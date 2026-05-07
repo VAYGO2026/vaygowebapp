@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#080d18"/>
+<title>VAYGO — Spin. Win. Explore.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#080d18;--navy2:#0c1422;--navy3:#111d30;
+  --cyan:#00e5ff;--pink:#ff2d78;--orange:#ff6d00;
+  --gold:#ffb800;--yellow:#ffe500;--green:#00e676;
+  --font-d:'Bebas Neue',sans-serif;
+  --font-s:'Pacifico',cursive;
+  --font-b:'Outfit',sans-serif;
+}
+html,body{background:var(--navy);color:#fff;font-family:var(--font-b);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+button{background:none;border:none;cursor:pointer;color:inherit;font-family:var(--font-b)}
+svg{display:block;flex-shrink:0}
+#app{width:100%;max-width:430px;margin:0 auto;min-height:100vh;background:var(--navy);position:relative;overflow-x:hidden}
+#bg{position:fixed;inset:0;max-width:430px;margin:0 auto;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(30px)}
+#orb1{width:280px;height:280px;top:-60px;right:-60px;background:radial-gradient(circle,rgba(0,229,255,.1) 0%,transparent 70%)}
+#orb2{width:220px;height:220px;top:40%;left:-50px;background:radial-gradient(circle,rgba(255,45,120,.09) 0%,transparent 70%)}
+#orb3{width:240px;height:240px;bottom:22%;left:26%;background:radial-gradient(circle,rgba(255,109,0,.07) 0%,transparent 70%)}
+.dotgrid{position:absolute;inset:0;opacity:.025;background-image:radial-gradient(circle,rgba(255,255,255,.8) 1px,transparent 1px);background-size:28px 28px}
+@keyframes orbF{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(16px,-10px) scale(1.05)}70%{transform:translate(-10px,8px) scale(.96)}}
+#orb1{animation:orbF 14s ease-in-out infinite}
+#orb2{animation:orbF 17s ease-in-out infinite reverse;animation-delay:-4s}
+#orb3{animation:orbF 20s ease-in-out infinite;animation-delay:-7s}
+#content{position:relative;z-index:10;overflow-y:auto;overflow-x:hidden;padding-bottom:84px;padding-top:env(safe-area-inset-top,10px)}
+/* HEADER */
+#hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 20px 6px}
+.ham{display:flex;flex-direction:column;gap:5px;padding:4px}
+.ham span{display:block;width:24px;height:2px;background:#fff;border-radius:2px}
+.bellbtn{position:relative;padding:4px}
+.nbadge{position:absolute;top:-2px;right:-2px;width:18px;height:18px;background:#ff2d78;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(255,45,120,.8)}
+/* WELCOME */
+#wbar{padding:4px 20px 14px}
+.wrow{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.wtitle{font-size:20px;font-weight:700;line-height:1.2}
+.wsub{font-size:13px;color:rgba(255,255,255,.5);margin-top:3px}
+.pbadge{flex-shrink:0;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:7px 12px}
+.pnum{font-size:15px;font-weight:700;line-height:1}
+.plbl{font-size:9px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.locbtn{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:14px;font-weight:500}
+/* SPIN CARD */
+#spcard{margin:0 16px;border-radius:24px;overflow:hidden;position:relative;
+  background:linear-gradient(135deg,#0c1830 0%,#0a1220 60%,#0d0a1a 100%);
+  border:1px solid rgba(255,255,255,.07);box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.spin-in{display:flex;align-items:center;padding:16px;gap:14px}
+.spin-r{flex:1}
+.sptitle{font-size:25px;font-weight:900;line-height:1.15;margin-bottom:6px}
+.spsub{font-size:13px;color:rgba(255,255,255,.58);line-height:1.5;margin-bottom:16px}
+.spsub b{color:var(--gold);font-weight:700}
+.spbtn{width:100%;padding:12px;border-radius:16px;font-size:15px;font-weight:700;letter-spacing:.07em;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#ff2d78 0%,#ff6d00 100%);box-shadow:0 4px 20px rgba(255,45,120,.45);transition:transform .15s}
+.spbtn:active{transform:scale(.97)}
+.whlwrap{flex-shrink:0;width:140px;height:140px}
+@keyframes whlIdle{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes ledBlink{0%,100%{opacity:1}50%{opacity:.25}}
+#whl{animation:whlIdle 22s linear infinite;transform-origin:70px 70px}
+/* CATS */
+#cats{padding:20px 16px 0}
+.stitle{font-size:17px;font-weight:700;margin-bottom:12px}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ccard{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:18px;background:rgba(13,21,37,.9);cursor:pointer;transition:transform .15s;text-align:left;border:1px solid rgba(255,255,255,.06);box-shadow:0 2px 16px rgba(0,0,0,.3)}
+.ccard:active{transform:scale(.96)}
+.clabel{font-size:13px;font-weight:700;letter-spacing:.03em}
+.csub{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;line-height:1.3}
+/* REWARDS */
+#rwds{margin-top:22px}
+.rhdrow{display:flex;align-items:center;justify-content:space-between;padding:0 16px;margin-bottom:12px}
+.rhtitle{font-size:17px;font-weight:700;display:flex;align-items:center;gap:6px}
+.vwall{font-size:13px;font-weight:600;color:var(--cyan);display:flex;align-items:center;gap:2px}
+.rrow{display:flex;gap:12px;overflow-x:auto;padding:0 16px 4px;scrollbar-width:none;-ms-overflow-style:none}
+.rrow::-webkit-scrollbar{display:none}
+.rcard{flex-shrink:0;width:155px;height:155px;border-radius:18px;position:relative;overflow:hidden;cursor:pointer;border:1px solid rgba(255,255,255,.07);transition:transform .15s}
+.rcard:active{transform:scale(.96)}
+.rdots{position:absolute;inset:0;opacity:.08;background-image:radial-gradient(circle,rgba(255,255,255,.5) 1px,transparent 1px);background-size:14px 14px}
+.rdisc{position:absolute;left:8px;top:50%;transform:translateY(-60%);font-family:var(--font-d);font-size:56px;color:rgba(255,255,255,.9);text-shadow:0 2px 12px rgba(0,0,0,.7);line-height:1}
+.rdisc.sm{font-size:44px}
+.rbot{position:absolute;bottom:0;left:0;right:0;padding:8px 10px;background:linear-gradient(to top,rgba(0,0,0,.78) 0%,transparent 100%)}
+.rpill{display:inline-block;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#fff;margin-bottom:4px}
+.rname{font-size:12px;font-weight:700;line-height:1.3;color:#fff}
+.rplace{font-size:10px;color:rgba(255,255,255,.5);margin-top:1px}
+/* BOTTOM NAV */
+#bnav{position:fixed;bottom:0;left:0;right:0;z-index:50;max-width:430px;margin:0 auto;background:rgba(8,13,24,.97);border-top:1px solid rgba(255,255,255,.07);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding-bottom:env(safe-area-inset-bottom,8px)}
+.ninner{display:flex;align-items:flex-end;justify-content:space-around;padding:4px 4px 6px}
+.nitem{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;min-width:52px}
+.nitem span{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);transition:color .15s}
+.ncenter{display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:4px;margin-top:-20px}
+.ndisc{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#1a1a2e,#16213e);border:2px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+.ncenter span{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);transition:color .15s}
+.ncenter.active span{color:var(--orange)}
+.ncenter.active .ndisc{box-shadow:0 0 20px rgba(255,109,0,.5),0 4px 16px rgba(0,0,0,.5)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.anim{opacity:0;animation:fadeUp .45s ease forwards}
+.d1{animation-delay:.05s}.d2{animation-delay:.15s}.d3{animation-delay:.25s}.d4{animation-delay:.35s}.d5{animation-delay:.45s}.d6{animation-delay:.55s}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="bg">
+  <div id="orb1" class="orb"></div>
+  <div id="orb2" class="orb"></div>
+  <div id="orb3" class="orb"></div>
+  <div class="dotgrid"></div>
+</div>
+<div id="content">
+
+<!-- HEADER -->
+<header id="hdr" class="anim d1">
+  <button class="ham" aria-label="Menu"><span></span><span></span><span></span></button>
+  <div></div>
+  <button class="bellbtn" aria-label="Notificaciones">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+    <span class="nbadge">3</span>
+  </button>
+</header>
+
+<!-- VAYGO LOGO SVG -->
+<div class="anim d2" style="padding:0 16px 4px">
+<svg viewBox="0 0 375 205" width="100%" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<radialGradient id="sunG" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffe500"/><stop offset="55%" stop-color="#ff9500"/><stop offset="100%" stop-color="#ff6d00" stop-opacity="0"/></radialGradient>
+<linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff6d00" stop-opacity=".22"/><stop offset="100%" stop-color="#080d18" stop-opacity="0"/></linearGradient>
+<linearGradient id="vG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#0099bb"/></linearGradient>
+<linearGradient id="aG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff4d9e"/><stop offset="100%" stop-color="#cc0050"/></linearGradient>
+<linearGradient id="yG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffb800"/><stop offset="100%" stop-color="#ff6d00"/></linearGradient>
+<filter id="ts"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,.75)"/></filter>
+<filter id="gl"><feGaussianBlur stdDeviation="2.5" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
+</defs>
+<rect x="0" y="0" width="375" height="205" fill="url(#skyG)"/>
+<circle cx="188" cy="70" r="40" fill="url(#sunG)" opacity=".9"/>
+<!-- left palm -->
+<g transform="translate(22,8)">
+<path d="M28 168 Q20 128 25 98 Q28 78 30 58" stroke="#2d5a1b" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+<path d="M30 58 Q10 38 -12 48" stroke="#3a7a22" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M30 58 Q4 28 14 12" stroke="#3a7a22" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<path d="M30 58 Q36 28 56 22" stroke="#3a7a22" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<path d="M30 58 Q56 48 64 60" stroke="#3a7a22" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M30 58 Q16 73 2 76" stroke="#3a7a22" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<circle cx="27" cy="63" r="4.5" fill="#7a5c2a"/><circle cx="21" cy="67" r="3.5" fill="#6b4f24"/>
+</g>
+<!-- right palm -->
+<g transform="translate(292,2)">
+<path d="M30 172 Q38 132 35 102 Q32 82 30 62" stroke="#2d5a1b" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+<path d="M30 62 Q52 42 72 50" stroke="#3a7a22" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M30 62 Q56 32 46 16" stroke="#3a7a22" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<path d="M30 62 Q4 30 14 18" stroke="#3a7a22" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<path d="M30 62 Q6 52 -2 62" stroke="#3a7a22" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M30 62 Q52 72 64 68" stroke="#3a7a22" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<circle cx="33" cy="67" r="4.5" fill="#7a5c2a"/><circle cx="27" cy="71" r="3.5" fill="#6b4f24"/>
+</g>
+<!-- pyramid -->
+<g transform="translate(188,98)" opacity=".88">
+<polygon points="0,-44 58,0 -58,0" fill="rgba(0,0,0,.35)" transform="translate(4,5)"/>
+<polygon points="0,-44 58,0 -58,0" fill="#c8a84b"/>
+<polygon points="-9,-44 9,-44 11,-32 -11,-32" fill="#b89540"/>
+<polygon points="-16,-32 16,-32 22,-20 -22,-20" fill="#c8a84b"/>
+<polygon points="-26,-20 26,-20 34,-8 -34,-8" fill="#d4b055"/>
+<polygon points="-34,-8 34,-8 42,0 -42,0" fill="#c8a84b"/>
+<polygon points="-42,0 42,0 58,8 -58,8" fill="#b89540"/>
+<rect x="-9" y="-54" width="18" height="12" fill="#c8a84b" rx="1"/>
+<rect x="-7" y="-58" width="14" height="6" fill="#b89540" rx="1"/>
+<rect x="-4.5" y="-38" width="9" height="10" fill="#1a0e05" rx="1"/>
+<line x1="-58" y1="0" x2="58" y2="0" stroke="#8a6e3a" stroke-width="1.5"/>
+</g>
+<!-- birds -->
+<g fill="none" stroke="#a0c8d8" stroke-width="1.5" stroke-linecap="round" opacity=".5">
+<path d="M58 26 Q63 21 68 26"/><path d="M72 18 Q76 14 80 18"/>
+<path d="M282 28 Q287 23 292 28"/><path d="M296 20 Q300 16 304 20"/><path d="M308 33 Q311 29 314 33"/>
+</g>
+<!-- water splash -->
+<g opacity=".6">
+<path d="M316 52 Q330 38 342 52 Q354 38 366 48" stroke="#00e5ff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M320 63 Q332 53 344 60" stroke="#00e5ff" stroke-width="2" fill="none" stroke-linecap="round"/>
+</g>
+<!-- letter shadows -->
+<text x="20" y="163" font-family="'Bebas Neue',sans-serif" font-size="88" fill="rgba(0,0,0,.55)" letter-spacing="1">V</text>
+<text x="77" y="163" font-family="'Bebas Neue',sans-serif" font-size="88" fill="rgba(0,0,0,.55)" letter-spacing="1">A</text>
+<text x="143" y="163" font-family="'Bebas Neue',sans-serif" font-size="88" fill="rgba(0,0,0,.55)" letter-spacing="1">Y</text>
+<text x="199" y="163" font-family="'Bebas Neue',sans-serif" font-size="88" fill="rgba(0,0,0,.55)" letter-spacing="1">G</text>
+<text x="273" y="163" font-family="'Bebas Neue',sans-serif" font-size="88" fill="rgba(0,0,0,.55)" letter-spacing="1">O</text>
+<!-- letter colors -->
+<text x="18" y="161" font-family="'Bebas Neue',sans-serif" font-size="88" fill="url(#vG)" filter="url(#ts)" letter-spacing="1">V</text>
+<text x="75" y="161" font-family="'Bebas Neue',sans-serif" font-size="88" fill="url(#aG)" filter="url(#ts)" letter-spacing="1">A</text>
+<text x="141" y="161" font-family="'Bebas Neue',sans-serif" font-size="88" fill="url(#yG)" filter="url(#ts)" letter-spacing="1">Y</text>
+<text x="197" y="161" font-family="'Bebas Neue',sans-serif" font-size="88" fill="white" filter="url(#ts)" letter-spacing="1">G</text>
+<text x="271" y="161" font-family="'Bebas Neue',sans-serif" font-size="88" fill="white" filter="url(#ts)" letter-spacing="1">O</text>
+<!-- compass on O -->
+<g transform="translate(308,118)"><polygon points="0,-15 5,15 0,11 -5,15" fill="#ff6d00" opacity=".95"/><polygon points="0,15 5,-15 0,-11 -5,-15" fill="#ffb800" opacity=".75"/></g>
+<!-- tagline -->
+<text x="188" y="191" text-anchor="middle" font-family="'Pacifico',cursive" font-size="19" fill="none" stroke="#ff6d00" stroke-width=".5">SPIN. WIN. EXPLORE.</text>
+<text x="188" y="191" text-anchor="middle" font-family="'Pacifico',cursive" font-size="19" fill="#ffb800" filter="url(#gl)">SPIN. WIN. EXPLORE.</text>
+</svg>
+</div>
+
+<!-- WELCOME BAR -->
+<div id="wbar" class="anim d3">
+  <div class="wrow">
+    <div><div class="wtitle">Welcome to VAYGO</div><div class="wsub">Your adventure starts here.</div></div>
+    <div class="pbadge">
+      <span style="color:#ffe500;font-size:16px">&#11088;</span>
+      <div><div class="pnum">1,250</div><div class="plbl">VAYGO POINTS</div></div>
+    </div>
+  </div>
+  <button class="locbtn">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="#ff2d78"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+    Cozumel, Mexico
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,.5)"><path d="M7 10l5 5 5-5z"/></svg>
+  </button>
+</div>
+
+<!-- SPIN WHEEL CARD -->
+<div id="spcard" class="anim d4">
+  <div class="spin-in">
+    <div class="whlwrap">
+      <svg id="whl" width="140" height="140" viewBox="0 0 140 140">
+        <circle cx="70" cy="70" r="68" fill="rgba(0,0,0,.55)"/>
+        <path d="M70,70 L70,12 A58,58 0 0,1 120.9,41 Z" fill="#ff6d00"/>
+        <path d="M70,70 L120.9,41 A58,58 0 0,1 120.9,99 Z" fill="#ff2d78"/>
+        <path d="M70,70 L120.9,99 A58,58 0 0,1 70,128 Z" fill="#00b4d8"/>
+        <path d="M70,70 L70,128 A58,58 0 0,1 19.1,99 Z" fill="#7b2fbe"/>
+        <path d="M70,70 L19.1,99 A58,58 0 0,1 19.1,41 Z" fill="#ff6d00"/>
+        <path d="M70,70 L19.1,41 A58,58 0 0,1 70,12 Z" fill="#ff2d78"/>
+        <line x1="70" y1="70" x2="70" y2="12" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/>
+        <line x1="70" y1="70" x2="120.9" y2="41" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/>
+        <line x1="70" y1="70" x2="120.9" y2="99" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/>
+        <line x1="70" y1="70" x2="70" y2="128" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/>
+        <line x1="70" y1="70" x2="19.1" y2="99" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/>
+        <line x1="70" y1="70" x2="19.1" y2="41" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/>
+        <text x="88" y="36" text-anchor="middle" font-size="13">&#127991;</text>
+        <text x="113" y="75" text-anchor="middle" font-size="13">&#128717;</text>
+        <text x="97" y="108" text-anchor="middle" font-size="13">&#127869;</text>
+        <text x="52" y="114" text-anchor="middle" font-size="13">&#127915;</text>
+        <text x="27" y="76" text-anchor="middle" font-size="13">&#127865;</text>
+        <text x="48" y="36" text-anchor="middle" font-size="13">&#127873;</text>
+        <circle cx="70" cy="4" r="3" fill="#ff2d78" style="animation:ledBlink 1.4s ease-in-out infinite"/>
+        <circle cx="104.4" cy="13.4" r="3" fill="#ff6d00"/>
+        <circle cx="128.6" cy="40" r="3" fill="#ffb800" style="animation:ledBlink 1.4s ease-in-out infinite;animation-delay:.3s"/>
+        <circle cx="136" cy="70" r="3" fill="#00e5ff"/>
+        <circle cx="128.6" cy="100" r="3" fill="#ff2d78" style="animation:ledBlink 1.4s ease-in-out infinite;animation-delay:.6s"/>
+        <circle cx="104.4" cy="126.6" r="3" fill="#ff6d00"/>
+        <circle cx="70" cy="136" r="3" fill="#ffb800" style="animation:ledBlink 1.4s ease-in-out infinite;animation-delay:.9s"/>
+        <circle cx="35.6" cy="126.6" r="3" fill="#00e5ff"/>
+        <circle cx="11.4" cy="100" r="3" fill="#ff2d78" style="animation:ledBlink 1.4s ease-in-out infinite;animation-delay:1.2s"/>
+        <circle cx="4" cy="70" r="3" fill="#ff6d00"/>
+        <circle cx="11.4" cy="40" r="3" fill="#ffb800" style="animation:ledBlink 1.4s ease-in-out infinite;animation-delay:1.5s"/>
+        <circle cx="35.6" cy="13.4" r="3" fill="#00e5ff"/>
+        <circle cx="70" cy="70" r="15" fill="#080d18" stroke="rgba(255,255,255,.15)" stroke-width="2"/>
+        <circle cx="70" cy="70" r="10" fill="#111d30"/>
+        <path d="M70 57 C65.58 57 62 60.58 62 65 C62 70.75 70 80 70 80 C70 80 78 70.75 78 65 C78 60.58 74.42 57 70 57Z" fill="white" opacity=".9"/>
+        <circle cx="70" cy="65" r="3" fill="#080d18"/>
+      </svg>
+    </div>
+    <div class="spin-r">
+      <div class="sptitle">READY TO<br>WIN?</div>
+      <div class="spsub">Spin the wheel and unlock <b>epic rewards!</b></div>
+      <button class="spbtn" onclick="doSpin()">
+        SPIN NOW
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<div id="cats" class="anim d5">
+  <div class="stitle">Explore Categories</div>
+  <div class="cgrid">
+    <button class="ccard" onclick="selCat('eat')" style="border-color:rgba(0,229,255,.2)">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="2" x2="3" y2="22"/><path d="M7 2v7a4 4 0 01-4 4"/><path d="M15 2v4c0 2.2 1.8 4 4 4v12"/><line x1="15" y1="10" x2="21" y2="10"/></svg>
+      <div><div class="clabel" style="color:#00e5ff">EAT</div><div class="csub">Local Restaurants</div></div>
+    </button>
+    <button class="ccard" onclick="selCat('drink')" style="border-color:rgba(255,45,120,.2)">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ff2d78" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8M12 11v11M3 3h18l-9 9-9-9z"/></svg>
+      <div><div class="clabel" style="color:#ff2d78">DRINK</div><div class="csub">Bars &amp; Nightlife</div></div>
+    </button>
+    <button class="ccard" onclick="selCat('shop')" style="border-color:rgba(255,184,0,.2)">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ffb800" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <div><div class="clabel" style="color:#ffb800">SHOP</div><div class="csub">Stores &amp; More</div></div>
+    </button>
+    <button class="ccard" onclick="selCat('save')" style="border-color:rgba(0,230,118,.2)">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00e676" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      <div><div class="clabel" style="color:#00e676">SAVE</div><div class="csub">Exclusive Deals</div></div>
+    </button>
+    <button class="ccard" onclick="selCat('tours')" style="border-color:rgba(255,229,0,.2)">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ffe500" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      <div><div class="clabel" style="color:#ffe500">TOURS</div><div class="csub">Activities &amp; Tours</div></div>
+    </button>
+    <button class="ccard" onclick="selCat('diving')" style="border-color:rgba(0,229,255,.2)">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="7" r="4"/><path d="M14 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16"/><circle cx="7" cy="18" r="2"/><circle cx="14" cy="18" r="2"/></svg>
+      <div><div class="clabel" style="color:#00e5ff">DIVING</div><div class="csub">Underwater Adventures</div></div>
+    </button>
+    <button class="ccard" onclick="selCat('adventure')" style="border-color:rgba(255,109,0,.2)">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ff6d00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M5 14h1l4-7h4l4 7h1"/><path d="M9 7l1 7M14 14H9"/></svg>
+      <div><div class="clabel" style="color:#ff6d00">ADVENTURE</div><div class="csub">Thrill &amp; Excitement</div></div>
+    </button>
+    <button class="ccard" onclick="selCat('fishing')" style="border-color:rgba(0,180,216,.2)">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00b4d8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v12"/><path d="M6 9q8 0 12 5-4 6-10 6-6 0-6-5"/><path d="M14 19l2 2M14 19l2-2"/></svg>
+      <div><div class="clabel" style="color:#00b4d8">FISHING</div><div class="csub">Deep Sea &amp; Sport Fishing</div></div>
+    </button>
+  </div>
+</div>
+
+<!-- HOT REWARDS -->
+<div id="rwds" class="anim d6">
+  <div class="rhdrow">
+    <div class="rhtitle">&#128293; Hot Rewards</div>
+    <button class="vwall">View all <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></button>
+  </div>
+  <div class="rrow">
+    <div class="rcard" onclick="openR('r1')" style="background:linear-gradient(135deg,#0d2a1a 0%,#0a1e28 60%,#0a1628 100%)">
+      <div class="rdots"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,180,100,.2) 0%,rgba(0,60,30,.12) 100%)"></div>
+      <div class="rdisc">2X1</div>
+      <div class="rbot"><div class="rpill" style="background:#ff2d78">RESTAURANTS</div><div class="rname">2x1 Main Courses</div><div class="rplace">Multiple Locations</div></div>
+    </div>
+    <div class="rcard" onclick="openR('r2')" style="background:linear-gradient(135deg,#1a1505 0%,#2a1a05 60%,#1a0a0a 100%)">
+      <div class="rdots"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,109,0,.22) 0%,rgba(160,40,0,.1) 100%)"></div>
+      <div class="rdisc">15%</div>
+      <div class="rbot"><div class="rpill" style="background:#ff6d00">BARS</div><div class="rname">15% Off Drinks</div><div class="rplace">Beach Clubs</div></div>
+    </div>
+    <div class="rcard" onclick="openR('r3')" style="background:linear-gradient(135deg,#1a1005 0%,#1a0a18 60%,#0a0a1a 100%)">
+      <div class="rdots"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,184,0,.2) 0%,rgba(120,60,0,.1) 100%)"></div>
+      <div class="rdisc">20%</div>
+      <div class="rbot"><div class="rpill" style="background:#ffb800;color:#1a0a00">SHOPPING</div><div class="rname">20% Off</div><div class="rplace">Selected Stores</div></div>
+    </div>
+    <div class="rcard" onclick="openR('r4')" style="background:linear-gradient(135deg,#001a2a 0%,#001428 60%,#000d1a 100%)">
+      <div class="rdots"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,180,220,.2) 0%,rgba(0,60,100,.1) 100%)"></div>
+      <div class="rdisc sm">FREE</div>
+      <div class="rbot"><div class="rpill" style="background:#00b4d8">DIVING</div><div class="rname">Free Dive Gear</div><div class="rplace">With Any Booking</div></div>
+    </div>
+    <div class="rcard" onclick="openR('r5')" style="background:linear-gradient(135deg,#1a0e00 0%,#280e00 60%,#180600 100%)">
+      <div class="rdots"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,109,0,.22) 0%,rgba(160,40,0,.1) 100%)"></div>
+      <div class="rdisc">30%</div>
+      <div class="rbot"><div class="rpill" style="background:#ff6d00">ADVENTURE</div><div class="rname">30% Off Tours</div><div class="rplace">Jungle &amp; ATV</div></div>
+    </div>
+  </div>
+</div>
+
+<div style="height:16px"></div>
+</div><!-- /content -->
+
+<!-- BOTTOM NAV -->
+<nav id="bnav">
+  <div class="ninner">
+    <button class="nitem" id="n-home" onclick="setNav('home')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,.38)"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span>HOME</span>
+    </button>
+    <button class="nitem" id="n-explore" onclick="setNav('explore')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.38)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="rgba(255,255,255,.38)" stroke="none"/></svg>
+      <span>EXPLORE</span>
+    </button>
+    <button class="ncenter" id="n-spin" onclick="setNav('spin')">
+      <div class="ndisc">
+        <svg width="34" height="34" viewBox="0 0 34 34">
+          <path d="M17,17 L17,2 A15,15 0 0,1 30,9.5 Z" fill="#ff6d00"/>
+          <path d="M17,17 L30,9.5 A15,15 0 0,1 30,24.5 Z" fill="#ff2d78"/>
+          <path d="M17,17 L30,24.5 A15,15 0 0,1 17,32 Z" fill="#00b4d8"/>
+          <path d="M17,17 L17,32 A15,15 0 0,1 4,24.5 Z" fill="#7b2fbe"/>
+          <path d="M17,17 L4,24.5 A15,15 0 0,1 4,9.5 Z" fill="#ff6d00"/>
+          <path d="M17,17 L4,9.5 A15,15 0 0,1 17,2 Z" fill="#ff2d78"/>
+          <circle cx="17" cy="17" r="5" fill="#080d18"/>
+          <circle cx="17" cy="17" r="3" fill="white" opacity=".75"/>
+        </svg>
+      </div>
+      <span>SPIN</span>
+    </button>
+    <button class="nitem" id="n-rewards" onclick="setNav('rewards')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,.38)"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+      <span>REWARDS</span>
+    </button>
+    <button class="nitem" id="n-profile" onclick="setNav('profile')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,.38)"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      <span>PROFILE</span>
+    </button>
+  </div>
+</nav>
+
+</div><!-- /app -->
+<script>
+const COLORS={home:'#ff2d78',explore:'#00e5ff',spin:'#ff6d00',rewards:'#ffb800',profile:'#a78bfa'};
+const IDS={home:'n-home',explore:'n-explore',spin:'n-spin',rewards:'n-rewards',profile:'n-profile'};
+let curNav='home';
+function setNav(id){
+  document.querySelectorAll('.nitem,.ncenter').forEach(el=>{
+    el.classList.remove('active');
+    const sp=el.querySelector('span');
+    if(sp) sp.style.color='rgba(255,255,255,.35)';
+    el.querySelectorAll('svg path,svg polygon').forEach(p=>{
+      if(p.getAttribute('fill')&&p.getAttribute('fill')!=='none') p.setAttribute('fill','rgba(255,255,255,.38)');
+    });
+  });
+  curNav=id;
+  const btn=document.getElementById(IDS[id]);
+  if(!btn) return;
+  const col=COLORS[id];
+  btn.classList.add('active');
+  const sp=btn.querySelector('span');
+  if(sp) sp.style.color=col;
+  if(id!=='spin'){
+    btn.querySelectorAll('svg path,svg polygon').forEach(p=>{
+      if(p.getAttribute('fill')&&p.getAttribute('fill')!=='none'&&!p.getAttribute('fill').startsWith('url')) p.setAttribute('fill',col);
+    });
+  }
+}
+let spinning=false;
+function doSpin(){
+  if(spinning) return;
+  spinning=true;
+  const whl=document.getElementById('whl');
+  whl.style.animation='none';
+  let deg=0,speed=14,target=deg+(Math.random()*1440+1080);
+  const prizes=['&#127869; Free dessert!','&#127865; 2x1 cocktails!','&#128717; 10% off shopping!','&#127915; VIP tour pass!','&#127873; Surprise gift!','&#127869; Free appetizer!'];
+  const prize=prizes[Math.floor(Math.random()*prizes.length)];
+  function frame(){
+    const dist=target-deg;
+    if(dist<200) speed=Math.max(.7,speed*.94);
+    deg+=speed;
+    whl.style.transform='rotate('+deg+'deg)';
+    if(deg<target){requestAnimationFrame(frame);}
+    else{whl.style.transform='rotate('+(target%360)+'deg)';spinning=false;toast('&#127881; You won: '+prize);}
+  }
+  requestAnimationFrame(frame);
+}
+function selCat(id){toast('&#128205; Opening: '+id.toUpperCase());}
+function openR(id){toast('&#127873; Claiming reward...');}
+function toast(msg){
+  const t=document.createElement('div');
+  t.innerHTML=msg;
+  Object.assign(t.style,{position:'fixed',top:'80px',left:'50%',transform:'translateX(-50%)',
+    background:'rgba(0,229,255,.12)',border:'1px solid rgba(0,229,255,.35)',
+    backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)',
+    color:'#fff',padding:'10px 22px',borderRadius:'20px',fontSize:'14px',
+    fontWeight:'600',fontFamily:"'Outfit',sans-serif",zIndex:'999',
+    boxShadow:'0 4px 20px rgba(0,0,0,.5)',whiteSpace:'nowrap',
+    transition:'opacity .4s'});
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),400);},2600);
+}
+setNav('home');
+</script>
+</body>
+</html>
