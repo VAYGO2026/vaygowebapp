@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>VAYGO — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;}
+.app{width:390px;height:100dvh;max-height:820px;background:#0A1628;border-radius:32px;overflow:hidden;display:flex;flex-direction:column;align-items:center;position:relative;}
+
+/* STATUS BAR */
+.status-bar{width:100%;display:flex;justify-content:space-between;align-items:center;padding:14px 24px 0;color:#fff;font-size:13px;font-weight:600;flex-shrink:0;}
+
+/* LOGO */
+.logo-wrap{width:100%;display:flex;align-items:center;justify-content:center;background:#0A1628;flex-shrink:0;}
+.logo-wrap img{width:100%;max-width:390px;height:auto;display:block;object-fit:cover;}
+
+/* CONTENT */
+.content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 28px 40px;gap:20px;width:100%;}
+
+.welcome-text{text-align:center;}
+.welcome-text h2{font-family:'Anton',sans-serif;font-size:28px;color:#fff;letter-spacing:1px;line-height:1.1;}
+.welcome-text h2 span{color:#FF2D7A;}
+.welcome-text p{font-size:13px;color:#8BB8D8;margin-top:8px;line-height:1.5;}
+
+/* DIVIDER */
+.divider{display:flex;align-items:center;gap:12px;width:100%;}
+.divider-line{flex:1;height:1px;background:#1A2E4A;}
+.divider span{font-size:11px;color:#4B6A85;font-weight:500;}
+
+/* GOOGLE BTN */
+.google-btn{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:12px;
+  background:#fff;border:none;border-radius:14px;padding:14px;
+  cursor:pointer;font-size:14px;font-weight:700;color:#1A1A1A;
+  box-shadow:0 4px 16px rgba(0,0,0,0.3);
+  transition:transform 0.15s,box-shadow 0.15s;
+}
+.google-btn:active{transform:scale(0.98);}
+.google-btn svg{width:22px;height:22px;flex-shrink:0;}
+
+/* EMAIL FORM */
+.email-form{width:100%;display:flex;flex-direction:column;gap:10px;}
+.input-wrap{position:relative;}
+.input-wrap input{
+  width:100%;background:#0D1E35;border:1px solid #1A2E4A;border-radius:12px;
+  padding:12px 16px;color:#fff;font-size:13px;outline:none;
+  font-family:'DM Sans',sans-serif;
+  transition:border-color 0.2s;
+}
+.input-wrap input:focus{border-color:#4FA3E8;}
+.input-wrap input::placeholder{color:#4B6A85;}
+
+.submit-btn{
+  width:100%;background:linear-gradient(90deg,#FF2D7A,#FF8C00);
+  border:none;border-radius:12px;padding:14px;
+  color:#fff;font-size:14px;font-weight:700;
+  cursor:pointer;letter-spacing:0.05em;
+  transition:opacity 0.2s;
+}
+.submit-btn:active{opacity:0.85;}
+
+.toggle-mode{
+  text-align:center;font-size:12px;color:#4B6A85;cursor:pointer;
+}
+.toggle-mode span{color:#4FA3E8;font-weight:600;}
+
+/* ERROR */
+.error-msg{
+  background:rgba(255,45,122,0.15);border:1px solid rgba(255,45,122,0.3);
+  border-radius:10px;padding:8px 12px;
+  font-size:11px;color:#FF2D7A;text-align:center;
+  display:none;
+}
+.error-msg.show{display:block;}
+
+/* LOADING */
+.loading{
+  display:none;position:fixed;inset:0;background:rgba(10,22,40,0.9);
+  z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:16px;
+}
+.loading.show{display:flex;}
+.spinner{width:40px;height:40px;border:3px solid #1A2E4A;border-top:3px solid #4FA3E8;border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading p{color:#8BB8D8;font-size:13px;}
+
+/* TERMS */
+.terms{font-size:10px;color:#3B5070;text-align:center;line-height:1.5;}
+.terms span{color:#4FA3E8;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="status-bar">
+    <span>9:41</span>
+    <span style="display:flex;gap:6px;align-items:center;">
+      <svg width="14" height="11" viewBox="0 0 24 18" fill="none"><path d="M1 4C5.5 0.5 18.5 0.5 23 4" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M4.5 8C7.5 5.5 16.5 5.5 19.5 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M8 12C10 10.5 14 10.5 16 12" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="2" fill="#fff"/></svg>
+      <svg width="22" height="12" viewBox="0 0 28 14" fill="none"><rect x="0.5" y="0.5" width="24" height="13" rx="3" stroke="#fff" stroke-width="1.2"/><rect x="25" y="4" width="3" height="6" rx="1.5" fill="#fff"/><rect x="2" y="2" width="20" height="10" rx="2" fill="#fff"/></svg>
+    </span>
+  </div>
+
+  <div class="logo-wrap">
+    <img src="https://raw.githubusercontent.com/vaygo2026/vaygowebapp/main/logo.png" alt="VAYGO"/>
+  </div>
+
+  <div class="content">
+
+    <div class="welcome-text">
+      <h2>Welcome to <span>VAYGO</span></h2>
+      <p>Sign in to spin, win and explore exclusive rewards in Cozumel</p>
+    </div>
+
+    <!-- GOOGLE LOGIN -->
+    <button class="google-btn" onclick="loginGoogle()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span>or</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- EMAIL FORM -->
+    <div class="email-form">
+      <div class="error-msg" id="errorMsg"></div>
+      <div class="input-wrap">
+        <input type="email" id="emailInput" placeholder="Email address" autocomplete="email"/>
+      </div>
+      <div class="input-wrap">
+        <input type="password" id="passInput" placeholder="Password" autocomplete="current-password"/>
+      </div>
+      <div class="input-wrap" id="nameWrap" style="display:none;">
+        <input type="text" id="nameInput" placeholder="Your full name"/>
+      </div>
+      <div class="input-wrap" id="cityWrap" style="display:none;">
+        <select id="cityInput" style="width:100%;background:#0D1E35;border:1px solid #1A2E4A;border-radius:12px;padding:12px 16px;color:#fff;font-size:13px;outline:none;font-family:'DM Sans',sans-serif;appearance:none;">
+          <option value="" disabled selected style="color:#4B6A85;">Select your city</option>
+          <option value="Cozumel">Cozumel</option>
+          <option value="Playa del Carmen">Playa del Carmen</option>
+          <option value="Tulum">Tulum</option>
+          <option value="Bacalar">Bacalar</option>
+          <option value="Cancún">Cancún</option>
+        </select>
+      </div>
+      <button class="submit-btn" id="submitBtn" onclick="handleEmailAuth()">Sign In</button>
+      <div class="toggle-mode" onclick="toggleMode()">
+        Don't have an account? <span id="toggleText">Create one</span>
+      </div>
+    </div>
+
+    <div class="terms">
+      By continuing you agree to our <span>Terms of Service</span><br/>and <span>Privacy Policy</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <p>Signing you in...</p>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain: "vaygo-app.firebaseapp.com",
+  projectId: "vaygo-app",
+  storageBucket: "vaygo-app.firebasestorage.app",
+  messagingSenderId: "499741267414",
+  appId: "1:499741267414:web:e69cd43156adaea11bc077"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+let isRegister = false;
+
+// CHECK IF ALREADY LOGGED IN
+onAuthStateChanged(auth, (user) => {
+  if(user) {
+    window.location.href = 'index.html';
+  }
+});
+
+// SAVE USER TO FIRESTORE
+async function saveUser(user, extraData = {}) {
+  const ref = doc(db, 'users', user.uid);
+  const snap = await getDoc(ref);
+  if(!snap.exists()) {
+    await setDoc(ref, {
+      uid: user.uid,
+      name: user.displayName || extraData.name || '',
+      email: user.email,
+      city: extraData.city || '',
+      createdAt: serverTimestamp(),
+      totalSpins: 0,
+    });
+  }
+}
+
+// GOOGLE LOGIN
+window.loginGoogle = async function() {
+  document.getElementById('loading').classList.add('show');
+  try {
+    const result = await signInWithPopup(auth, provider);
+    await saveUser(result.user);
+    window.location.href = 'index.html';
+  } catch(e) {
+    document.getElementById('loading').classList.remove('show');
+    showError('Google sign-in failed. Please try again.');
+  }
+};
+
+// EMAIL AUTH
+window.handleEmailAuth = async function() {
+  const email = document.getElementById('emailInput').value.trim();
+  const pass = document.getElementById('passInput').value;
+  const name = document.getElementById('nameInput').value.trim();
+  const city = document.getElementById('cityInput').value;
+
+  if(!email || !pass) { showError('Please enter email and password.'); return; }
+  if(isRegister && !name) { showError('Please enter your name.'); return; }
+  if(isRegister && !city) { showError('Please select your city.'); return; }
+  if(pass.length < 6) { showError('Password must be at least 6 characters.'); return; }
+
+  document.getElementById('loading').classList.add('show');
+  try {
+    let result;
+    if(isRegister) {
+      result = await createUserWithEmailAndPassword(auth, email, pass);
+      await updateProfile(result.user, { displayName: name });
+      await saveUser(result.user, { name, city });
+    } else {
+      result = await signInWithEmailAndPassword(auth, email, pass);
+    }
+    window.location.href = 'index.html';
+  } catch(e) {
+    document.getElementById('loading').classList.remove('show');
+    const msgs = {
+      'auth/user-not-found': 'No account found with this email.',
+      'auth/wrong-password': 'Incorrect password.',
+      'auth/email-already-in-use': 'This email is already registered.',
+      'auth/invalid-email': 'Invalid email address.',
+      'auth/invalid-credential': 'Invalid email or password.',
+    };
+    showError(msgs[e.code] || 'Something went wrong. Please try again.');
+  }
+};
+
+// TOGGLE MODE
+window.toggleMode = function() {
+  isRegister = !isRegister;
+  document.getElementById('nameWrap').style.display = isRegister ? 'block' : 'none';
+  document.getElementById('cityWrap').style.display = isRegister ? 'block' : 'none';
+  document.getElementById('submitBtn').textContent = isRegister ? 'Create Account' : 'Sign In';
+  document.getElementById('toggleText').textContent = isRegister ? 'Sign in instead' : 'Create one';
+  hideError();
+};
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function hideError() {
+  document.getElementById('errorMsg').classList.remove('show');
+}
+</script>
+</body>
+</html>
