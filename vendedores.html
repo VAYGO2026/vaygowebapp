@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VAYGO — Códigos Vendedores</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#060E1C;font-family:'DM Sans',sans-serif;padding:30px 20px;}
+h1{font-family:'Anton',sans-serif;color:#fff;font-size:28px;letter-spacing:2px;margin-bottom:6px;}
+p{color:#4FA3E8;font-size:13px;margin-bottom:30px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+.card{background:#0D1E35;border:1px solid #1A2E4A;border-radius:20px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px;}
+.card-header{text-align:center;}
+.vendor-num{font-family:'Anton',sans-serif;font-size:22px;color:#FF2D7A;letter-spacing:1px;}
+.vendor-name{font-size:12px;color:#4B6A85;margin-top:2px;}
+.qr-wrap{background:#fff;padding:10px;border-radius:12px;}
+.url{font-size:10px;color:#4B6A85;text-align:center;word-break:break-all;max-width:240px;}
+.download-btn{background:linear-gradient(90deg,#FF2D7A,#FF8C00);border:none;border-radius:10px;padding:8px 20px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.05em;}
+.logo{font-family:'Anton',sans-serif;font-size:13px;color:#fff;letter-spacing:1px;}
+.logo span{color:#FF2D7A;}
+@media print{
+  body{background:#fff;padding:10px;}
+  .download-btn{display:none;}
+  .card{border:1px solid #ccc;break-inside:avoid;}
+  h1,p,.logo{color:#000!important;}
+  .vendor-num{color:#FF2D7A!important;}
+  .url{color:#666!important;}
+  .vendor-name{color:#666!important;}
+}
+</style>
+</head>
+<body>
+
+<h1>VAYGO — VENDEDORES</h1>
+<p>10 códigos QR únicos para tracking de ventas. Cada vendedor tiene su propio QR.</p>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const APP_URL = 'https://vaygowebapp-9vrd.vercel.app';
+const vendors = [
+  {num:1, name:'Vendedor 1'},
+  {num:2, name:'Vendedor 2'},
+  {num:3, name:'Vendedor 3'},
+  {num:4, name:'Vendedor 4'},
+  {num:5, name:'Vendedor 5'},
+  {num:6, name:'Vendedor 6'},
+  {num:7, name:'Vendedor 7'},
+  {num:8, name:'Vendedor 8'},
+  {num:9, name:'Vendedor 9'},
+  {num:10, name:'Vendedor 10'},
+];
+
+const grid = document.getElementById('grid');
+
+vendors.forEach(v => {
+  const refUrl = `${APP_URL}?ref=v${v.num}`;
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="card-header">
+      <div class="logo">VAY<span>GO</span></div>
+      <div class="vendor-num">VENDEDOR ${v.num}</div>
+      <div class="vendor-name" id="name${v.num}">${v.name}</div>
+    </div>
+    <div class="qr-wrap" id="qr${v.num}"></div>
+    <div class="url">${refUrl}</div>
+    <button class="download-btn" onclick="downloadQR(${v.num})">Descargar QR</button>
+  `;
+  grid.appendChild(card);
+
+  setTimeout(() => {
+    new QRCode(document.getElementById('qr'+v.num), {
+      text: refUrl,
+      width: 180,
+      height: 180,
+      colorDark: '#0A1628',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }, v.num * 100);
+});
+
+function downloadQR(num) {
+  setTimeout(() => {
+    const qrWrap = document.getElementById('qr'+num);
+    const img = qrWrap.querySelector('img') || qrWrap.querySelector('canvas');
+    if(!img) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 300;
+    canvas.height = 360;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#0D1E35';
+    ctx.fillRect(0,0,300,360);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(50,20,200,200);
+    const qrImg = new Image();
+    qrImg.crossOrigin = 'anonymous';
+    qrImg.src = img.src || img.toDataURL();
+    qrImg.onload = () => {
+      ctx.drawImage(qrImg, 60, 30, 180, 180);
+      ctx.fillStyle = '#FF2D7A';
+      ctx.font = 'bold 18px Anton, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('VAYGO', 150, 250);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 14px DM Sans, sans-serif';
+      ctx.fillText('VENDEDOR '+num, 150, 275);
+      ctx.fillStyle = '#4FA3E8';
+      ctx.font = '10px DM Sans, sans-serif';
+      ctx.fillText('Escanea para explorar VAYGO', 150, 300);
+      const link = document.createElement('a');
+      link.download = `vaygo-vendedor-${num}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    qrImg.onerror = () => {
+      // fallback canvas
+      const c = qrWrap.querySelector('canvas');
+      if(c) {
+        const link = document.createElement('a');
+        link.download = `vaygo-vendedor-${num}.png`;
+        link.href = c.toDataURL('image/png');
+        link.click();
+      }
+    };
+  }, 200);
+}
+</script>
+</body>
+</html>
