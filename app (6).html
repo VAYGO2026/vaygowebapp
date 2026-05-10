@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>VAYGO — Spin. Win. Explore.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;}
+.app{width:390px;height:100dvh;max-height:820px;background:#0A1628;border-radius:32px;overflow:hidden;display:flex;flex-direction:column;position:relative;}
+.status-bar{display:flex;justify-content:space-between;align-items:center;padding:18px 24px 6px;color:#fff;font-size:13px;font-weight:600;flex-shrink:0;}
+.header{display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;background:#0A1628;overflow:hidden;}
+.header img{width:100%;max-width:390px;height:auto;display:block;object-fit:cover;}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px 14px 80px;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+
+.welcome-row{display:flex;align-items:flex-start;justify-content:space-between;padding:0 2px 10px;}
+.welcome-left{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.welcome-title{font-size:13px;font-weight:700;color:#fff;}
+.welcome-sub{font-size:10px;color:#4FA3E8;margin-top:1px;}
+.location-row{display:flex;align-items:center;gap:4px;margin-top:5px;cursor:pointer;}
+.location-row svg{width:12px;height:12px;}
+.location-text{font-size:13px;font-weight:600;color:#ffffff;}
+.location-arrow{font-size:11px;color:#ffffff;}
+.share-btn{background:rgba(37,211,102,0.12);border:1px solid rgba(37,211,102,0.3);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin-top:18px;}
+.share-btn svg{width:16px;height:16px;}
+#locDropdown{display:none;margin-top:4px;background:#0D1E35;border:1px solid #1A3050;border-radius:10px;overflow:hidden;}
+#locDropdown div{padding:7px 12px;font-size:11px;color:#8BB8D8;cursor:pointer;border-top:1px solid #1A3050;}
+#locDropdown div:first-child{border-top:none;}
+#locDropdown div:hover{background:#1A2E4A;}
+
+/* HERO CARD */
+.hero-card{background:linear-gradient(150deg,#0D2347,#091525);border-radius:22px;border:1px solid #1A3050;padding:10px 10px;display:flex;flex-direction:row;align-items:center;gap:8px;margin-bottom:10px;overflow:hidden;}
+
+/* SLOT MACHINE */
+.slot-wrap{flex-shrink:0;display:flex;align-items:flex-start;gap:5px;}
+.machine{width:200px;}
+.sign{background:linear-gradient(180deg,#3B0764,#1E0438);border:2px solid #C084FC;border-bottom:none;border-radius:10px 10px 0 0;padding:4px 6px 2px;box-shadow:0 -3px 12px rgba(192,132,252,0.4),inset 0 1px 0 rgba(255,255,255,0.15);}
+.sign-inner{background:linear-gradient(180deg,#4C0891,#2D0558);border-radius:6px 6px 0 0;padding:3px 6px;border:1px solid rgba(255,215,0,0.5);text-align:center;}
+.sign-text{font-family:'Anton',sans-serif;font-size:15px;color:#FFD700;letter-spacing:4px;text-shadow:0 0 10px rgba(255,215,0,0.9),0 0 20px rgba(255,215,0,0.4);animation:flashDiscount 1.5s ease-in-out infinite;}
+@keyframes flashDiscount{0%,100%{opacity:1;text-shadow:0 0 10px rgba(255,215,0,0.9),0 0 20px rgba(255,215,0,0.4);}50%{opacity:0.55;text-shadow:0 0 4px rgba(255,215,0,0.3);}}
+.bulbs-row{display:flex;justify-content:space-around;padding:3px 4px 0;}
+.sbulb{width:6px;height:6px;border-radius:50%;}
+@keyframes bl{0%,100%{opacity:1;}50%{opacity:0.2;}}
+.slot-body{background:linear-gradient(180deg,#1a0535,#0f0220);border:2px solid #8B5CF6;border-top:none;border-radius:0 0 12px 12px;padding:7px;box-shadow:0 6px 20px rgba(139,92,246,0.3),inset 0 -2px 0 rgba(255,255,255,0.05);}
+.reels-outer{background:linear-gradient(180deg,#05000F,#0A0018);border-radius:8px;padding:5px;border:1px solid rgba(139,92,246,0.4);box-shadow:inset 0 2px 8px rgba(0,0,0,0.8);position:relative;}
+.reels-outer::before{content:'';position:absolute;top:50%;left:0;right:0;height:36px;transform:translateY(-50%);border-top:1px solid rgba(255,215,0,0.3);border-bottom:1px solid rgba(255,215,0,0.3);pointer-events:none;z-index:3;}
+.reels{display:flex;gap:4px;}
+.reel{flex:1;height:68px;overflow:hidden;border-radius:5px;background:linear-gradient(180deg,#E8E0F0,#F5F0FF,#E8E0F0);position:relative;box-shadow:inset 2px 0 5px rgba(0,0,0,0.3),inset -2px 0 5px rgba(0,0,0,0.3),inset 0 3px 8px rgba(0,0,0,0.4);}
+.reel::before,.reel::after{content:'';position:absolute;left:0;right:0;height:20px;z-index:2;pointer-events:none;}
+.reel::before{top:0;background:linear-gradient(180deg,rgba(5,0,15,0.9),transparent);}
+.reel::after{bottom:0;background:linear-gradient(0deg,rgba(5,0,15,0.9),transparent);}
+.reel-track{display:flex;flex-direction:column;}
+.reel-track.r1{animation:sp 1.4s linear infinite;}
+.reel-track.r2{animation:sp 1.6s linear infinite 0.15s;}
+.reel-track.r3{animation:sp 1.8s linear infinite 0.3s;}
+@keyframes sp{0%{transform:translateY(0);}100%{transform:translateY(-252px);}}
+.ri{height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;gap:2px;}
+.rn{font-family:'Anton',sans-serif;font-size:16px;line-height:1;}
+.ro{font-size:8px;font-weight:800;color:#333;letter-spacing:0.05em;}
+.lights-strip{display:flex;justify-content:space-around;padding:4px 2px 0;}
+.ls{width:5px;height:5px;border-radius:50%;}
+.coin-slots{display:flex;justify-content:center;gap:10px;margin:4px 0 3px;}
+.coin-slot{width:20px;height:4px;background:#0A0018;border-radius:2px;border:1px solid rgba(139,92,246,0.4);}
+.btns{display:flex;gap:4px;margin-top:4px;}
+.sbtn{flex:1;padding:5px 2px;border-radius:7px;border:none;font-family:'DM Sans',sans-serif;font-size:8px;font-weight:800;letter-spacing:0.06em;cursor:pointer;position:relative;text-transform:uppercase;}
+.sbtn::after{content:'';position:absolute;top:2px;left:3px;right:3px;height:38%;background:rgba(255,255,255,0.2);border-radius:4px 4px 0 0;}
+.sbtn-b{background:linear-gradient(180deg,#7C3AED,#4C1D95);color:#E9D5FF;box-shadow:0 3px 0 #2E1065,0 4px 8px rgba(124,58,237,0.3);}
+.sbtn-s{background:linear-gradient(180deg,#16a34a,#14532d);color:#BBF7D0;box-shadow:0 3px 0 #052e16,0 4px 8px rgba(22,163,74,0.3);}
+.coins-row{display:flex;justify-content:center;margin-top:4px;}
+.coin{width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFE066,#C8960C);border:1px solid #8B6914;box-shadow:0 1px 3px rgba(0,0,0,0.5);margin-left:-3px;}
+.handle{display:flex;flex-direction:column;align-items:center;margin-top:-2px;}
+.h-ball{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FF8FAB,#CC0033);border:1px solid rgba(255,255,255,0.3);box-shadow:0 2px 6px rgba(0,0,0,0.5),0 0 8px rgba(255,0,50,0.3);}
+.h-stick{width:5px;height:40px;background:linear-gradient(90deg,#8B6914,#F0C040,#D4AF37,#8B6914);border-radius:3px;box-shadow:1px 0 3px rgba(0,0,0,0.5);}
+.h-base{width:14px;height:7px;background:linear-gradient(180deg,#F0C040,#8B6914);border-radius:3px 3px 5px 5px;box-shadow:0 2px 4px rgba(0,0,0,0.5);}
+
+/* HERO RIGHT */
+.hero-right{flex:1;display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+.ready{font-family:'Anton',sans-serif;font-size:32px;color:#fff;line-height:1;text-align:right;}
+.ready span{color:#FF2D7A;text-shadow:0 0 12px rgba(255,45,122,0.5);}
+.hero-sub{font-size:12px;font-weight:600;color:#fff;text-align:right;line-height:1.5;}
+.spin-now{background:linear-gradient(180deg,#FF2D7A,#C4004A);border:none;border-radius:20px;padding:8px 12px;color:#fff;font-family:'Anton',sans-serif;font-size:13px;letter-spacing:1px;box-shadow:0 4px 0 #7A0030,0 6px 16px rgba(255,45,122,0.4);cursor:pointer;width:100%;position:relative;}
+.spin-now::after{content:'';position:absolute;top:3px;left:10px;right:10px;height:35%;background:rgba(255,255,255,0.2);border-radius:10px;}
+
+/* CATEGORIES */
+.section-title{font-size:11px;font-weight:500;color:#ffffff;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;padding-left:2px;}
+.cats-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.cats-row-center{display:flex;justify-content:center;gap:8px;margin-bottom:14px;}
+.cat-item{flex:1;max-width:84px;background:#0D1E35;border:2px solid transparent;border-radius:16px;padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;position:relative;}
+.cat-item::before{content:'';position:absolute;inset:-2px;border-radius:17px;padding:2px;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:borderRun 2s linear infinite;}
+.cat-item.eat::before{background:conic-gradient(from var(--angle,0deg),transparent 0%,transparent 70%,#7FC142 80%,#7FC142 90%,transparent 100%);animation:borderRun 2s linear infinite;}
+.cat-item.drink::before{background:conic-gradient(from var(--angle,0deg),transparent 0%,transparent 70%,#FF2D7A 80%,#FF2D7A 90%,transparent 100%);animation:borderRun 2s linear infinite 0.5s;}
+.cat-item.shop::before{background:conic-gradient(from var(--angle,0deg),transparent 0%,transparent 70%,#FF8C00 80%,#FF8C00 90%,transparent 100%);animation:borderRun 2s linear infinite 1s;}
+.cat-item.tours::before{background:conic-gradient(from var(--angle,0deg),transparent 0%,transparent 70%,#4FA3E8 80%,#4FA3E8 90%,transparent 100%);animation:borderRun 2s linear infinite 1.5s;}
+@property --angle{syntax:'<angle>';initial-value:0deg;inherits:false;}
+@keyframes borderRun{to{--angle:360deg;}}
+.cats-row-center .cat-item{flex:0 0 84px;}
+.cat-item:active{background:#132333;border-color:#2A4060;}
+.cat-icon-wrap{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+.cat-icon-wrap svg{width:24px;height:24px;}
+.eat .cat-icon-wrap svg{animation:pulse-eat 2.5s ease-in-out infinite;}
+.drink .cat-icon-wrap svg{animation:pulse-drink 2.5s ease-in-out infinite 0.6s;}
+.shop .cat-icon-wrap svg{animation:pulse-shop 2.5s ease-in-out infinite 1.2s;}
+.tours .cat-icon-wrap svg{animation:pulse-tours 2.5s ease-in-out infinite 1.8s;}
+@keyframes pulse-eat{0%,100%{opacity:1;filter:drop-shadow(0 0 6px #7FC142);}50%{opacity:0.25;filter:drop-shadow(0 0 0px #7FC142);}}
+@keyframes pulse-drink{0%,100%{opacity:1;filter:drop-shadow(0 0 6px #FF2D7A);}50%{opacity:0.25;filter:drop-shadow(0 0 0px #FF2D7A);}}
+@keyframes pulse-shop{0%,100%{opacity:1;filter:drop-shadow(0 0 6px #FF8C00);}50%{opacity:0.25;filter:drop-shadow(0 0 0px #FF8C00);}}
+@keyframes pulse-tours{0%,100%{opacity:1;filter:drop-shadow(0 0 6px #4FA3E8);}50%{opacity:0.25;filter:drop-shadow(0 0 0px #4FA3E8);}}
+.cat-name{font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;}
+.cat-desc{font-size:7px;font-weight:400;color:#ffffff;text-align:center;line-height:1.3;}
+
+/* HOT REWARDS */
+.hot-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.hot-title{font-size:13px;font-weight:400;color:#ffffff;letter-spacing:0.04em;}
+.hot-viewall{font-size:10px;color:#4FA3E8;font-weight:500;cursor:pointer;}
+.rewards-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;}
+.rewards-scroll::-webkit-scrollbar{display:none;}
+.reward-card{flex-shrink:0;width:150px;background:#0D1E35;border:1px solid #1A2E4A;border-radius:16px;overflow:hidden;cursor:pointer;}
+.reward-card.expanded{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:320px;z-index:100;border-radius:22px;background:#0D1520;overflow-y:auto;max-height:80vh;border:1px solid #2A4060;}
+.reward-img{width:100%;height:90px;object-fit:cover;display:block;}
+.reward-img-expanded{height:175px;}
+.reward-body{padding:8px 10px 10px;}
+.reward-badge{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:2px 8px;font-size:8px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px;}
+.reward-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;line-height:1.2;}
+.reward-discount{font-size:24px;font-weight:500;margin-bottom:6px;line-height:1;}
+.reward-deal{background:linear-gradient(90deg,#FF2D7A,#FF8C00);border:none;border-radius:8px;padding:6px 0;width:100%;color:#fff;font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;}
+.expanded-details{padding:0 14px 16px;display:none;}
+.expanded-details.show{display:block;}
+.detail-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:12px;color:#8BB8D8;line-height:1.4;}
+.detail-row svg{width:14px;height:14px;flex-shrink:0;margin-top:2px;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99;}
+.overlay.show{display:block;}
+
+/* BOTTOM NAV */
+.bottom-nav{background:#0A1628;border-top:1px solid #1A2E4A;display:flex;justify-content:space-around;align-items:center;padding:10px 0 18px;flex-shrink:0;position:absolute;bottom:0;left:0;right:0;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 12px;}
+.nav-icon-wrap{width:26px;height:26px;display:flex;align-items:center;justify-content:center;}
+.nav-icon-wrap svg{width:22px;height:22px;}
+.nav-label{font-size:9px;font-weight:600;color:#3B5070;text-transform:uppercase;letter-spacing:0.06em;}
+.nav-item.active .nav-label{color:#4FA3E8;}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:#4FA3E8;margin-top:1px;}
+
+/* QR MODAL */
+.qr-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center;}
+.qr-modal.show{display:flex;}
+.qr-box{background:#0D1520;border:1px solid #1A3050;border-radius:22px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;width:240px;}
+.qr-box h3{color:#fff;font-size:14px;font-weight:600;}
+.qr-box p{color:#4FA3E8;font-size:10px;text-align:center;line-height:1.4;}
+.qr-close{background:rgba(255,255,255,0.08);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:14px;cursor:pointer;align-self:flex-end;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="status-bar">
+    <span>9:41</span>
+    <span style="display:flex;gap:6px;align-items:center;">
+      <svg width="14" height="11" viewBox="0 0 24 18" fill="none"><path d="M1 4C5.5 0.5 18.5 0.5 23 4" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M4.5 8C7.5 5.5 16.5 5.5 19.5 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M8 12C10 10.5 14 10.5 16 12" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="2" fill="#fff"/></svg>
+      <svg width="22" height="12" viewBox="0 0 28 14" fill="none"><rect x="0.5" y="0.5" width="24" height="13" rx="3" stroke="#fff" stroke-width="1.2"/><rect x="25" y="4" width="3" height="6" rx="1.5" fill="#fff"/><rect x="2" y="2" width="20" height="10" rx="2" fill="#fff"/></svg>
+    </span>
+  </div>
+
+  <div class="scroll">
+
+    <!-- HERO CARD CON SLOT MACHINE -->
+    <div class="hero-card">
+      <div class="slot-wrap">
+        <div class="machine">
+          <div class="sign">
+            <div class="sign-inner"><div class="sign-text">DISCOUNT</div></div>
+            <div class="bulbs-row">
+              <div class="sbulb" style="background:#FF2D7A;box-shadow:0 0 5px #FF2D7A;animation:bl 1s infinite 0s;"></div>
+              <div class="sbulb" style="background:#FFD700;box-shadow:0 0 5px #FFD700;animation:bl 1s infinite 0.2s;"></div>
+              <div class="sbulb" style="background:#A259FF;box-shadow:0 0 5px #A259FF;animation:bl 1s infinite 0.4s;"></div>
+              <div class="sbulb" style="background:#00C9A7;box-shadow:0 0 5px #00C9A7;animation:bl 1s infinite 0.6s;"></div>
+              <div class="sbulb" style="background:#FF2D7A;box-shadow:0 0 5px #FF2D7A;animation:bl 1s infinite 0.8s;"></div>
+            </div>
+          </div>
+          <div class="slot-body">
+            <div class="reels-outer">
+              <div class="reels">
+                <div class="reel">
+                  <div class="reel-track r1">
+                    <div class="ri"><div class="rn" style="color:#FF8C00;">20%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#FF2D7A;">30%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#7FC142;">15%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#A259FF;">25%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#4FA3E8;">10%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#FF2D7A;">30%</div><div class="ro">OFF</div></div>
+                  </div>
+                </div>
+                <div class="reel">
+                  <div class="reel-track r2">
+                    <div class="ri"><div class="rn" style="color:#7FC142;">10%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#FF8C00;">20%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#A259FF;">25%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#7FC142;">15%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#4FA3E8;">10%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#FF2D7A;">30%</div><div class="ro">OFF</div></div>
+                  </div>
+                </div>
+                <div class="reel">
+                  <div class="reel-track r3">
+                    <div class="ri"><div class="rn" style="color:#A259FF;">25%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#FF2D7A;">🎁</div><div class="ro">GIFT</div></div>
+                    <div class="ri"><div class="rn" style="color:#4FA3E8;">15%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#FF8C00;">20%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#7FC142;">10%</div><div class="ro">OFF</div></div>
+                    <div class="ri"><div class="rn" style="color:#FF2D7A;">🎁</div><div class="ro">GIFT</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="lights-strip">
+              <div class="ls" style="background:#FF2D7A;box-shadow:0 0 4px #FF2D7A;animation:bl 1s infinite 0s;"></div>
+              <div class="ls" style="background:#FFD700;box-shadow:0 0 4px #FFD700;animation:bl 1s infinite 0.2s;"></div>
+              <div class="ls" style="background:#A259FF;box-shadow:0 0 4px #A259FF;animation:bl 1s infinite 0.4s;"></div>
+              <div class="ls" style="background:#00C9A7;box-shadow:0 0 4px #00C9A7;animation:bl 1s infinite 0.6s;"></div>
+              <div class="ls" style="background:#FF2D7A;box-shadow:0 0 4px #FF2D7A;animation:bl 1s infinite 0.6s;"></div>
+            </div>
+            <div class="coin-slots"><div class="coin-slot"></div><div class="coin-slot"></div></div>
+            <div class="btns">
+              <button class="sbtn sbtn-b">BET</button>
+              <button class="sbtn sbtn-s">SPIN</button>
+              <button class="sbtn sbtn-b">MAX</button>
+            </div>
+            <div class="coins-row">
+              <div class="coin"></div><div class="coin"></div><div class="coin"></div><div class="coin"></div>
+            </div>
+          </div>
+        </div>
+        <div class="handle">
+          <div class="h-ball"></div>
+          <div class="h-stick"></div>
+          <div class="h-base"></div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="ready">READY<br>TO <span>WIN?</span></div>
+        <div class="hero-sub">Select a venue.<br>Pull. Win.<br>It's that easy!</div>
+        <button class="spin-now">SPIN NOW</button>
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-left:2px;padding-right:2px;">
+      <div class="section-title" style="margin-bottom:0;">Explore</div>
+      <div style="display:flex;align-items:center;gap:5px;">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span style="font-size:10px;font-weight:700;color:#fff;" id="userCount">120+ Users</span>
+      </div>
+    </div>
+    <div class="cats-row">
+      <div class="cat-item eat" style="border-color:#7FC142;box-shadow:0 0 8px rgba(127,193,66,0.5);" onclick="window.location.href='explore.html?cat=eat'">
+        <div class="cat-icon-wrap" style="background:rgba(127,193,66,0.2);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#7FC142" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="2" x2="7" y2="22"/><path d="M4 2v6a3 3 0 006 0V2"/><line x1="17" y1="2" x2="17" y2="8"/><path d="M17 8c0 2 2 3 2 5v7"/><line x1="19" y1="2" x2="19" y2="8"/></svg>
+        </div>
+        <div class="cat-name" style="color:#7FC142;">EAT</div>
+        <div class="cat-desc">Local Restaurants</div>
+      </div>
+      <div class="cat-item drink" style="border-color:#FF2D7A;box-shadow:0 0 8px rgba(255,45,122,0.5);" onclick="window.location.href='explore.html?cat=drink'">
+        <div class="cat-icon-wrap" style="background:rgba(255,45,122,0.2);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FF2D7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8M12 22v-7M5 3l7 7 7-7H5z"/><path d="M9 8l1.5-1.5M13 6l1-1"/></svg>
+        </div>
+        <div class="cat-name" style="color:#FF2D7A;">DRINK</div>
+        <div class="cat-desc">Bars &amp; Nightlife</div>
+      </div>
+      <div class="cat-item shop" style="border-color:#FF8C00;box-shadow:0 0 8px rgba(255,140,0,0.5);" onclick="window.location.href='explore.html?cat=shop'">
+        <div class="cat-icon-wrap" style="background:rgba(255,140,0,0.2);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FF8C00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/><path d="M12 13l.8 1.6L15 15l-1.5 1.4.4 2.1L12 17.5l-1.9 1 .4-2.1L9 15l2.2-.4z"/></svg>
+        </div>
+        <div class="cat-name" style="color:#FF8C00;">SHOP</div>
+        <div class="cat-desc">Stores &amp; More</div>
+      </div>
+      <div class="cat-item tours" style="border-color:#4FA3E8;box-shadow:0 0 8px rgba(79,163,232,0.5);" onclick="window.location.href='explore.html?cat=tours'">
+        <div class="cat-icon-wrap" style="background:rgba(79,163,232,0.2);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" fill="#4FA3E8" opacity="0.3" stroke="#4FA3E8"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg>
+        </div>
+        <div class="cat-name" style="color:#4FA3E8;">TOURS</div>
+        <div class="cat-desc">Activities &amp; Tours</div>
+      </div>
+    </div>
+    <!-- HOT REWARDS -->
+    <div class="hot-header" style="margin-top:20px;">
+      <div class="hot-title">🔥 Hot Rewards</div>
+      <div class="hot-viewall">View all ›</div>
+    </div>
+    <div class="rewards-scroll">
+      <div class="reward-card" id="card0" onclick="expandCard(0)">
+        <img class="reward-img" id="img0" src="https://picsum.photos/seed/food/400/200" alt=""/>
+        <div class="reward-body">
+          <div class="reward-badge" style="background:rgba(127,193,66,0.2);color:#7FC142;">🍴 EAT</div>
+          <div class="reward-name">La Habichuela</div>
+          <div class="reward-discount" style="color:#7FC142;">20% OFF</div>
+          <button class="reward-deal">Get Deal</button>
+        </div>
+        <div class="expanded-details" id="det0">
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Av. Juárez 12, Cozumel</div>
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>12:00 pm – 11:00 pm</div>
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>Restaurante tradicional mexicano con vista al mar.</div>
+        </div>
+      </div>
+      <div class="reward-card" id="card1" onclick="expandCard(1)">
+        <img class="reward-img" id="img1" src="https://picsum.photos/seed/bar/400/200" alt=""/>
+        <div class="reward-body">
+          <div class="reward-badge" style="background:rgba(255,45,122,0.2);color:#FF2D7A;">🍹 DRINK</div>
+          <div class="reward-name">Sunset Bar</div>
+          <div class="reward-discount" style="color:#FF2D7A;">2x1</div>
+          <button class="reward-deal">Get Deal</button>
+        </div>
+        <div class="expanded-details" id="det1">
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Malecón Norte, Cozumel</div>
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>4:00 pm – 2:00 am</div>
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>Coctelería con vista al atardecer del Caribe.</div>
+        </div>
+      </div>
+      <div class="reward-card" id="card2" onclick="expandCard(2)">
+        <img class="reward-img" id="img2" src="https://picsum.photos/seed/beach/400/200" alt=""/>
+        <div class="reward-body">
+          <div class="reward-badge" style="background:rgba(79,163,232,0.2);color:#4FA3E8;">🗺️ TOURS</div>
+          <div class="reward-name">Cozumel Explorer</div>
+          <div class="reward-discount" style="color:#4FA3E8;">15% OFF</div>
+          <button class="reward-deal">Get Deal</button>
+        </div>
+        <div class="expanded-details" id="det2">
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Puerto de Abrigo, Cozumel</div>
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>8:00 am – 6:00 pm</div>
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>Tours en jeep, snorkel y cenotes todo incluido.</div>
+        </div>
+      </div>
+      <div class="reward-card" id="card3" onclick="expandCard(3)">
+        <img class="reward-img" id="img3" src="https://picsum.photos/seed/dive/400/200" alt=""/>
+        <div class="reward-body">
+          <div class="reward-badge" style="background:rgba(0,201,167,0.2);color:#00C9A7;">🤿 DIVING</div>
+          <div class="reward-name">Deep Blue Dive</div>
+          <div class="reward-discount" style="color:#00C9A7;">25% OFF</div>
+          <button class="reward-deal">Get Deal</button>
+        </div>
+        <div class="expanded-details" id="det3">
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Zona Hotelera, Cozumel</div>
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>7:00 am – 4:00 pm</div>
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>Buceo en cavernas y cenotes del Caribe mexicano.</div>
+        </div>
+      </div>
+      <div class="reward-card" id="card4" onclick="expandCard(4)">
+        <img class="reward-img" id="img4" src="https://picsum.photos/seed/club/400/200" alt=""/>
+        <div class="reward-body">
+          <div class="reward-badge" style="background:rgba(162,89,255,0.2);color:#A259FF;">🏖️ BEACH</div>
+          <div class="reward-name">Playa Azul Club</div>
+          <div class="reward-discount" style="color:#A259FF;">30% OFF</div>
+          <button class="reward-deal">Get Deal</button>
+        </div>
+        <div class="expanded-details" id="det4">
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Carretera Costera Sur Km 4</div>
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>10:00 am – 8:00 pm</div>
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>Beach club premium con alberca, DJ y restaurante.</div>
+        </div>
+      </div>
+    </div>
+    <div style="height:10px;"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="nav-item" onclick="var m=document.getElementById('contactModal');m.style.display='flex';" style="cursor:pointer;">
+      <div class="nav-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </div>
+      <span class="nav-label" style="color:#4FA3E8;">Join</span>
+      <span class="nav-label" style="color:#fff;">VAYGO</span>
+    </div>
+    <div class="nav-item" style="flex-direction:row;align-items:center;gap:8px;flex:2;justify-content:center;">
+      <svg viewBox="0 0 24 24" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ig" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#FFDC80"/>
+            <stop offset="25%" style="stop-color:#FCAF45"/>
+            <stop offset="50%" style="stop-color:#F77737"/>
+            <stop offset="75%" style="stop-color:#E1306C"/>
+            <stop offset="100%" style="stop-color:#833AB4"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#ig)"/>
+        <circle cx="12" cy="12" r="4.5" fill="none" stroke="#fff" stroke-width="1.8"/>
+        <circle cx="17" cy="7" r="1.2" fill="#fff"/>
+      </svg>
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px;">
+        <span style="font-size:14px;font-weight:600;color:#fff;white-space:nowrap;">Follow Us</span>
+        <span style="font-size:14px;font-weight:800;color:#4FA3E8;white-space:nowrap;">Instagram</span>
+      </div>
+    </div>
+    <div class="nav-item" onclick="var m=document.getElementById('ratingModal');m.style.display='flex';" style="cursor:pointer;">
+      <div class="nav-icon-wrap">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#3B5070" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#FFD700" stroke="#FFD700"/></svg>
+      </div>
+      <span class="nav-label" style="color:#FFD700;">Rate Us</span>
+    </div>
+    <div class="nav-item" onclick="document.getElementById('qrModal').classList.add('show')" style="cursor:pointer;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+        <div style="background:rgba(37,211,102,0.12);border:1px solid rgba(37,211,102,0.3);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#25D366" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </div>
+        <span class="nav-label" style="color:#25D366;">QR</span>
+      </div>
+    </div>
+
+  <!-- RATING MODAL -->
+  <div id="ratingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center;">
+    <div style="background:#0D1520;border:1px solid #1A3050;border-radius:22px;padding:20px;width:320px;display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="color:#fff;font-size:15px;font-weight:700;">Rate VAYGO</h3>
+        <button onclick="document.getElementById('ratingModal').style.display='none'" style="background:rgba(255,255,255,0.08);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:14px;cursor:pointer;">✕</button>
+      </div>
+      <p style="color:#4FA3E8;font-size:11px;">How would you rate your experience?</p>
+      <div id="stars" style="display:flex;gap:8px;justify-content:center;">
+        <span onclick="setRating(1)" style="font-size:32px;cursor:pointer;">⭐</span>
+        <span onclick="setRating(2)" style="font-size:32px;cursor:pointer;">⭐</span>
+        <span onclick="setRating(3)" style="font-size:32px;cursor:pointer;">⭐</span>
+        <span onclick="setRating(4)" style="font-size:32px;cursor:pointer;">⭐</span>
+        <span onclick="setRating(5)" style="font-size:32px;cursor:pointer;">⭐</span>
+      </div>
+      <div id="ratingVal" style="text-align:center;color:#FFD700;font-size:13px;font-weight:700;min-height:18px;"></div>
+      <form action="https://formspree.io/f/mrejybjv" method="POST" style="display:flex;flex-direction:column;gap:8px;">
+        <input type="hidden" name="rating" id="ratingInput" value=""/>
+        <input name="name" placeholder="Your name" style="background:#0A1628;border:1px solid #1A3050;border-radius:8px;padding:8px 12px;color:#fff;font-size:12px;outline:none;"/>
+        <textarea name="comment" placeholder="Tell us what you think..." rows="3" required style="background:#0A1628;border:1px solid #1A3050;border-radius:8px;padding:8px 12px;color:#fff;font-size:12px;outline:none;resize:none;"></textarea>
+        <button type="submit" style="background:linear-gradient(90deg,#FFD700,#FF8C00);border:none;border-radius:10px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.05em;">Send Review</button>
+      </form>
+    </div>
+  </div>
+  </nav>
+
+  <!-- CONTACT MODAL -->
+  <div id="contactModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center;">
+    <div style="background:#0D1520;border:1px solid #1A3050;border-radius:22px;padding:20px;width:320px;display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="color:#fff;font-size:15px;font-weight:700;">Advertise with VAYGO</h3>
+        <button onclick="document.getElementById('contactModal').style.display='none'" style="background:rgba(255,255,255,0.08);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:14px;cursor:pointer;">✕</button>
+      </div>
+      <p style="color:#4FA3E8;font-size:11px;line-height:1.5;">Fill out this form and we'll get back to you shortly.</p>
+      <form action="https://formspree.io/f/mrejybjv" method="POST" style="display:flex;flex-direction:column;gap:8px;">
+        <input name="name" placeholder="Your name" required style="background:#0A1628;border:1px solid #1A3050;border-radius:8px;padding:8px 12px;color:#fff;font-size:12px;outline:none;"/>
+        <input name="business" placeholder="Business name" required style="background:#0A1628;border:1px solid #1A3050;border-radius:8px;padding:8px 12px;color:#fff;font-size:12px;outline:none;"/>
+        <input name="city" placeholder="City" required style="background:#0A1628;border:1px solid #1A3050;border-radius:8px;padding:8px 12px;color:#fff;font-size:12px;outline:none;"/>
+        <input name="phone" placeholder="Phone number" style="background:#0A1628;border:1px solid #1A3050;border-radius:8px;padding:8px 12px;color:#fff;font-size:12px;outline:none;"/>
+        <input name="email" type="email" placeholder="Email" required style="background:#0A1628;border:1px solid #1A3050;border-radius:8px;padding:8px 12px;color:#fff;font-size:12px;outline:none;"/>
+        <textarea name="message" placeholder="Tell us about your business..." rows="3" style="background:#0A1628;border:1px solid #1A3050;border-radius:8px;padding:8px 12px;color:#fff;font-size:12px;outline:none;resize:none;"></textarea>
+        <button type="submit" style="background:linear-gradient(90deg,#FF2D7A,#FF8C00);border:none;border-radius:10px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.05em;">Send Message</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeExpanded()"></div>
+
+<div class="qr-modal" id="qrModal">
+  <div class="qr-box">
+    <button class="qr-close" onclick="document.getElementById('qrModal').classList.remove('show')">✕</button>
+    <h3>Share VAYGO</h3>
+    <div id="qrCanvas" style="background:#fff;padding:8px;border-radius:10px;display:flex;align-items:center;justify-content:center;"></div>
+    <p>Scan to explore exclusive rewards in Cozumel</p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp, runTransaction, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain: "vaygo-app.firebaseapp.com",
+  projectId: "vaygo-app",
+  storageBucket: "vaygo-app.firebasestorage.app",
+  messagingSenderId: "499741267414",
+  appId: "1:499741267414:web:e69cd43156adaea11bc077"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+window.db = getFirestore(fbApp);
+window.currentUser = null;
+
+onAuthStateChanged(auth, async (user) => {
+  if(!user) {
+    await signInAnonymously(auth);
+  } else {
+    window.currentUser = user;
+    const ref = doc(window.db, 'users', user.uid);
+    const snap = await getDoc(ref);
+
+    // Capturar referido de URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode = urlParams.get('ref') || '';
+
+    if(!snap.exists()) {
+      await setDoc(ref, {
+        uid: user.uid,
+        createdAt: serverTimestamp(),
+        totalSpins: 0,
+        isAnonymous: true,
+        referredBy: refCode || 'direct',
+      });
+      // Incrementar contador global
+      const counterRef = doc(window.db, 'stats', 'users');
+      try {
+        await runTransaction(window.db, async (t) => {
+          const counterSnap = await t.get(counterRef);
+          const current = counterSnap.exists() ? counterSnap.data().count : 0;
+          t.set(counterRef, { count: current + 1 });
+        });
+      } catch(e) { console.log('counter error', e); }
+
+      // Si viene de vendedor, registrar en su contador
+      if(refCode) {
+        const vendorRef = doc(window.db, 'vendors', refCode);
+        try {
+          await runTransaction(window.db, async (t) => {
+            const vSnap = await t.get(vendorRef);
+            const current = vSnap.exists() ? vSnap.data() : {
+              name: refCode,
+              downloads: 0,
+              spins: 0,
+              commissions: 0
+            };
+            t.set(vendorRef, {
+              ...current,
+              downloads: (current.downloads || 0) + 1,
+              lastActivity: serverTimestamp()
+            });
+          });
+        } catch(e) { console.log('vendor error', e); }
+      }
+    } else if(refCode && !snap.data().referredBy) {
+      // Si ya existe pero no tiene referido, actualizarlo
+      await setDoc(ref, { referredBy: refCode }, { merge: true });
+    }
+
+    // Guardar ref en sessionStorage para usarlo en los spins
+    if(refCode) sessionStorage.setItem('vaygo_ref', refCode);
+
+    // Escuchar contador en tiempo real
+    const counterRef = doc(window.db, 'stats', 'users');
+    onSnapshot(counterRef, (snap) => {
+      if(snap.exists()) {
+        const count = snap.data().count || 0;
+        const el = document.getElementById('userCount');
+        if(el) el.textContent = count + '+ Users';
+      }
+    });
+
+    // Generar QR real apuntando a la app
+    setTimeout(() => {
+      const qrEl = document.getElementById('qrCanvas');
+      if(qrEl && qrEl.innerHTML === '') {
+        new QRCode(qrEl, {
+          text: 'https://vaygowebapp-9vrd.vercel.app',
+          width: 150,
+          height: 150,
+          colorDark: '#0A1628',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      }
+    }, 500);
+  }
+});
+</script>
+
+<script>
+function setRating(n){
+  document.getElementById('ratingInput').value=n;
+  const labels=['','⭐ Poor','⭐⭐ Fair','⭐⭐⭐ Good','⭐⭐⭐⭐ Great','⭐⭐⭐⭐⭐ Excellent!'];
+  document.getElementById('ratingVal').textContent=labels[n];
+  const stars=document.getElementById('stars').children;
+  for(let i=0;i<stars.length;i++){
+    stars[i].style.opacity=i<n?'1':'0.3';
+  }
+}
+function toggleLocation(){
+  const d=document.getElementById('locDropdown');
+  d.style.display=d.style.display==='block'?'none':'block';
+}
+function setLoc(n){
+  document.getElementById('locText').textContent=n;
+  document.getElementById('locDropdown').style.display='none';
+}
+// Leer ciudad desde URL y guardar en sessionStorage
+(function(){
+  const cities = {
+    'cozumel': 'Cozumel, Mexico',
+    'playa-del-carmen': 'Playa del Carmen',
+    'tulum': 'Tulum',
+    'bacalar': 'Bacalar',
+    'cancun': 'Cancún'
+  };
+  const params = new URLSearchParams(window.location.search);
+  const city = params.get('city');
+  if(city && cities[city]) {
+    sessionStorage.setItem('vaygo_city', city);
+    document.getElementById('locText').textContent = cities[city];
+  } else {
+    // Leer ciudad guardada
+    const saved = sessionStorage.getItem('vaygo_city');
+    if(saved && cities[saved]) {
+      document.getElementById('locText').textContent = cities[saved];
+    }
+  }
+})();
+let eid=null;
+function expandCard(id){
+  if(eid!==null){closeExpanded();if(eid===id)return;}
+  eid=id;
+  document.getElementById('card'+id).classList.add('expanded');
+  document.getElementById('img'+id).classList.add('reward-img-expanded');
+  document.getElementById('det'+id).classList.add('show');
+  document.getElementById('overlay').classList.add('show');
+}
+function closeExpanded(){
+  if(eid===null)return;
+  document.getElementById('card'+eid).classList.remove('expanded');
+  document.getElementById('img'+eid).classList.remove('reward-img-expanded');
+  document.getElementById('det'+eid).classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+  eid=null;
+}
+(function(){
+  const c=document.getElementById('qrCanvas');
+  if(!c)return;
+  const ctx=c.getContext('2d'),s=6;
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,150,150);
+  ctx.fillStyle='#0A1628';
+  for(let r=0;r<23;r++)for(let cc=0;cc<23;cc++){
+    if(Math.random()>0.5)ctx.fillRect(cc*s+6,r*s+6,s-1,s-1);
+  }
+  [[0,0],[0,16],[16,0]].forEach(([x,y])=>{
+    ctx.fillStyle='#0A1628';ctx.fillRect(x*s+6,y*s+6,s*7,s*7);
+    ctx.fillStyle='#fff';ctx.fillRect(x*s+9,y*s+9,s*5,s*5);
+    ctx.fillStyle='#0A1628';ctx.fillRect(x*s+12,y*s+12,s*3,s*3);
+  });
+})();
+<!-- TUTORIAL OVERLAY -->
+<div id="tutorialOverlay" style="display:none;position:fixed;inset:0;z-index:500;">
+
+  <!-- STEP 1 — Tap EAT -->
+  <div id="tStep1" style="position:absolute;inset:0;">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.75);"></div>
+    <div id="tHighlight1" style="position:absolute;border-radius:16px;box-shadow:0 0 0 9999px rgba(0,0,0,0.75);transition:all 0.3s;pointer-events:none;"></div>
+    <div id="tBubble1" style="position:absolute;background:#0D1E35;border:2px solid #7FC142;border-radius:16px;padding:12px 16px;max-width:200px;box-shadow:0 0 20px rgba(127,193,66,0.4);">
+      <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Step 1 of 3</div>
+      <div style="font-size:12px;color:#8BB8D8;line-height:1.4;">Tap any category to explore venues near you 👇</div>
+    </div>
+    <div id="tArrow1" style="position:absolute;animation:arrowBounce 1s ease-in-out infinite;">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="11" fill="rgba(127,193,66,0.3)" stroke="#7FC142" stroke-width="2"/>
+        <path d="M12 7v10M8 13l4 4 4-4" stroke="#7FC142" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- STEP 2 — Tap a venue -->
+  <div id="tStep2" style="position:absolute;inset:0;display:none;">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.75);"></div>
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#0D1E35;border:2px solid #FF2D7A;border-radius:16px;padding:20px 24px;text-align:center;max-width:260px;box-shadow:0 0 20px rgba(255,45,122,0.4);">
+      <div style="font-size:28px;margin-bottom:8px;">🍴</div>
+      <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:6px;">Step 2 of 3</div>
+      <div style="font-size:12px;color:#8BB8D8;line-height:1.5;">Now tap on any restaurant card to open it and get ready to spin!</div>
+      <button onclick="nextTutorial(3)" style="margin-top:12px;background:linear-gradient(90deg,#FF2D7A,#FF8C00);border:none;border-radius:10px;padding:10px 24px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">Got it! →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 — Spin -->
+  <div id="tStep3" style="position:absolute;inset:0;display:none;">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.75);"></div>
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#0D1E35;border:2px solid #FFD700;border-radius:16px;padding:20px 24px;text-align:center;max-width:260px;box-shadow:0 0 20px rgba(255,215,0,0.4);">
+      <div style="font-size:28px;margin-bottom:8px;">🎰</div>
+      <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:6px;">Step 3 of 3</div>
+      <div style="font-size:12px;color:#8BB8D8;line-height:1.5;">Inside the venue tap SPIN NOW to reveal your exclusive prize and get your QR code! 🎁</div>
+      <button onclick="endTutorial()" style="margin-top:12px;background:linear-gradient(90deg,#7FC142,#00C9A7);border:none;border-radius:10px;padding:10px 24px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">Let's Go! 🚀</button>
+    </div>
+  </div>
+
+</div>
+
+<style>
+@keyframes arrowBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(8px);}}
+</style>
+
+<script>
+(function(){
+  if(localStorage.getItem('vaygo_tutorial_done')) return;
+
+  // Esperar a que cargue la app
+  setTimeout(() => {
+    const overlay = document.getElementById('tutorialOverlay');
+    overlay.style.display = 'block';
+
+    // Posicionar highlight y flecha sobre el botón EAT
+    const eatBtn = document.querySelector('.cat-item.eat');
+    if(eatBtn) {
+      const rect = eatBtn.getBoundingClientRect();
+      const appRect = document.querySelector('.app').getBoundingClientRect();
+
+      const h = document.getElementById('tHighlight1');
+      h.style.left = (rect.left - appRect.left - 8) + 'px';
+      h.style.top = (rect.top - appRect.top - 8) + 'px';
+      h.style.width = (rect.width + 16) + 'px';
+      h.style.height = (rect.height + 16) + 'px';
+
+      const arrow = document.getElementById('tArrow1');
+      arrow.style.left = (rect.left - appRect.left + rect.width/2 - 20) + 'px';
+      arrow.style.top = (rect.top - appRect.top - 60) + 'px';
+
+      const bubble = document.getElementById('tBubble1');
+      bubble.style.left = (rect.left - appRect.left - 10) + 'px';
+      bubble.style.top = (rect.top - appRect.top - 130) + 'px';
+    }
+
+    // Interceptar click en categorías para avanzar al paso 2
+    document.querySelectorAll('.cat-item').forEach(btn => {
+      const orig = btn.onclick;
+      btn.onclick = function(e) {
+        nextTutorial(2);
+        // Guardar que el tutorial está en progreso
+        sessionStorage.setItem('vaygo_tutorial_step', '2');
+        if(orig) orig.call(this, e);
+      };
+    });
+  }, 1000);
+})();
+
+window.nextTutorial = function(step) {
+  document.getElementById('tStep1').style.display = 'none';
+  document.getElementById('tStep2').style.display = 'none';
+  document.getElementById('tStep3').style.display = 'none';
+  if(step === 2) document.getElementById('tStep2').style.display = 'block';
+  if(step === 3) document.getElementById('tStep3').style.display = 'block';
+};
+
+window.endTutorial = function() {
+  document.getElementById('tutorialOverlay').style.display = 'none';
+  localStorage.setItem('vaygo_tutorial_done', '1');
+};
+</script>
