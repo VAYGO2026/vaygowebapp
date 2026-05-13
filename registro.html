@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VAYGO — Únete como Venue</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --dark:#060E1C;
+  --dark2:#0D1E35;
+  --dark3:#1A2E4A;
+  --pink:#FF2D7A;
+  --orange:#FF8C00;
+  --blue:#4FA3E8;
+  --green:#7FC142;
+  --white:#fff;
+  --gray:#4B6A85;
+  --light:#8FB8D4;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);font-family:'DM Sans',sans-serif;color:var(--white);overflow-x:hidden;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,45,122,0.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(79,163,232,0.06) 0%,transparent 50%);pointer-events:none;}
+
+/* Animated slot symbols bg */
+.symbols-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:0.04;}
+.sym{position:absolute;font-size:60px;animation:float linear infinite;}
+@keyframes float{0%{transform:translateY(100vh) rotate(0deg);}100%{transform:translateY(-200px) rotate(360deg);}}
+
+.hero-logo{font-family:'Anton',sans-serif;font-size:clamp(56px,10vw,96px);letter-spacing:4px;margin-bottom:8px;animation:fadeUp 0.6s ease both;}
+.hero-logo span{color:var(--pink);}
+.hero-tag{font-size:clamp(13px,2.5vw,16px);color:var(--light);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:32px;animation:fadeUp 0.6s 0.1s ease both;opacity:0;}
+.hero-title{font-size:clamp(28px,5vw,48px);font-weight:700;text-align:center;max-width:700px;line-height:1.15;margin-bottom:16px;animation:fadeUp 0.6s 0.2s ease both;opacity:0;}
+.hero-title span{color:var(--pink);}
+.hero-sub{font-size:clamp(14px,2vw,17px);color:var(--light);text-align:center;max-width:500px;line-height:1.6;margin-bottom:40px;animation:fadeUp 0.6s 0.3s ease both;opacity:0;}
+.hero-cta{background:linear-gradient(135deg,var(--pink),var(--orange));border:none;border-radius:50px;padding:16px 40px;font-family:'Anton',sans-serif;font-size:18px;letter-spacing:2px;color:var(--white);cursor:pointer;animation:fadeUp 0.6s 0.4s ease both;opacity:0;transition:transform 0.2s,box-shadow 0.2s;}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(255,45,122,0.4);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* STATS BAR */
+.stats-bar{background:var(--dark2);border-top:1px solid var(--dark3);border-bottom:1px solid var(--dark3);padding:24px 20px;}
+.stats-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.stat{text-align:center;}
+.stat-n{font-family:'Anton',sans-serif;font-size:32px;color:var(--pink);}
+.stat-l{font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;}
+
+/* SECTION */
+section{padding:64px 20px;}
+.section-inner{max-width:900px;margin:0 auto;}
+.section-label{font-size:11px;color:var(--pink);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:8px;}
+.section-title{font-family:'Anton',sans-serif;font-size:clamp(28px,4vw,42px);letter-spacing:1px;margin-bottom:16px;line-height:1.1;}
+.section-sub{color:var(--light);font-size:15px;line-height:1.7;max-width:560px;}
+
+/* HOW IT WORKS */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:40px;}
+.step{background:var(--dark2);border:1px solid var(--dark3);border-radius:16px;padding:24px;position:relative;overflow:hidden;transition:border-color 0.2s;}
+.step:hover{border-color:var(--pink);}
+.step-num{font-family:'Anton',sans-serif;font-size:48px;color:var(--dark3);position:absolute;top:12px;right:16px;}
+.step-icon{font-size:28px;margin-bottom:12px;}
+.step-title{font-size:14px;font-weight:700;color:var(--white);margin-bottom:6px;}
+.step-desc{font-size:12px;color:var(--gray);line-height:1.5;}
+
+/* PLANS */
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:40px;}
+.plan{background:var(--dark2);border:1px solid var(--dark3);border-radius:20px;padding:24px;display:flex;flex-direction:column;transition:transform 0.2s,border-color 0.2s;cursor:pointer;}
+.plan:hover{transform:translateY(-4px);}
+.plan.popular{border-color:var(--pink);position:relative;}
+.plan.popular::before{content:'MÁS POPULAR';position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--pink);font-size:9px;font-weight:700;letter-spacing:0.1em;padding:4px 12px;border-radius:0 0 8px 8px;}
+.plan-icon{font-size:24px;margin-bottom:12px;}
+.plan-name{font-family:'Anton',sans-serif;font-size:18px;letter-spacing:1px;margin-bottom:4px;}
+.plan-pos{font-size:11px;color:var(--gray);margin-bottom:16px;}
+.plan-price{font-family:'Anton',sans-serif;font-size:36px;color:var(--white);margin-bottom:2px;}
+.plan-price span{font-size:14px;font-family:'DM Sans',sans-serif;color:var(--gray);font-weight:400;}
+.plan-regular{font-size:11px;color:var(--gray);text-decoration:line-through;margin-bottom:16px;}
+.plan-promo{display:inline-block;background:rgba(255,140,0,0.15);color:var(--orange);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:16px;}
+.plan-features{list-style:none;flex:1;}
+.plan-features li{font-size:12px;color:var(--light);padding:5px 0;border-bottom:1px solid var(--dark3);display:flex;gap:6px;align-items:flex-start;}
+.plan-features li::before{content:'✓';color:var(--green);flex-shrink:0;margin-top:1px;}
+.plan-btn{margin-top:20px;background:linear-gradient(135deg,var(--pink),var(--orange));border:none;border-radius:12px;padding:12px;font-family:'Anton',sans-serif;font-size:15px;letter-spacing:1px;color:var(--white);cursor:pointer;transition:opacity 0.2s;}
+.plan-btn:hover{opacity:0.9;}
+.plan.card-std .plan-btn,.plan.banner-std .plan-btn{background:var(--dark3);}
+
+/* REGISTER FORM */
+.register-section{background:var(--dark2);border-top:1px solid var(--dark3);border-bottom:1px solid var(--dark3);}
+.form-box{background:var(--dark);border:1px solid var(--dark3);border-radius:24px;padding:clamp(24px,4vw,40px);max-width:600px;margin:40px auto 0;}
+.form-selected-plan{background:var(--dark2);border:1px solid var(--dark3);border-radius:12px;padding:16px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.fsp-name{font-family:'Anton',sans-serif;font-size:18px;letter-spacing:1px;}
+.fsp-price{font-size:14px;color:var(--pink);font-weight:700;}
+.fsp-change{font-size:12px;color:var(--blue);cursor:pointer;text-decoration:underline;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-grid.single{grid-template-columns:1fr;}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg.full{grid-column:1/-1;}
+.fl{font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;}
+.fi,.fs{background:var(--dark2);border:1px solid var(--dark3);border-radius:10px;padding:12px 14px;color:var(--white);font-size:13px;outline:none;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;}
+.fi:focus,.fs:focus{border-color:var(--pink);}
+.fs option{background:var(--dark2);}
+.fi::placeholder{color:var(--dark3);}
+.divider{height:1px;background:var(--dark3);margin:20px 0;}
+.payment-title{font-size:14px;font-weight:700;color:var(--white);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.payment-note{font-size:11px;color:var(--gray);margin-bottom:16px;line-height:1.5;}
+.mp-logo{display:flex;align-items:center;gap:6px;background:var(--dark2);border:1px solid var(--dark3);border-radius:10px;padding:10px 14px;margin-bottom:16px;}
+.mp-logo img{height:20px;}
+.mp-logo span{font-size:12px;color:var(--light);}
+.submit-btn{width:100%;background:linear-gradient(135deg,var(--pink),var(--orange));border:none;border-radius:14px;padding:16px;font-family:'Anton',sans-serif;font-size:20px;letter-spacing:2px;color:var(--white);cursor:pointer;margin-top:20px;transition:transform 0.2s,box-shadow 0.2s;}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(255,45,122,0.4);}
+.submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.terms{font-size:11px;color:var(--gray);text-align:center;margin-top:12px;line-height:1.5;}
+.terms a{color:var(--blue);}
+
+/* SUCCESS */
+.success-screen{display:none;text-align:center;padding:60px 20px;}
+.success-icon{font-size:64px;margin-bottom:20px;animation:bounce 0.6s ease;}
+@keyframes bounce{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
+.success-title{font-family:'Anton',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:12px;}
+.success-sub{color:var(--light);font-size:15px;line-height:1.6;max-width:400px;margin:0 auto 24px;}
+.success-steps{background:var(--dark2);border:1px solid var(--dark3);border-radius:16px;padding:24px;max-width:400px;margin:0 auto;text-align:left;}
+.ss-item{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--dark3);}
+.ss-item:last-child{border:none;}
+.ss-num{background:var(--pink);color:var(--white);font-family:'Anton',sans-serif;font-size:12px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ss-txt{font-size:13px;color:var(--light);}
+
+/* LOADING */
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(6,14,28,0.9);z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.loading-overlay.show{display:flex;}
+.spinner{width:48px;height:48px;border:3px solid var(--dark3);border-top-color:var(--pink);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-txt{font-size:14px;color:var(--light);}
+
+/* ERROR */
+.error-msg{background:rgba(255,45,122,0.1);border:1px solid rgba(255,45,122,0.3);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--pink);margin-top:12px;display:none;}
+
+/* FOOTER */
+footer{padding:32px 20px;text-align:center;border-top:1px solid var(--dark3);}
+footer .logo{font-family:'Anton',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:6px;}
+footer .logo span{color:var(--pink);}
+footer p{font-size:12px;color:var(--gray);}
+
+/* GRADIENT BAR */
+.grad-bar{height:4px;background:linear-gradient(90deg,var(--pink),var(--orange),var(--pink));background-size:200%;animation:gradMove 3s linear infinite;}
+@keyframes gradMove{0%{background-position:0%;}100%{background-position:200%;}}
+
+@media(max-width:520px){
+  .form-grid{grid-template-columns:1fr;}
+  .stats-inner{grid-template-columns:repeat(2,1fr);}
+  .fg.full{grid-column:1;}
+}
+</style>
+</head>
+<body>
+
+<div class="grad-bar"></div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-txt" id="loadingTxt">Procesando tu registro...</div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="symbols-bg" id="symbolsBg"></div>
+  <div class="hero-logo">VAY<span>GO</span></div>
+  <div class="hero-tag">Cozumel, México</div>
+  <h1 class="hero-title">Lleva más clientes a tu <span>mesa</span> cada día</h1>
+  <p class="hero-sub">Únete a la plataforma de descubrimiento con recompensas que conecta turistas y locales con los mejores venues de Cozumel.</p>
+  <button class="hero-cta" onclick="scrollToPlans()">VER PLANES →</button>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat"><div class="stat-n">13+</div><div class="stat-l">Venues activos</div></div>
+    <div class="stat"><div class="stat-n">4</div><div class="stat-l">Categorías</div></div>
+    <div class="stat"><div class="stat-n">🎰</div><div class="stat-l">Slot machine viral</div></div>
+    <div class="stat"><div class="stat-n">24h</div><div class="stat-l">Para estar activo</div></div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section>
+  <div class="section-inner">
+    <div class="section-label">Así funciona</div>
+    <h2 class="section-title">De la app a tu mesa</h2>
+    <p class="section-sub">El turista llega a Cozumel, abre VAYGO, gira el slot y obtiene un descuento para tu venue. Tú solo lo recibes.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-icon">📱</div>
+        <div class="step-title">Escanea el QR</div>
+        <div class="step-desc">El turista escanea VAYGO en el muelle, hotel o punto de alto tráfico.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-icon">🍴</div>
+        <div class="step-title">Elige categoría</div>
+        <div class="step-desc">Selecciona EAT, DRINK, SHOP o TOURS según lo que busca.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-icon">🎰</div>
+        <div class="step-title">Gira el slot</div>
+        <div class="step-desc">Obtiene un descuento sorpresa para un venue específico.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-icon">🏆</div>
+        <div class="step-title">Llega a tu venue</div>
+        <div class="step-desc">Presenta su código, tú lo validas y aplicas el descuento.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section id="planes" style="background:var(--dark2);border-top:1px solid var(--dark3);border-bottom:1px solid var(--dark3);">
+  <div class="section-inner">
+    <div class="section-label">Precio de lanzamiento 🔥</div>
+    <h2 class="section-title">Elige tu plan</h2>
+    <p class="section-sub">Pago mensual. Sin contratos. Cancela cuando quieras. Tu venue activo en 24 horas.</p>
+    <div class="plans">
+      <div class="plan popular" onclick="selectPlan('card_top')">
+        <div class="plan-icon">🃏</div>
+        <div class="plan-name">CARD TOP</div>
+        <div class="plan-pos">Posiciones 1 a 4 — máxima visibilidad</div>
+        <div class="plan-price">$2,500 <span>MXN/mes</span></div>
+        <div class="plan-regular">Regular: $4,000 MXN</div>
+        <div class="plan-promo">🔥 PRECIO LANZAMIENTO</div>
+        <ul class="plan-features">
+          <li>Apareces en las primeras 4 posiciones</li>
+          <li>Sin hacer scroll — primera vista</li>
+          <li>Foto, Maps, web e Instagram</li>
+          <li>Descuento en el slot machine</li>
+          <li>Estadísticas mensuales</li>
+        </ul>
+        <button class="plan-btn">ELEGIR PLAN →</button>
+      </div>
+      <div class="plan card-std" onclick="selectPlan('card_std')">
+        <div class="plan-icon">🃏</div>
+        <div class="plan-name">CARD STD</div>
+        <div class="plan-pos">Posición 5 en adelante</div>
+        <div class="plan-price">$2,000 <span>MXN/mes</span></div>
+        <div class="plan-regular">Regular: $2,000 MXN</div>
+        <div class="plan-promo">🔥 PRECIO LANZAMIENTO</div>
+        <ul class="plan-features">
+          <li>Tarjeta en tu categoría</li>
+          <li>Foto, Maps, web e Instagram</li>
+          <li>Descuento en el slot machine</li>
+          <li>Estadísticas mensuales</li>
+        </ul>
+        <button class="plan-btn">ELEGIR PLAN →</button>
+      </div>
+      <div class="plan" onclick="selectPlan('banner_top')">
+        <div class="plan-icon">🏆</div>
+        <div class="plan-name">BANNER TOP</div>
+        <div class="plan-pos">Banners 1 al 3 — pantalla principal</div>
+        <div class="plan-price">$3,000 <span>MXN/mes</span></div>
+        <div class="plan-regular">Regular: $5,000 MXN</div>
+        <div class="plan-promo">🔥 PRECIO LANZAMIENTO</div>
+        <ul class="plan-features">
+          <li>Banner destacado en Home</li>
+          <li>Primera impresión al abrir la app</li>
+          <li>Foto, Maps, web e Instagram</li>
+          <li>Descuento en el slot machine</li>
+          <li>Estadísticas mensuales</li>
+        </ul>
+        <button class="plan-btn">ELEGIR PLAN →</button>
+      </div>
+      <div class="plan banner-std" onclick="selectPlan('banner_std')">
+        <div class="plan-icon">🏆</div>
+        <div class="plan-name">BANNER STD</div>
+        <div class="plan-pos">Banner 4 en adelante</div>
+        <div class="plan-price">$2,500 <span>MXN/mes</span></div>
+        <div class="plan-regular">Regular: $3,000 MXN</div>
+        <div class="plan-promo">🔥 PRECIO LANZAMIENTO</div>
+        <ul class="plan-features">
+          <li>Banner en pantalla principal</li>
+          <li>Foto, Maps, web e Instagram</li>
+          <li>Descuento en el slot machine</li>
+          <li>Estadísticas mensuales</li>
+        </ul>
+        <button class="plan-btn">ELEGIR PLAN →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGISTER FORM -->
+<section class="register-section" id="registro">
+  <div class="section-inner">
+    <div class="section-label">Registro</div>
+    <h2 class="section-title">Activa tu venue hoy</h2>
+    <p class="section-sub">Llena tus datos, realiza el pago y en menos de 24 horas tu venue estará activo en VAYGO.</p>
+
+    <div class="form-box">
+      <!-- Selected plan display -->
+      <div class="form-selected-plan" id="selectedPlanBox" style="display:none;">
+        <div>
+          <div style="font-size:11px;color:var(--gray);margin-bottom:2px;">Plan seleccionado</div>
+          <div class="fsp-name" id="fspName">—</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="fsp-price" id="fspPrice">—</div>
+          <div class="fsp-change" onclick="scrollToPlans()">Cambiar plan</div>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="fg">
+          <label class="fl">Nombre del venue *</label>
+          <input class="fi" id="fVenueName" placeholder="Ej: Bajau Steakhouse" required/>
+        </div>
+        <div class="fg">
+          <label class="fl">Categoría *</label>
+          <select class="fs" id="fCat">
+            <option value="">Selecciona...</option>
+            <option value="EAT">🍴 EAT — Restaurantes</option>
+            <option value="DRINK">🍹 DRINK — Bares y cocteles</option>
+            <option value="SHOP">🛍️ SHOP — Tiendas</option>
+            <option value="TOURS">🗺️ TOURS — Experiencias</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Nombre de contacto *</label>
+          <input class="fi" id="fContact" placeholder="Tu nombre"/>
+        </div>
+        <div class="fg">
+          <label class="fl">WhatsApp *</label>
+          <input class="fi" id="fPhone" placeholder="529871234567" type="tel"/>
+        </div>
+        <div class="fg full">
+          <label class="fl">Email *</label>
+          <input class="fi" id="fEmail" placeholder="correo@ejemplo.com" type="email"/>
+        </div>
+        <div class="fg full">
+          <label class="fl">Dirección del venue</label>
+          <input class="fi" id="fAddress" placeholder="Av. Rafael E. Melgar #XX, Cozumel"/>
+        </div>
+        <div class="fg">
+          <label class="fl">Sitio web (opcional)</label>
+          <input class="fi" id="fWeb" placeholder="https://tuweb.com"/>
+        </div>
+        <div class="fg">
+          <label class="fl">Instagram (opcional)</label>
+          <input class="fi" id="fInstagram" placeholder="@tuvenue"/>
+        </div>
+        <div class="fg full">
+          <label class="fl">Plan *</label>
+          <select class="fs" id="fPlan">
+            <option value="">Selecciona un plan...</option>
+            <option value="card_top">🃏 Card Top (pos. 1-4) — $2,500 MXN/mes 🔥</option>
+            <option value="card_std">🃏 Card Standard (pos. 5+) — $2,000 MXN/mes 🔥</option>
+            <option value="banner_top">🏆 Banner Top (pos. 1-3) — $3,000 MXN/mes 🔥</option>
+            <option value="banner_std">🏆 Banner Standard (pos. 4+) — $2,500 MXN/mes 🔥</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="payment-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Pago seguro con MercadoPago
+      </div>
+      <div class="payment-note">Al confirmar serás redirigido a MercadoPago para completar el pago de forma segura. Aceptamos todas las tarjetas de crédito y débito, transferencia y OXXO.</div>
+
+      <div class="mp-logo">
+        <svg width="24" height="24" viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="30" fill="#009EE3"/><path d="M14 30c0-8.8 7.2-16 16-16s16 7.2 16 16" stroke="white" stroke-width="3" fill="none"/><circle cx="30" cy="30" r="4" fill="white"/></svg>
+        <span>Pago procesado por MercadoPago — 100% seguro</span>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">CONFIRMAR Y PAGAR →</button>
+      <div class="terms">Al continuar aceptas los <a href="#">Términos y Condiciones</a> de VAYGO. Pago mensual recurrente. Puedes cancelar en cualquier momento.</div>
+    </div>
+
+    <!-- Success -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">¡BIENVENIDO A VAYGO!</div>
+      <p class="success-sub">Tu pago fue procesado exitosamente. En menos de 24 horas tu venue estará activo en la app.</p>
+      <div class="success-steps">
+        <div class="ss-item"><div class="ss-num">1</div><div class="ss-txt">Recibirás un WhatsApp de confirmación con los próximos pasos.</div></div>
+        <div class="ss-item"><div class="ss-num">2</div><div class="ss-txt">Nos mandas tu foto y datos finales del venue.</div></div>
+        <div class="ss-item"><div class="ss-num">3</div><div class="ss-txt">En 24 hrs tu tarjeta aparece en VAYGO activa para todos los usuarios.</div></div>
+        <div class="ss-item"><div class="ss-num">4</div><div class="ss-txt">¡Los clientes empiezan a llegar a tu mesa! 🚀</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="logo">VAY<span>GO</span></div>
+  <p>Cozumel, Quintana Roo, México</p>
+  <p style="margin-top:4px;">vaygowebapp.vercel.app</p>
+</footer>
+
+<div class="grad-bar"></div>
+
+<script>
+// Floating symbols background
+const syms = ['🎰','🍴','🍹','🛍️','🗺️','🎯','⭐','🏖️'];
+const bg = document.getElementById('symbolsBg');
+for(let i=0;i<12;i++){
+  const s = document.createElement('div');
+  s.className = 'sym';
+  s.textContent = syms[Math.floor(Math.random()*syms.length)];
+  s.style.left = Math.random()*100+'%';
+  s.style.animationDuration = (12+Math.random()*20)+'s';
+  s.style.animationDelay = (-Math.random()*20)+'s';
+  s.style.fontSize = (30+Math.random()*40)+'px';
+  bg.appendChild(s);
+}
+
+const planPrices = {
+  card_top: {name:'Card Top 🔥', price:'$2,500 MXN/mes', amount:2500},
+  card_std: {name:'Card Standard 🔥', price:'$2,000 MXN/mes', amount:2000},
+  banner_top: {name:'Banner Top 🔥', price:'$3,000 MXN/mes', amount:3000},
+  banner_std: {name:'Banner Standard 🔥', price:'$2,500 MXN/mes', amount:2500},
+};
+
+function scrollToPlans(){
+  document.getElementById('planes').scrollIntoView({behavior:'smooth'});
+}
+
+function selectPlan(planId){
+  const plan = planPrices[planId];
+  document.getElementById('fPlan').value = planId;
+  document.getElementById('fspName').textContent = plan.name;
+  document.getElementById('fspPrice').textContent = plan.price;
+  document.getElementById('selectedPlanBox').style.display = 'flex';
+  document.getElementById('registro').scrollIntoView({behavior:'smooth'});
+}
+
+document.getElementById('fPlan').addEventListener('change', function(){
+  const plan = planPrices[this.value];
+  if(plan){
+    document.getElementById('fspName').textContent = plan.name;
+    document.getElementById('fspPrice').textContent = plan.price;
+    document.getElementById('selectedPlanBox').style.display = 'flex';
+  }
+});
+
+function showError(msg){
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(()=>el.style.display='none', 5000);
+}
+
+async function handleSubmit(){
+  const venueName = document.getElementById('fVenueName').value.trim();
+  const cat = document.getElementById('fCat').value;
+  const contact = document.getElementById('fContact').value.trim();
+  const phone = document.getElementById('fPhone').value.trim();
+  const email = document.getElementById('fEmail').value.trim();
+  const plan = document.getElementById('fPlan').value;
+
+  if(!venueName){return showError('Ingresa el nombre de tu venue.');}
+  if(!cat){return showError('Selecciona una categoría.');}
+  if(!contact){return showError('Ingresa tu nombre de contacto.');}
+  if(!phone){return showError('Ingresa tu número de WhatsApp.');}
+  if(!email||!email.includes('@')){return showError('Ingresa un email válido.');}
+  if(!plan){return showError('Selecciona un plan.');}
+
+  const loading = document.getElementById('loadingOverlay');
+  const btn = document.getElementById('submitBtn');
+  loading.classList.add('show');
+  btn.disabled = true;
+
+  try {
+    document.getElementById('loadingTxt').textContent = 'Creando tu suscripción en MercadoPago...';
+
+    const res = await fetch('/api/create-subscription', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        venueName, cat, contact, phone, email, plan,
+        web: document.getElementById('fWeb').value.trim(),
+        instagram: document.getElementById('fInstagram').value.trim(),
+        address: document.getElementById('fAddress').value.trim(),
+        amount: planPrices[plan].amount,
+        planName: planPrices[plan].name
+      })
+    });
+
+    const data = await res.json();
+
+    if(data.init_point){
+      document.getElementById('loadingTxt').textContent = 'Redirigiendo a MercadoPago...';
+      window.location.href = data.init_point;
+    } else if(data.error){
+      throw new Error(data.error);
+    } else {
+      throw new Error('No se pudo crear la suscripción.');
+    }
+  } catch(err){
+    loading.classList.remove('show');
+    btn.disabled = false;
+    showError('Error: ' + err.message + ' — Intenta de nuevo o contáctanos por WhatsApp.');
+  }
+}
+
+// Check URL params for success/failure
+const params = new URLSearchParams(window.location.search);
+if(params.get('status') === 'approved'){
+  document.getElementById('successScreen').style.display = 'block';
+  document.querySelector('.form-box').style.display = 'none';
+  document.getElementById('successScreen').scrollIntoView({behavior:'smooth'});
+}
+if(params.get('status') === 'failure'){
+  showError('El pago no pudo procesarse. Intenta de nuevo.');
+}
+</script>
+</body>
+</html>
