@@ -377,7 +377,7 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
       <span class="nav-label" style="color:#4FA3E8;">Join</span>
       <span class="nav-label" style="color:#fff;">VAYGO</span>
     </div>
-    <div class="nav-item" style="flex-direction:row;align-items:center;gap:8px;flex:2;justify-content:center;">
+    <div class="nav-item" style="flex-direction:row;align-items:center;gap:8px;flex:2;justify-content:center;cursor:pointer;" onclick="window.open('https://www.instagram.com/vaygo.mx/','_blank')">
       <svg viewBox="0 0 24 24" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="ig" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -394,7 +394,7 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
       </svg>
       <div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px;">
         <span style="font-size:14px;font-weight:600;color:#fff;white-space:nowrap;">Follow Us</span>
-        <span style="font-size:14px;font-weight:800;color:#4FA3E8;white-space:nowrap;">Instagram</span>
+        <span style="font-size:14px;font-weight:800;color:#4FA3E8;white-space:nowrap;">@vaygo.mx</span>
       </div>
     </div>
     <div class="nav-item" onclick="var m=document.getElementById('ratingModal');m.style.display='flex';" style="cursor:pointer;">
@@ -627,18 +627,20 @@ function closeExpanded(){
   eid=null;
 }
 (function(){
-  const c=document.getElementById('qrCanvas');
-  if(!c)return;
-  const ctx=c.getContext('2d'),s=6;
-  ctx.fillStyle='#fff';ctx.fillRect(0,0,150,150);
-  ctx.fillStyle='#0A1628';
-  for(let r=0;r<23;r++)for(let cc=0;cc<23;cc++){
-    if(Math.random()>0.5)ctx.fillRect(cc*s+6,r*s+6,s-1,s-1);
-  }
-  [[0,0],[0,16],[16,0]].forEach(([x,y])=>{
-    ctx.fillStyle='#0A1628';ctx.fillRect(x*s+6,y*s+6,s*7,s*7);
-    ctx.fillStyle='#fff';ctx.fillRect(x*s+9,y*s+9,s*5,s*5);
-    ctx.fillStyle='#0A1628';ctx.fillRect(x*s+12,y*s+12,s*3,s*3);
+  window.addEventListener('load', function(){
+    const c=document.getElementById('qrCanvas');
+    if(!c)return;
+    const ctx=c.getContext('2d'),s=6;
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,150,150);
+    ctx.fillStyle='#0A1628';
+    for(let r=0;r<23;r++)for(let cc=0;cc<23;cc++){
+      if(Math.random()>0.5)ctx.fillRect(cc*s+6,r*s+6,s-1,s-1);
+    }
+    [[0,0],[0,16],[16,0]].forEach(([x,y])=>{
+      ctx.fillStyle='#0A1628';ctx.fillRect(x*s+6,y*s+6,s*7,s*7);
+      ctx.fillStyle='#fff';ctx.fillRect(x*s+9,y*s+9,s*5,s*5);
+      ctx.fillStyle='#0A1628';ctx.fillRect(x*s+12,y*s+12,s*3,s*3);
+    });
   });
 })();
 </script>
