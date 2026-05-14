@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VAYGO — Validar Código</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:40px;}
+.grad-bar{height:4px;background:linear-gradient(90deg,#FF2D7A,#FF8C00,#FF2D7A);background-size:200%;animation:gm 3s linear infinite;}
+@keyframes gm{0%{background-position:0%;}100%{background-position:200%;}}
+.header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #1A2E4A;}
+.logo{font-family:'Anton',sans-serif;font-size:22px;color:#fff;letter-spacing:2px;}
+.logo span{color:#FF2D7A;}
+.badge{background:rgba(127,193,66,0.15);border:1px solid rgba(127,193,66,0.3);border-radius:20px;padding:4px 12px;font-size:11px;color:#7FC142;font-weight:700;}
+.container{max-width:420px;margin:0 auto;padding:20px;}
+.box{background:#0D1E35;border:1px solid #1A2E4A;border-radius:20px;padding:20px;margin-bottom:16px;text-align:center;}
+.box-title{font-family:'Anton',sans-serif;font-size:16px;color:#fff;letter-spacing:1px;margin-bottom:4px;}
+.box-sub{font-size:12px;color:#4B6A85;margin-bottom:16px;}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;padding:14px 20px;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:1px;cursor:pointer;width:100%;margin-bottom:8px;}
+.btn-scan{background:linear-gradient(135deg,#FF2D7A,#FF8C00);color:#fff;}
+.btn-stop{background:#1A2E4A;color:#4FA3E8;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:700;}
+.btn-confirm{background:linear-gradient(135deg,#7FC142,#00C9A7);color:#fff;margin-top:12px;}
+.btn-reset{background:#0A1628;border:1px solid #1A2E4A;color:#4B6A85;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:600;margin-top:8px;}
+.manual-row{display:flex;gap:8px;margin-top:4px;}
+.manual-input{flex:1;background:#0A1628;border:1px solid #1A2E4A;border-radius:10px;padding:12px 14px;color:#fff;font-size:13px;outline:none;font-family:'DM Sans',sans-serif;text-transform:uppercase;letter-spacing:1px;}
+.manual-input:focus{border-color:#FF2D7A;}
+.manual-btn{background:linear-gradient(135deg,#4FA3E8,#7FC142);border:none;border-radius:10px;padding:12px 16px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;}
+.divider{display:flex;align-items:center;gap:10px;margin:12px 0;}
+.div-line{flex:1;height:1px;background:#1A2E4A;}
+.div-txt{font-size:11px;color:#4B6A85;}
+#preview{width:100%;max-width:300px;height:280px;border-radius:14px;object-fit:cover;display:none;border:3px solid #FF2D7A;margin-bottom:12px;}
+.result{background:#0D1E35;border:2px solid #1A2E4A;border-radius:20px;padding:24px;margin-bottom:16px;display:none;text-align:center;}
+.r-icon{font-size:56px;margin-bottom:10px;}
+.r-title{font-family:'Anton',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:8px;}
+.r-sub{font-size:14px;color:#8FB8D4;margin-bottom:6px;line-height:1.5;}
+.r-extra{font-size:12px;color:#4B6A85;}
+.min-note{background:#0A1628;border:1px solid rgba(255,140,0,0.3);border-radius:10px;padding:10px 14px;font-size:11px;color:#4B6A85;text-align:center;margin-top:16px;}
+.min-note strong{color:#FF8C00;}
+.used-count{font-size:10px;color:#4B6A85;text-align:center;margin-top:8px;}
+</style>
+</head>
+<body>
+
+<div class="grad-bar"></div>
+<div class="header">
+  <div class="logo">VAY<span>GO</span> <span style="font-size:13px;color:#4B6A85;font-family:'DM Sans';font-weight:600;">VENUE</span></div>
+  <div class="badge">✓ Validador</div>
+</div>
+
+<div class="container">
+  <div class="box">
+    <div class="box-title">📷 Escanear QR del cliente</div>
+    <div class="box-sub">Apunta la cámara al QR o ingresa el código manual</div>
+    <video id="preview" autoplay playsinline></video>
+    <button class="btn btn-scan" id="startBtn" onclick="startScanner()">📷 ABRIR CÁMARA</button>
+    <button class="btn btn-stop" id="stopBtn" onclick="stopScanner()" style="display:none;">✕ Cerrar cámara</button>
+    <div class="divider"><div class="div-line"></div><div class="div-txt">o ingresa manual</div><div class="div-line"></div></div>
+    <div class="manual-row">
+      <input class="manual-input" id="manualInput" placeholder="VYG-XXXX-XXXX" maxlength="14"/>
+      <button class="manual-btn" onclick="validateManual()">VALIDAR</button>
+    </div>
+    <div class="used-count" id="usedCount"></div>
+  </div>
+
+  <div class="result" id="resultBox">
+    <div class="r-icon" id="rIcon"></div>
+    <div class="r-title" id="rTitle"></div>
+    <div class="r-sub" id="rSub"></div>
+    <div class="r-extra" id="rExtra"></div>
+    <button class="btn btn-confirm" id="confirmBtn" onclick="confirmUsed()" style="display:none;">✅ CONFIRMAR — APLICAR DESCUENTO</button>
+    <button class="btn btn-reset" onclick="resetAll()">↩ Validar otro código</button>
+  </div>
+
+  <div class="min-note">⚠️ Verifica consumo mínimo de <strong>$20 USD</strong> antes de aplicar el descuento.</div>
+</div>
+
+<div class="grad-bar" style="margin-top:20px;"></div>
+
+<script>
+const USED_KEY = 'vaygo_used_v1';
+let pendingCode = '';
+
+function getUsed() {
+  try { return JSON.parse(localStorage.getItem(USED_KEY)) || {}; } 
+  catch(e) { return {}; }
+}
+
+function isUsedToday(code) {
+  const used = getUsed();
+  const e = used[code];
+  if(!e) return false;
+  return e.date === new Date().toDateString() ? e : false;
+}
+
+function markUsed(code) {
+  const used = getUsed();
+  used[code] = { date: new Date().toDateString(), time: new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}) };
+  localStorage.setItem(USED_KEY, JSON.stringify(used));
+  updateCount();
+}
+
+function updateCount() {
+  const used = getUsed();
+  const today = new Date().toDateString();
+  const n = Object.values(used).filter(e=>e.date===today).length;
+  document.getElementById('usedCount').textContent = n > 0 ? `${n} código${n>1?'s':''} canjeado${n>1?'s':''} hoy` : '';
+}
+
+function validateCode(raw) {
+  let code, prize, restName;
+
+  if(raw.startsWith('VAYGO|')) {
+    const p = raw.split('|');
+    if(p.length < 4) return showResult('invalid', {});
+    restName = p[1];
+    prize = p[2];
+    code = p[3];
+  } else {
+    code = raw.replace(/\s/g,'').toUpperCase();
+    prize = '—';
+    restName = '—';
+  }
+
+  if(!code.match(/^VYG-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) {
+    return showResult('invalid', { code });
+  }
+
+  const usedEntry = isUsedToday(code);
+  if(usedEntry) {
+    return showResult('used', { code, prize, restName, time: usedEntry.time });
+  }
+
+  pendingCode = code;
+  showResult('valid', { code, prize, restName });
+}
+
+function validateManual() {
+  const val = document.getElementById('manualInput').value.trim().toUpperCase();
+  if(!val) return;
+  validateCode(val);
+}
+
+function confirmUsed() {
+  if(!pendingCode) return;
+  markUsed(pendingCode);
+  document.getElementById('rIcon').textContent = '🎉';
+  document.getElementById('rTitle').textContent = '¡DESCUENTO APLICADO!';
+  document.getElementById('rTitle').style.color = '#7FC142';
+  document.getElementById('rSub').textContent = '¡Que disfrute su visita! 🚀';
+  document.getElementById('rExtra').textContent = `Código: ${pendingCode}`;
+  document.getElementById('confirmBtn').style.display = 'none';
+  document.getElementById('resultBox').style.borderColor = 'rgba(127,193,66,0.4)';
+  pendingCode = '';
+}
+
+function showResult(type, data) {
+  const box = document.getElementById('resultBox');
+  box.style.display = 'block';
+  document.getElementById('confirmBtn').style.display = 'none';
+  const cfgs = {
+    valid:   { icon:'✅', color:'#7FC142', border:'rgba(127,193,66,0.4)',   title:'¡CÓDIGO VÁLIDO!',    sub:`Premio: <strong style="color:#7FC142">${data.prize}</strong>`, extra:`Venue: ${data.restName} | Código: ${data.code}`, btn:true },
+    used:    { icon:'❌', color:'#FF2D7A', border:'rgba(255,45,122,0.4)',   title:'YA FUE CANJEADO',    sub:`Canjeado hoy a las <strong>${data.time}</strong>`,             extra:`Código: ${data.code}`,                             btn:false },
+    invalid: { icon:'🚫', color:'#FF8C00', border:'rgba(255,140,0,0.4)',    title:'CÓDIGO INVÁLIDO',    sub:'Este no es un código VAYGO válido.',                           extra:'',                                                 btn:false },
+  };
+  const c = cfgs[type] || cfgs.invalid;
+  box.style.borderColor = c.border;
+  document.getElementById('rIcon').textContent = c.icon;
+  document.getElementById('rTitle').textContent = c.title;
+  document.getElementById('rTitle').style.color = c.color;
+  document.getElementById('rSub').innerHTML = c.sub;
+  document.getElementById('rExtra').textContent = c.extra;
+  if(c.btn) document.getElementById('confirmBtn').style.display = 'flex';
+  box.scrollIntoView({ behavior:'smooth' });
+}
+
+function resetAll() {
+  document.getElementById('resultBox').style.display = 'none';
+  document.getElementById('manualInput').value = '';
+  pendingCode = '';
+}
+
+// Camera
+let scanActive = false;
+let detector = 'BarcodeDetector' in window ? new BarcodeDetector({formats:['qr_code']}) : null;
+
+async function startScanner() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    const v = document.getElementById('preview');
+    v.srcObject = stream;
+    v.style.display = 'block';
+    document.getElementById('startBtn').style.display = 'none';
+    document.getElementById('stopBtn').style.display = 'flex';
+    scanActive = true;
+    scan();
+  } catch(e) { alert('No se pudo abrir la cámara. Usa el código manual.'); }
+}
+
+function stopScanner() {
+  const v = document.getElementById('preview');
+  if(v.srcObject) v.srcObject.getTracks().forEach(t=>t.stop());
+  v.style.display = 'none';
+  document.getElementById('startBtn').style.display = 'flex';
+  document.getElementById('stopBtn').style.display = 'none';
+  scanActive = false;
+}
+
+async function scan() {
+  if(!scanActive || !detector) return;
+  try {
+    const v = document.getElementById('preview');
+    const codes = await detector.detect(v);
+    if(codes.length > 0) { stopScanner(); validateCode(codes[0].rawValue); return; }
+  } catch(e) {}
+  if(scanActive) requestAnimationFrame(scan);
+}
+
+updateCount();
+</script>
+</body>
+</html>
