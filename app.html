@@ -289,13 +289,18 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
       <div class="hot-viewall">View all ›</div>
     </div>
     <div class="rewards-scroll">
-      <div class="reward-card" id="cardLH" onclick="openVenue('lobster-house-cozumel')">
-        <img class="reward-img" src="https://raw.githubusercontent.com/vaygo2026/vaygowebapp/main/lobsterhouse.jpg" alt="Lobster House"/>
+      <div class="reward-card" id="cardLH" onclick="expandCard('LH')">
+        <img class="reward-img" id="imgLH" src="https://raw.githubusercontent.com/vaygo2026/vaygowebapp/main/lobsterhouse.jpg" alt="Lobster House"/>
         <div class="reward-body">
           <div class="reward-badge" style="background:rgba(127,193,66,0.2);color:#7FC142;">🍴 EAT</div>
           <div class="reward-name">Lobster House</div>
-          <div class="reward-discount" style="color:#7FC142;">Spin to Win!</div>
+          <div class="reward-discount" style="color:#7FC142;">2x1</div>
           <button class="reward-deal">Get Deal</button>
+        </div>
+        <div class="expanded-details" id="detLH">
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Zona Hotelera Norte Km 4.5, frente al Westin Cozumel</div>
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>5:30 pm – 10:30 pm</div>
+          <div class="detail-row"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>Steak & Lobster — Mariscos frescos desde 1999. Un clásico de Cozumel.</div>
         </div>
       </div>
       <div class="reward-card" id="card0" onclick="expandCard(0)">
