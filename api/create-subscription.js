@@ -21,9 +21,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Configuración de pago no disponible.' });
   }
 
-  const BASE_URL = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : 'https://vaygowebapp.vercel.app';
+  const BASE_URL = process.env.BASE_URL || 'https://vaygowebapp-ynao.vercel.app';
 
   try {
     // Crear preferencia de pago en MercadoPago
