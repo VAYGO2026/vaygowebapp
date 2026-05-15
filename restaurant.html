@@ -5,12 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <title>VAYGO — Restaurant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+<noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;}
 .app{width:390px;height:100dvh;max-height:820px;background:#0A1628;border-radius:32px;overflow:hidden;display:flex;flex-direction:column;position:relative;}
+.demo-bar{background:linear-gradient(90deg,#FF8C00,#FF2D7A);padding:7px 16px;display:none;align-items:center;justify-content:space-between;flex-shrink:0;}
+.demo-bar.show{display:flex;}
+.demo-bar span{font-size:11px;font-weight:700;color:#fff;letter-spacing:0.06em;}
+.demo-bar button{font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,0.25);border:none;border-radius:20px;padding:4px 12px;cursor:pointer;}
 .header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 12px;flex-shrink:0;background:#0A1628;border-bottom:1px solid #1A2E4A;}
 .back-btn{display:flex;align-items:center;gap:6px;cursor:pointer;background:rgba(79,163,232,0.1);border:1px solid rgba(79,163,232,0.25);border-radius:20px;padding:6px 12px;}
 .back-btn svg{width:16px;height:16px;}
@@ -92,14 +97,20 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
 .spin-btn:disabled{background:linear-gradient(180deg,#3B5070,#2A3A50);box-shadow:0 4px 0 #1A2535;cursor:not-allowed;transform:none;}
 .bottom-nav{background:#0A1628;border-top:1px solid #1A2E4A;display:flex;justify-content:space-around;align-items:center;padding:10px 0 18px;flex-shrink:0;position:absolute;bottom:0;left:0;right:0;}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 12px;}
-.nav-icon-wrap{width:26px;height:26px;display:flex;align-items:center;justify-content:center;}
 .nav-label{font-size:9px;font-weight:600;color:#3B5070;text-transform:uppercase;letter-spacing:0.06em;}
 </style>
 </head>
 <body>
 <div class="app">
+
+  <!-- Barra demo -->
+  <div class="demo-bar" id="demoBanner">
+    <span>⚡ MODO DEMO — VAYGO</span>
+    <button onclick="exitDemo()">SALIR</button>
+  </div>
+
   <div class="header">
-    <div class="back-btn" onclick="goBack()">
+    <div class="back-btn" id="backBtn" onclick="goBack()">
       <svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
       <span>Back</span>
     </div>
@@ -109,7 +120,7 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
 
   <div class="scroll">
     <div class="rest-hero">
-      <img class="rest-img" id="restImg" src="https://picsum.photos/seed/restaurant/800/400" alt=""/>
+      <img class="rest-img" id="restImg" src="" alt="" loading="lazy" style="background:#0D2347;"/>
       <div class="rest-overlay"></div>
       <div class="rest-info">
         <div class="rest-badge" id="restBadge">EAT</div>
@@ -152,16 +163,11 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
         <span style="font-size:11px;font-weight:700;color:#4FA3E8;">Visit Website</span>
       </a>
       <a id="igBtn" href="#" target="_blank" class="action-btn" style="display:none;">
-        <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
-          <defs><linearGradient id="igG" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#FFDC80"/><stop offset="50%" style="stop-color:#E1306C"/><stop offset="100%" style="stop-color:#833AB4"/></linearGradient></defs>
-          <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#igG)"/>
-          <circle cx="12" cy="12" r="4.5" fill="none" stroke="#fff" stroke-width="1.8"/>
-          <circle cx="17" cy="7" r="1.2" fill="#fff"/>
-        </svg>
+        <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="igG" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#FFDC80"/><stop offset="50%" style="stop-color:#E1306C"/><stop offset="100%" style="stop-color:#833AB4"/></linearGradient></defs><rect x="2" y="2" width="20" height="20" rx="6" fill="url(#igG)"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="17" cy="7" r="1.2" fill="#fff"/></svg>
         <span style="font-size:11px;font-weight:700;color:#E1306C;">Instagram</span>
       </a>
       <a id="mapsBtn" href="#" target="_blank" class="action-btn" style="display:none;">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#34A853" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#34A853" stroke-width="2" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
         <span style="font-size:11px;font-weight:700;color:#34A853;">Maps</span>
       </a>
     </div>
@@ -189,7 +195,7 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
           <span style="font-size:16px;">⚠️</span>
           <div>
             <div style="font-size:11px;font-weight:700;color:#FF8C00;letter-spacing:0.05em;">MINIMUM PURCHASE REQUIRED</div>
-            <div style="font-size:11px;color:#8FB8D4;margin-top:1px;">Valid on orders of <strong style="color:#fff;">$20 USD</strong> or more <span style="color:#4B6A85;">(approx. $400 MXN)</span></div>
+            <div style="font-size:11px;color:#8FB8D4;margin-top:1px;">Valid on orders of <strong style="color:#fff;">$20 USD</strong> or more</div>
           </div>
         </div>
       </div>
@@ -258,16 +264,15 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
         </div>
       </div>
       <div class="spin-btn-wrap">
-        <button class="spin-btn" id="spinBtn" onclick="doSpin()" disabled>Loading...</button>
+        <button class="spin-btn" id="spinBtn" onclick="doSpin()">🎰 SPIN NOW</button>
       </div>
     </div>
   </div>
 
   <nav class="bottom-nav">
     <div class="nav-item" onclick="var m=document.getElementById('contactModal');m.style.display='flex';">
-      <div class="nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="#4FA3E8" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-      <span class="nav-label" style="color:#4FA3E8;">Join</span>
-      <span class="nav-label" style="color:#fff;">VAYGO</span>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#4FA3E8" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span class="nav-label" style="color:#4FA3E8;">Join VAYGO</span>
     </div>
     <div class="nav-item" style="flex-direction:row;align-items:center;gap:8px;flex:2;justify-content:center;">
       <svg viewBox="0 0 24 24" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
@@ -282,7 +287,7 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
       </div>
     </div>
     <div class="nav-item" onclick="var m=document.getElementById('ratingModal');m.style.display='flex';">
-      <div class="nav-icon-wrap"><svg viewBox="0 0 24 24" width="26" height="26" fill="#FFD700" stroke="#FFD700" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="#FFD700" stroke="#FFD700" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       <span class="nav-label" style="color:#FFD700;">Rate Us</span>
     </div>
   </nav>
@@ -349,20 +354,42 @@ const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
 
+// ── MODO DEMO ──
+const _p = new URLSearchParams(window.location.search);
+const _isDemo = _p.get('demo') === 'true';
+const _sessionDemo = sessionStorage.getItem('vaygo_demo') === '1' || localStorage.getItem('vaygo_demo') === '1';
+const _demoExp = parseInt(sessionStorage.getItem('vaygo_demo_exp') || localStorage.getItem('vaygo_demo_exp') || '0');
+const _sessionValid = _sessionDemo && Date.now() < _demoExp;
+
+if(_isDemo && !_sessionValid){
+  window.location.href = 'demo.html';
+}
+if(_isDemo && _sessionValid){
+  document.getElementById('demoBanner').classList.add('show');
+}
+
+window.exitDemo = function(){
+  if(confirm('¿Salir de la demo?')){
+    sessionStorage.removeItem('vaygo_demo');
+    sessionStorage.removeItem('vaygo_demo_exp');
+    window.location.href = 'demo.html';
+  }
+};
+
 // URL PARAMS
 const params = new URLSearchParams(window.location.search);
-const restId = params.get('id') || 'restaurant';
-const restName = params.get('name') || 'Restaurant';
-const restCat = params.get('cat') || 'EAT';
-const restColor = params.get('color') || '#7FC142';
-const restImg = params.get('img') || 'https://picsum.photos/seed/restaurant/800/400';
-const restHours = params.get('hours') || '9:00 am – 10:00 pm';
-const restExpires = params.get('expires') || '10:00 pm';
+const restId       = params.get('id') || 'restaurant';
+const restName     = params.get('name') || 'Restaurant';
+const restCat      = params.get('cat') || 'EAT';
+const restColor    = params.get('color') || '#7FC142';
+const restImg      = params.get('img') || 'https://picsum.photos/seed/restaurant/800/400';
+const restHours    = params.get('hours') || '9:00 am – 10:00 pm';
+const restExpires  = params.get('expires') || '10:00 pm';
 const restLocation = params.get('location') || 'Cozumel, Mexico';
-const restSubcat = params.get('subcat') || 'Breakfast';
-const restMenu = params.get('menu') || '';
-const restWeb = params.get('web') || '';
-const restInstagram = params.get('instagram') || '';
+const restSubcat   = params.get('subcat') || 'Breakfast';
+const restMenu     = params.get('menu') || '';
+const restWeb      = params.get('web') || '';
+const restInstagram= params.get('instagram') || '';
 
 // SET UI
 document.getElementById('headerTitle').textContent = restName;
@@ -371,224 +398,146 @@ document.getElementById('restImg').src = restImg;
 document.getElementById('restHours').textContent = restHours;
 document.getElementById('restLocation').textContent = restLocation;
 document.getElementById('restBadge').textContent = restCat;
-document.getElementById('restBadge').style.background = 'rgba(127,193,66,0.2)';
 document.getElementById('restBadge').style.color = restColor;
+document.getElementById('restBadge').style.background = `rgba(127,193,66,0.2)`;
 document.getElementById('infoCategory').textContent = restCat + ' • ' + restSubcat;
 document.getElementById('infoExpires').textContent = restExpires;
 document.getElementById('prizeName').textContent = restName;
 
-if(restMenu) { const b = document.getElementById('menuBtn'); b.href = restMenu; b.style.display = 'flex'; }
-if(restWeb) { const b = document.getElementById('webBtn'); b.href = restWeb; b.style.display = 'flex'; }
-if(restInstagram) { const b = document.getElementById('igBtn'); b.href = 'https://instagram.com/' + restInstagram.replace('@',''); b.style.display = 'flex'; }
-if(restLocation) { const b = document.getElementById('mapsBtn'); b.href = 'https://maps.google.com/?q=' + encodeURIComponent(restLocation); b.style.display = 'flex'; }
+if(restMenu){ const b=document.getElementById('menuBtn'); b.href=restMenu; b.style.display='flex'; }
+if(restWeb){ const b=document.getElementById('webBtn'); b.href=restWeb; b.style.display='flex'; }
+if(restInstagram){ const b=document.getElementById('igBtn'); b.href='https://instagram.com/'+restInstagram.replace('@',''); b.style.display='flex'; }
+if(restLocation){ const b=document.getElementById('mapsBtn'); b.href='https://maps.google.com/?q='+encodeURIComponent(restLocation); b.style.display='flex'; }
 
-// PRIZES
+// BACK BUTTON — pasar demo=true si aplica
+window.goBack = function(){
+  const cat = (new URLSearchParams(window.location.search).get('cat')||'eat').toLowerCase();
+  const demoParam = _isDemo && _sessionValid ? '&demo=true' : '';
+  window.location.href = 'explore.html?cat=' + cat + demoParam;
+};
+
+// ── Premios ──
 const prizes = [
-  {label:'20% OFF', color:'#FF8C00'},
-  {label:'30% OFF', color:'#FF2D7A'},
-  {label:'15% OFF', color:'#7FC142'},
-  {label:'25% OFF', color:'#A259FF'},
-  {label:'10% OFF', color:'#4FA3E8'},
+  {label:'20% OFF',color:'#FF8C00'},
+  {label:'30% OFF',color:'#FF2D7A'},
+  {label:'15% OFF',color:'#7FC142'},
+  {label:'25% OFF',color:'#A259FF'},
+  {label:'10% OFF',color:'#4FA3E8'},
   {label:'🎁 GIFT', color:'#00C9A7'},
 ];
 
+// ── Botón activo desde el inicio — Firebase corre en segundo plano ──
+let currentUser = null;
+let spinning = false;
 const today = new Date().toISOString().split('T')[0];
 const spinKey = restId + '_' + today;
-let spinning = false;
-let currentUser = null;
 
-// Show slot immediately — don't wait for Firebase
-window.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('spinBtn');
-  if(btn) { btn.disabled = false; btn.textContent = 'SPIN NOW'; }
-});
-
-// AUTH
-// Safety timeout — show slot after 5s even if Firebase is slow
-const safetyTimer = setTimeout(() => {
-  const btn = document.getElementById('spinBtn');
-  if(btn && btn.disabled && btn.textContent === 'Loading...') {
-    btn.disabled = false;
-    btn.textContent = 'SPIN NOW';
-    document.getElementById('slotSection').style.display = 'block';
-  }
-}, 5000);
+// Firebase auth en segundo plano — no bloquea el UI
+signInAnonymously(auth).catch(e => console.log('auth error', e));
 
 onAuthStateChanged(auth, async (user) => {
-  clearTimeout(safetyTimer);
-  if(!user) {
-    await signInAnonymously(auth);
-  } else {
+  if(user){
     currentUser = user;
-    const btn = document.getElementById('spinBtn');
-    btn.disabled = false;
-    btn.textContent = 'SPIN NOW';
-    document.getElementById('slotSection').style.display = 'block';
-    checkPreviousSpin();
+    if(!_isDemo) checkPreviousSpin();
   }
 });
 
-async function checkPreviousSpin() {
+async function checkPreviousSpin(){
   try {
-    const ref = doc(db, 'users', currentUser.uid, 'spins', spinKey);
+    const ref = doc(db,'users',currentUser.uid,'spins',spinKey);
     const snap = await getDoc(ref);
-    if(snap.exists()) {
+    if(snap.exists()){
       const data = snap.data();
-      const now = new Date();
       const expires = new Date(data.expiresAt);
-      if(now < expires) {
-        showPrize(data.prize, data.code, data.expiresStr);
-      } else {
-        showBlocked();
-      }
+      if(new Date() < expires) showPrize(data.prize, data.code, data.expiresStr);
+      else showBlocked();
     }
-  } catch(e) { console.log('check error', e); }
+  } catch(e){ console.log('check error',e); }
 }
 
-function generateCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = 'VYG-';
-  for(let i=0;i<4;i++) code += chars[Math.floor(Math.random()*chars.length)];
-  code += '-';
-  for(let i=0;i<4;i++) code += chars[Math.floor(Math.random()*chars.length)];
+function generateCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = _isDemo ? 'VYG-DEMO-' : 'VYG-';
+  const seg = _isDemo ? 4 : 4;
+  for(let i=0;i<seg;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+  if(!_isDemo){ code+='-'; for(let i=0;i<4;i++) code+=chars[Math.floor(Math.random()*chars.length)]; }
   return code;
 }
 
-window.goBack = function() {
-  const cat = (new URLSearchParams(window.location.search).get('cat') || 'eat').toLowerCase();
-  window.location.href = 'explore.html?cat=' + cat;
-};
-
-window.doSpin = async function() {
-  if(spinning || !currentUser) return;
+window.doSpin = async function(){
+  if(spinning) return;
   spinning = true;
-
   const btn = document.getElementById('spinBtn');
-  btn.disabled = true;
-  btn.textContent = 'SPINNING...';
+  btn.disabled = true; btn.textContent = 'SPINNING...';
 
-  const r1 = document.getElementById('r1');
-  const r2 = document.getElementById('r2');
-  const r3 = document.getElementById('r3');
+  const r1=document.getElementById('r1');
+  const r2=document.getElementById('r2');
+  const r3=document.getElementById('r3');
+  r1.style.animation='sp 0.15s linear infinite';
+  r2.style.animation='sp 0.15s linear infinite 0.05s';
+  r3.style.animation='sp 0.15s linear infinite 0.1s';
 
-  const style = document.createElement('style');
-  style.textContent = '@keyframes sp{0%{transform:translateY(0);}100%{transform:translateY(-252px);}}';
-  document.head.appendChild(style);
-
-  r1.style.animation = 'sp 0.15s linear infinite';
-  r2.style.animation = 'sp 0.15s linear infinite 0.05s';
-  r3.style.animation = 'sp 0.15s linear infinite 0.1s';
-
-  setTimeout(async () => {
-    r1.style.animation = 'none';
-    r2.style.animation = 'none';
-    r3.style.animation = 'none';
-
-    const prize = prizes[Math.floor(Math.random() * prizes.length)];
+  setTimeout(async()=>{
+    r1.style.animation='none'; r2.style.animation='none'; r3.style.animation='none';
+    const prize = prizes[Math.floor(Math.random()*prizes.length)];
     const code = generateCode();
-    const refCode = sessionStorage.getItem('vaygo_ref') || 'direct';
-
-    const expires = new Date();
-    expires.setHours(23, 59, 59);
+    const refCode = sessionStorage.getItem('vaygo_ref')||'direct';
+    const expires = new Date(); expires.setHours(23,59,59);
     const expiresStr = restExpires + ' today';
 
-    try {
-      // Save user spin
-      await setDoc(doc(db, 'users', currentUser.uid, 'spins', spinKey), {
-        restId, restName,
-        category: restCat,
-        subcategory: restSubcat,
-        prize: prize.label,
-        prizeColor: prize.color,
-        code,
-        spunAt: serverTimestamp(),
-        expiresAt: expires.toISOString(),
-        expiresStr,
-        used: false,
-        referredBy: refCode,
-      });
-
-      // Save global spin
-      await setDoc(doc(db, 'spins', code), {
-        uid: currentUser.uid,
-        restId, restName,
-        prize: prize.label,
-        code,
-        spunAt: serverTimestamp(),
-        expiresAt: expires.toISOString(),
-        expiresStr,
-        used: false,
-        referredBy: refCode,
-      });
-
-      // Save in codes collection for validator
-      await setDoc(doc(db, 'codes', code), {
-        uid: currentUser.uid,
-        spinKey,
-        restId, restName,
-        prize: prize.label,
-        code,
-        spunAt: serverTimestamp(),
-        expiresAt: expires.toISOString(),
-        expiresStr,
-        used: false,
-      });
-
-      // Update vendor counter
-      if(refCode && refCode !== 'direct') {
-        try {
-          await runTransaction(db, async (t) => {
-            const vRef = doc(db, 'vendors', refCode);
-            const vSnap = await t.get(vRef);
-            const cur = vSnap.exists() ? vSnap.data() : {spins:0};
-            t.set(vRef, {...cur, spins:(cur.spins||0)+1, lastActivity:serverTimestamp()}, {merge:true});
-          });
-        } catch(e) {}
-      }
-    } catch(e) { console.log('save error', e); }
+    // En modo DEMO no guardar en Firebase
+    if(!_isDemo && currentUser){
+      try {
+        await setDoc(doc(db,'users',currentUser.uid,'spins',spinKey),{
+          restId, restName, category:restCat, subcategory:restSubcat,
+          prize:prize.label, prizeColor:prize.color, code,
+          spunAt:serverTimestamp(), expiresAt:expires.toISOString(),
+          expiresStr, used:false, referredBy:refCode,
+        });
+        await setDoc(doc(db,'codes',code),{
+          uid:currentUser.uid, spinKey, restId, restName,
+          prize:prize.label, code, spunAt:serverTimestamp(),
+          expiresAt:expires.toISOString(), expiresStr, used:false,
+        });
+      } catch(e){ console.log('save error',e); }
+    }
 
     showPrize(prize.label, code, expiresStr);
     spinning = false;
   }, 2500);
 };
 
-function showPrize(prizeLabel, code, expiresStr) {
-  document.getElementById('slotSection').style.display = 'none';
+function showPrize(prizeLabel, code, expiresStr){
+  document.getElementById('slotSection').style.display='none';
   document.getElementById('prizeSection').classList.add('show');
   document.getElementById('blockedMsg').classList.remove('show');
-
-  const prizeColor = prizes.find(p => p.label === prizeLabel)?.color || restColor;
+  const prizeColor = prizes.find(p=>p.label===prizeLabel)?.color || restColor;
   document.getElementById('prizeCard').style.borderColor = prizeColor;
   document.getElementById('prizeValue').textContent = prizeLabel;
   document.getElementById('prizeValue').style.color = prizeColor;
   document.getElementById('prizeCode').textContent = code;
-  document.getElementById('prizeExpires').innerHTML = 'Valid until: <span>' + expiresStr + '</span>';
+  document.getElementById('prizeExpires').innerHTML = 'Valid until: <span>'+expiresStr+'</span>';
   document.getElementById('infoPrize').textContent = prizeLabel;
-
-  document.getElementById('qrCode').innerHTML = '';
-  new window.QRCode(document.getElementById('qrCode'), {
-    text: 'VAYGO|' + restId + '|' + prizeLabel + '|' + code + '|' + expiresStr,
-    width: 160, height: 160,
-    colorDark: '#0A1628', colorLight: '#ffffff',
-    correctLevel: window.QRCode.CorrectLevel.H
+  document.getElementById('qrCode').innerHTML='';
+  new window.QRCode(document.getElementById('qrCode'),{
+    text:'VAYGO|'+restId+'|'+prizeLabel+'|'+code+'|'+expiresStr,
+    width:160, height:160, colorDark:'#0A1628', colorLight:'#ffffff',
+    correctLevel:window.QRCode.CorrectLevel.H
   });
-
-  setTimeout(() => {
-    document.getElementById('prizeSection').scrollIntoView({behavior:'smooth'});
-  }, 300);
+  setTimeout(()=>{ document.getElementById('prizeSection').scrollIntoView({behavior:'smooth'}); },300);
 }
 
-function showBlocked() {
-  document.getElementById('slotSection').style.display = 'none';
+function showBlocked(){
+  document.getElementById('slotSection').style.display='none';
   document.getElementById('blockedMsg').classList.add('show');
 }
 
-window.setRating = function(n) {
-  document.getElementById('ratingInput').value = n;
-  const labels = ['','⭐ Poor','⭐⭐ Fair','⭐⭐⭐ Good','⭐⭐⭐⭐ Great','⭐⭐⭐⭐⭐ Excellent!'];
-  document.getElementById('ratingVal').textContent = labels[n];
-  const stars = document.getElementById('stars').children;
-  for(let i=0;i<stars.length;i++) stars[i].style.opacity = i<n ? '1' : '0.3';
+window.setRating = function(n){
+  document.getElementById('ratingInput').value=n;
+  const labels=['','⭐ Poor','⭐⭐ Fair','⭐⭐⭐ Good','⭐⭐⭐⭐ Great','⭐⭐⭐⭐⭐ Excellent!'];
+  document.getElementById('ratingVal').textContent=labels[n];
+  const stars=document.getElementById('stars').children;
+  for(let i=0;i<stars.length;i++) stars[i].style.opacity=i<n?'1':'0.3';
 };
 </script>
 </body>
