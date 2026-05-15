@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>VAYGO — Validador</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+<!-- ✅ FIX BUG 2: jsQR funciona en iOS Safari, Android Chrome, Firefox — todos los navegadores -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:40px;}
@@ -30,7 +32,13 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 .divider{display:flex;align-items:center;gap:10px;margin:12px 0;}
 .div-line{flex:1;height:1px;background:#1A2E4A;}
 .div-txt{font-size:11px;color:#4B6A85;}
+
+/* ✅ FIX: canvas en lugar de video para jsQR */
 #preview{width:100%;max-width:300px;height:280px;border-radius:14px;object-fit:cover;display:none;border:3px solid #FF2D7A;margin-bottom:12px;}
+#scanCanvas{display:none;}
+
+.scan-status{font-size:12px;color:#4FA3E8;text-align:center;margin-bottom:8px;min-height:18px;}
+
 .result{background:#0D1E35;border:2px solid #1A2E4A;border-radius:20px;padding:24px;margin-bottom:16px;display:none;text-align:center;}
 .r-icon{font-size:56px;margin-bottom:10px;}
 .r-title{font-family:'Anton',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:8px;}
@@ -52,7 +60,6 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 .staff-name{font-size:13px;color:#fff;font-weight:700;}
 .staff-venue{font-size:11px;color:#4FA3E8;margin-top:2px;}
 .staff-change{font-size:11px;color:#3B5070;cursor:pointer;text-decoration:underline;}
-/* REGISTRO */
 .register-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:#060E1C;}
 .register-box{background:#0D1E35;border:1px solid #1A2E4A;border-radius:24px;padding:28px;width:100%;max-width:380px;text-align:center;}
 .register-logo{font-family:'Anton',sans-serif;font-size:32px;color:#fff;letter-spacing:3px;margin-bottom:4px;}
@@ -88,8 +95,8 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
     <div class="logo">VAY<span>GO</span> <span style="font-size:13px;color:#4B6A85;font-family:'DM Sans';font-weight:600;">VENUE</span></div>
     <div class="badge">✓ Validador</div>
   </div>
-  <div class="container">
 
+  <div class="container">
     <div class="staff-info">
       <div>
         <div class="staff-name" id="staffNameDisplay"></div>
@@ -116,10 +123,18 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
     <div class="box">
       <div class="box-title">📷 Escanear QR del cliente</div>
       <div class="box-sub">Apunta la cámara al QR o ingresa el código manual</div>
-      <video id="preview" autoplay playsinline></video>
+
+      <!-- Video para mostrar la cámara -->
+      <video id="preview" autoplay playsinline muted></video>
+      <!-- Canvas oculto para jsQR -->
+      <canvas id="scanCanvas"></canvas>
+
+      <div class="scan-status" id="scanStatus"></div>
       <div class="loading" id="loadingMsg">🔍 Verificando en Firebase...</div>
+
       <button class="btn btn-scan" id="startBtn" onclick="startScanner()">📷 ABRIR CÁMARA</button>
       <button class="btn btn-stop" id="stopBtn" onclick="stopScanner()" style="display:none;">✕ Cerrar cámara</button>
+
       <div class="divider"><div class="div-line"></div><div class="div-txt">o ingresa manual</div><div class="div-line"></div></div>
       <div class="manual-row">
         <input class="manual-input" id="manualInput" placeholder="VYG-XXXX-XXXX" maxlength="14"/>
@@ -139,6 +154,7 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 
     <div class="min-note">⚠️ Verifica consumo mínimo de <strong>$20 USD</strong> antes de aplicar el descuento.</div>
   </div>
+
   <div class="grad-bar" style="margin-top:20px;"></div>
 </div>
 
@@ -157,6 +173,7 @@ const firebaseConfig = {
 
 const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
+
 let pendingCode = '';
 let currentVenue = '';
 let currentStaff = '';
@@ -243,12 +260,10 @@ window.validateCode = async function(raw) {
     prize = prize || data.prize || '—';
     restName = restName || data.restName || '—';
 
-    // Verificar que es de ESTE venue
     if(data.restName && data.restName.toLowerCase() !== currentVenue.toLowerCase()) {
       return showResult('wrongvenue', { code, codeVenue: data.restName });
     }
 
-    // Ya usado
     if(data.used === true) {
       let validTime = '—';
       if(data.validatedAt && data.validatedAt.toDate) {
@@ -257,7 +272,6 @@ window.validateCode = async function(raw) {
       return showResult('used', { code, prize, restName, time: validTime, validatedStaff: data.validatedStaff || '—' });
     }
 
-    // Expirado
     if(data.expiresAt) {
       const expires = data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
       if(new Date() > expires) return showResult('expired', { code, prize, restName });
@@ -305,15 +319,17 @@ function showResult(type, data) {
   box.style.display = 'block';
   document.getElementById('confirmBtn').style.display = 'none';
   document.getElementById('detailCard').style.display = 'none';
+
   const cfgs = {
-    valid:      {icon:'✅',color:'#7FC142',border:'rgba(127,193,66,0.4)', title:'¡CÓDIGO VÁLIDO!',   sub:`Premio: <strong style="color:#7FC142">${data.prize}</strong>`,btn:true},
-    used:       {icon:'❌',color:'#FF2D7A',border:'rgba(255,45,122,0.4)', title:'YA FUE CANJEADO',   sub:`Validado el <strong>${data.time}</strong><br><span style="font-size:11px">Por: ${data.validatedStaff}</span>`,btn:false},
+    valid:      {icon:'✅',color:'#7FC142',border:'rgba(127,193,66,0.4)',  title:'¡CÓDIGO VÁLIDO!',   sub:`Premio: <strong style="color:#7FC142">${data.prize}</strong>`,btn:true},
+    used:       {icon:'❌',color:'#FF2D7A',border:'rgba(255,45,122,0.4)',  title:'YA FUE CANJEADO',   sub:`Validado el <strong>${data.time}</strong><br><span style="font-size:11px">Por: ${data.validatedStaff}</span>`,btn:false},
     wrongvenue: {icon:'⚠️',color:'#FF8C00',border:'rgba(255,140,0,0.4)',  title:'VENUE INCORRECTO',  sub:`Este código es para:<br><strong style="color:#FF8C00">${data.codeVenue}</strong><br>No puedes canjearlo aquí.`,btn:false},
     expired:    {icon:'⏰',color:'#FF8C00',border:'rgba(255,140,0,0.4)',  title:'CÓDIGO EXPIRADO',   sub:'Este código ya venció.',btn:false},
     notfound:   {icon:'🚫',color:'#FF8C00',border:'rgba(255,140,0,0.4)',  title:'NO ENCONTRADO',     sub:'Este código no existe en VAYGO.',btn:false},
     invalid:    {icon:'🚫',color:'#FF8C00',border:'rgba(255,140,0,0.4)',  title:'CÓDIGO INVÁLIDO',   sub:'Formato incorrecto.',btn:false},
-    error:      {icon:'⚠️',color:'#FF8C00',border:'rgba(255,140,0,0.4)',  title:'ERROR DE CONEXIÓN', sub:'No se pudo verificar. Revisa internet.',btn:false},
+    error:      {icon:'⚠️',color:'#FF8C00',border:'rgba(255,140,0,0.4)', title:'ERROR DE CONEXIÓN', sub:'No se pudo verificar. Revisa internet.',btn:false},
   };
+
   const c = cfgs[type] || cfgs.invalid;
   box.style.borderColor = c.border;
   document.getElementById('rIcon').textContent = c.icon;
@@ -321,6 +337,7 @@ function showResult(type, data) {
   document.getElementById('rTitle').style.color = c.color;
   document.getElementById('rSub').innerHTML = c.sub;
   document.getElementById('rExtra').textContent = '';
+
   if(data.code && (type==='valid'||type==='used')) {
     const detail = document.getElementById('detailCard');
     detail.style.display = 'block';
@@ -331,6 +348,7 @@ function showResult(type, data) {
       ${type==='valid'?`<div class="detail-row"><span class="detail-label">Válido hasta</span><span class="detail-value" style="color:#4FA3E8">${data.expiresStr||'hoy'}</span></div>`:''}
     `;
   }
+
   if(c.btn) document.getElementById('confirmBtn').style.display = 'flex';
   box.scrollIntoView({behavior:'smooth'});
 }
@@ -349,37 +367,87 @@ window.validateManual = function() {
 </script>
 
 <script>
+// ✅ FIX BUG 2: Scanner con jsQR — funciona en iOS Safari, Android, Firefox, TODOS los navegadores
+// Ya NO usa BarcodeDetector que solo funciona en Chrome Android
+
 let scanActive = false;
-let detector = 'BarcodeDetector' in window ? new BarcodeDetector({formats:['qr_code']}) : null;
+let scanStream = null;
+let animFrame = null;
+
 function startScanner() {
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+  const constraints = {
+    video: {
+      facingMode: { ideal: 'environment' }, // cámara trasera preferida
+      width: { ideal: 640 },
+      height: { ideal: 480 }
+    }
+  };
+
+  navigator.mediaDevices.getUserMedia(constraints)
     .then(stream => {
-      const v = document.getElementById('preview');
-      v.srcObject = stream;
-      v.style.display = 'block';
+      scanStream = stream;
+      const video = document.getElementById('preview');
+      video.srcObject = stream;
+      video.style.display = 'block';
       document.getElementById('startBtn').style.display = 'none';
       document.getElementById('stopBtn').style.display = 'flex';
+      document.getElementById('scanStatus').textContent = '🔍 Buscando QR...';
       scanActive = true;
-      scan();
+
+      video.addEventListener('loadedmetadata', () => {
+        video.play();
+        scanLoop();
+      });
     })
-    .catch(() => alert('No se pudo abrir la cámara. Usa el código manual.'));
+    .catch(err => {
+      console.error('Camera error:', err);
+      alert('No se pudo abrir la cámara. Usa el código manual.');
+    });
 }
+
 function stopScanner() {
-  const v = document.getElementById('preview');
-  if(v.srcObject) v.srcObject.getTracks().forEach(t=>t.stop());
-  v.style.display = 'none';
+  scanActive = false;
+  if(animFrame) cancelAnimationFrame(animFrame);
+  if(scanStream) scanStream.getTracks().forEach(t => t.stop());
+  const video = document.getElementById('preview');
+  video.srcObject = null;
+  video.style.display = 'none';
   document.getElementById('startBtn').style.display = 'flex';
   document.getElementById('stopBtn').style.display = 'none';
-  scanActive = false;
+  document.getElementById('scanStatus').textContent = '';
 }
-async function scan() {
-  if(!scanActive || !detector) return;
-  try {
-    const codes = await detector.detect(document.getElementById('preview'));
-    if(codes.length > 0) { stopScanner(); window.validateCode(codes[0].rawValue); return; }
-  } catch(e) {}
-  if(scanActive) requestAnimationFrame(scan);
+
+function scanLoop() {
+  if(!scanActive) return;
+
+  const video = document.getElementById('preview');
+  const canvas = document.getElementById('scanCanvas');
+
+  if(video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth > 0) {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    // jsQR lee el frame — funciona en todos los navegadores
+    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+      inversionAttempts: 'dontInvert'
+    });
+
+    if(code && code.data) {
+      // ✅ QR encontrado
+      document.getElementById('scanStatus').textContent = '✅ QR detectado!';
+      stopScanner();
+      window.validateCode(code.data);
+      return;
+    }
+  }
+
+  animFrame = requestAnimationFrame(scanLoop);
 }
 </script>
+
 </body>
 </html>
