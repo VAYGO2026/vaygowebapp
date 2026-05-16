@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>VAYGO — Throw to Win</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;touch-action:none;font-family:'DM Sans',sans-serif;}
+.app{width:100%;max-width:430px;height:100dvh;margin:0 auto;position:relative;overflow:hidden;background:#000;}
+
+/* FONDO */
+#bgImg{position:absolute;top:54px;left:0;right:0;bottom:54px;z-index:1;object-fit:cover;width:100%;height:calc(100% - 108px);}
+
+/* CANVAS encima de todo */
+#gc{position:absolute;top:54px;left:0;width:100%;height:calc(100% - 108px);z-index:5;pointer-events:none;}
+
+/* MANO */
+#hand{position:absolute;bottom:54px;left:50%;transform:translateX(-50%);z-index:6;mix-blend-mode:screen;pointer-events:none;}
+#hand img{height:260px;mix-blend-mode:screen;}
+
+/* HEADER */
+.hdr{position:absolute;top:0;left:0;right:0;height:54px;z-index:10;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:space-between;padding:0 14px;}
+.back{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;text-decoration:none;}
+.logo-n{font-family:'Anton',sans-serif;font-size:18px;color:#C9A84C;letter-spacing:4px;text-align:center;}
+.logo-s{font-size:7px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-align:center;}
+.chances-box{background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:4px 10px;text-align:center;}
+.chances-lbl{font-size:7px;color:rgba(255,255,255,0.5);letter-spacing:0.1em;display:block;margin-bottom:3px;}
+.chances-dots{display:flex;gap:4px;justify-content:center;}
+.dot{width:12px;height:12px;border-radius:50%;background:#C9A84C;box-shadow:0 0 5px #C9A84C;transition:all 0.3s;}
+.dot.used{background:#333;box-shadow:none;}
+
+/* HERO */
+.hero{position:absolute;top:62px;left:14px;z-index:8;}
+.hero h1{font-family:'Anton',sans-serif;font-size:28px;color:#fff;line-height:1;}
+.hero h2{font-family:'Anton',sans-serif;font-size:28px;color:#C9A84C;line-height:1;}
+.hero p{font-size:10px;color:rgba(255,255,255,0.6);margin-top:4px;}
+
+/* DRAG */
+#dragLbl{position:absolute;bottom:58px;left:0;right:0;z-index:8;text-align:center;font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:0.12em;}
+
+/* NAV */
+.nav{position:absolute;bottom:0;left:0;right:0;height:54px;z-index:10;background:rgba(0,0,0,0.95);border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-around;}
+.ni{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
+.ni .ico{font-size:15px;}
+.ni span{font-size:7px;color:rgba(255,255,255,0.35);}
+.nc{background:linear-gradient(180deg,#C9A84C,#8B6914);border-radius:50%;width:44px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-top:-12px;box-shadow:0 0 0 3px #000,0 0 0 4px rgba(201,168,76,0.4);}
+.nc .ico{font-size:14px;}
+.nc .lbl{font-size:7px;color:#fff;font-weight:700;}
+
+/* PRIZE MODAL */
+#prizeModal{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.9);}
+#prizeModal.show{display:flex;}
+.pbox{background:#0D1520;border-radius:22px;padding:24px 20px;text-align:center;width:280px;border:2px solid #C9A84C;}
+.pbox img{width:120px;height:140px;object-fit:contain;margin:0 auto 10px;display:block;mix-blend-mode:screen;}
+.plbl{font-size:9px;color:#8BB8D8;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:4px;}
+.pval{font-family:'Anton',sans-serif;font-size:36px;line-height:1;margin-bottom:4px;}
+.pdesc{font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:16px;}
+.pbtn{background:linear-gradient(180deg,#C9A84C,#8B6914);border:none;border-radius:50px;padding:12px 0;color:#fff;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;width:100%;box-shadow:0 4px 0 #5A4008;}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <img id="bgImg" src="https://raw.githubusercontent.com/VAYGO2026/vaygowebapp/main/table.webp" alt=""/>
+  <canvas id="gc"></canvas>
+
+  <div id="hand">
+    <img src="https://raw.githubusercontent.com/VAYGO2026/vaygowebapp/main/hand.png" alt=""/>
+  </div>
+
+  <div class="hdr">
+    <a href="app.html" class="back">&#8249;</a>
+    <div><div class="logo-n">VAYGO</div><div class="logo-s">EXPLORE COZUMEL DIFFERENTLY</div></div>
+    <div class="chances-box">
+      <span class="chances-lbl">CHANCES</span>
+      <div class="chances-dots">
+        <div class="dot" id="d0"></div>
+        <div class="dot" id="d1"></div>
+        <div class="dot" id="d2"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h1>THROW</h1>
+    <h2>TO WIN</h2>
+    <p>Drag to aim · Release to throw</p>
+  </div>
+
+  <div id="dragLbl">← &nbsp; DRAG TO AIM &nbsp; →</div>
+
+  <div class="nav">
+    <div class="ni" onclick="location.href='explore.html'"><div class="ico">🧭</div><span>EXPLORE</span></div>
+    <div class="ni"><div class="ico">🎁</div><span>REWARDS</span></div>
+    <div class="nc"><div class="ico">🏆</div><div class="lbl">PLAY</div></div>
+    <div class="ni" onclick="location.href='app.html'"><div class="ico">📍</div><span>MAP</span></div>
+    <div class="ni"><div class="ico">👤</div><span>PROFILE</span></div>
+  </div>
+
+  <div id="prizeModal">
+    <div class="pbox" id="pbox">
+      <img id="pimg" src="" alt=""/>
+      <div class="plbl">YOUR PRIZE</div>
+      <div class="pval" id="pval">FREE DRINK</div>
+      <div class="pdesc" id="pdesc">Show this to the staff</div>
+      <button class="pbtn" onclick="closePrize()">AWESOME! 🎉</button>
+    </div>
+  </div>
+
+</div>
+<script>
+const BASE = 'https://raw.githubusercontent.com/VAYGO2026/vaygowebapp/main/';
+
+const PRIZES = [
+  {p:'FREE DRINK',     c:'#9B59FF', d:'Enjoy a free drink on the house!', s:BASE+'cup1.png'},
+  {p:'10% OFF',        c:'#3A7FFF', d:'Get 10% off your entire bill!',    s:BASE+'cup2.png'},
+  {p:'PREMIUM DESSERT',c:'#FF9500', d:'A premium dessert on us!',         s:BASE+'cup3.png'},
+  {p:'SPECIAL EXP.',   c:'#00E5CC', d:'Unlock a special experience!',     s:BASE+'cup4.png'},
+  {p:'20% OFF',        c:'#FF3333', d:'Get 20% off your bill!',           s:BASE+'cup5.png'},
+  {p:'FREE APPETIZER', c:'#33CC33', d:'Enjoy a free appetizer!',          s:BASE+'cup6.png'},
+  {p:'VIP ACCESS',     c:'#FF4400', d:'Unlock VIP treatment tonight!',    s:BASE+'cup7.png'},
+  {p:'SPIN AGAIN',     c:'#CC44FF', d:'Try your luck one more time!',     s:BASE+'cup8.png'},
+];
+
+// Posiciones de vasos como % del canvas (calibradas)
+const CUPS = [
+  {x:0.14, y:0.41}, // 0 FREE DRINK
+  {x:0.30, y:0.37}, // 1 10% OFF
+  {x:0.50, y:0.34}, // 2 PREMIUM DESSERT
+  {x:0.68, y:0.37}, // 3 SPECIAL EXP
+  {x:0.85, y:0.41}, // 4 20% OFF
+  {x:0.27, y:0.52}, // 5 FREE APPETIZER
+  {x:0.50, y:0.49}, // 6 VIP ACCESS
+  {x:0.73, y:0.52}, // 7 SPIN AGAIN
+];
+
+const app    = document.getElementById('app');
+const canvas = document.getElementById('gc');
+const ctx    = canvas.getContext('2d');
+
+function resize(){
+  canvas.width  = app.clientWidth;
+  canvas.height = app.clientHeight - 108;
+}
+resize();
+window.addEventListener('resize', ()=>{ resize(); draw(); });
+
+let chances=3, phase='idle', aimX=0.5;
+let isDrag=false, lastX=0;
+let ball=null, trail=[], winner=-1;
+let sparks=[], bounced=false;
+
+function cupPx(i){
+  return { x: CUPS[i].x * canvas.width, y: CUPS[i].y * canvas.height };
+}
+
+function moveHand(ax){
+  const off = (ax - 0.5) * app.clientWidth * 0.55;
+  document.getElementById('hand').style.transform = `translateX(calc(-50% + ${off}px))`;
+}
+
+function updDots(){
+  [0,1,2].forEach(i=>{
+    document.getElementById('d'+i).classList.toggle('used', i>=chances);
+  });
+}
+
+// Chispas
+function addSparks(x,y){
+  for(let i=0;i<16;i++){
+    const a = Math.random()*Math.PI*2;
+    const s = 1.5 + Math.random()*3;
+    sparks.push({x,y, vx:Math.cos(a)*s, vy:Math.sin(a)*s-2, r:2+Math.random()*2.5, life:1});
+  }
+}
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // DEBUG — círculos sobre vasos (quitar cuando estén calibrados)
+  CUPS.forEach((c,i)=>{
+    const px=c.x*canvas.width, py=c.y*canvas.height;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(px,py,18,0,Math.PI*2);
+    ctx.strokeStyle='rgba(255,0,0,0.7)';
+    ctx.lineWidth=2;
+    ctx.stroke();
+    ctx.fillStyle='rgba(255,0,0,0.25)';
+    ctx.fill();
+    ctx.fillStyle='#fff';
+    ctx.font='bold 11px sans-serif';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(i,px,py);
+    ctx.restore();
+  });
+
+  // Aim line
+  if(phase==='idle'){
+    const sx=aimX*canvas.width, sy=canvas.height*0.88;
+    const ex=canvas.width*0.5,  ey=canvas.height*0.52;
+    ctx.save();
+    ctx.setLineDash([7,5]);
+    ctx.strokeStyle='rgba(255,200,80,0.4)';
+    ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.moveTo(sx,sy);
+    ctx.lineTo(ex,ey);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  // Trail
+  if(trail.length>1){
+    ctx.save();
+    for(let i=1;i<trail.length;i++){
+      const p=i/trail.length;
+      ctx.beginPath();
+      ctx.moveTo(trail[i-1].x,trail[i-1].y);
+      ctx.lineTo(trail[i].x,trail[i].y);
+      ctx.strokeStyle=`rgba(255,${140+p*80},20,${p*0.9})`;
+      ctx.lineWidth=p*5;
+      ctx.shadowColor='#FF8C00';
+      ctx.shadowBlur=p*8;
+      ctx.stroke();
+    }
+    ctx.shadowBlur=0;
+    ctx.restore();
+  }
+
+  // Sparks
+  sparks = sparks.filter(s=>s.life>0);
+  sparks.forEach(s=>{
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,${150+Math.random()*80},0,${s.life})`;
+    ctx.fill();
+    ctx.restore();
+    s.x+=s.vx; s.y+=s.vy; s.vy+=0.3; s.life-=0.06; s.r*=0.93;
+  });
+
+  // Ball
+  if(ball){
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
+    ctx.fillStyle='#F5F0EC';
+    ctx.shadowColor='rgba(255,255,255,0.7)';
+    ctx.shadowBlur=14;
+    ctx.fill();
+    ctx.shadowBlur=0;
+    // Reflejo
+    ctx.beginPath();
+    ctx.arc(ball.x-ball.r*0.28,ball.y-ball.r*0.28,ball.r*0.32,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,0.4)';
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+function launch(){
+  if(chances<=0||phase!=='idle') return;
+  chances--; updDots();
+  phase='flying'; bounced=false;
+  document.getElementById('dragLbl').style.opacity='0';
+
+  winner = Math.floor(Math.random()*8);
+  const tgt = cupPx(winner);
+  const sx  = aimX*canvas.width;
+  const sy  = canvas.height*0.86;
+  const bx  = sx+(tgt.x-sx)*0.45+(Math.random()-.5)*15;
+  const by  = canvas.height*0.62;
+
+  ball={x:sx,y:sy,r:13}; trail=[];
+  const T=100; let f=0;
+
+  function anim(){
+    trail.push({x:ball.x,y:ball.y});
+    if(trail.length>20) trail.shift();
+
+    if(f<T/2){
+      const p=f/(T/2), e=p<.5?2*p*p:-1+(4-2*p)*p;
+      ball.x=sx+(bx-sx)*e;
+      ball.y=sy+(by-sy)*e-Math.sin(p*Math.PI)*90;
+      ball.r=13+5*Math.sin(p*Math.PI);
+      if(f===Math.floor(T/2)-1){ addSparks(bx,by); }
+    } else {
+      const p=(f-T/2)/(T/2), e=p<.5?2*p*p:-1+(4-2*p)*p;
+      ball.x=bx+(tgt.x-bx)*e;
+      ball.y=by+(tgt.y-by)*e-Math.sin(p*Math.PI)*40;
+      ball.r=Math.max(3, 17-11*p);
+    }
+
+    draw(); f++;
+
+    if(f>=T){
+      // Pelota cae dentro del vaso
+      let s=0;
+      function sink(){
+        s++;
+        if(ball) ball={x:tgt.x, y:tgt.y+s*2, r:Math.max(0,10-s*2)};
+        draw();
+        if(s<5){ requestAnimationFrame(sink); }
+        else{
+          ball=null; trail=[];
+          setTimeout(()=>{ phase='done'; showPrize(winner); }, 300);
+        }
+      }
+      sink();
+      return;
+    }
+    requestAnimationFrame(anim);
+  }
+  anim();
+}
+
+function showPrize(i){
+  const pr=PRIZES[i];
+  document.getElementById('pbox').style.borderColor=pr.c;
+  document.getElementById('pval').textContent=pr.p;
+  document.getElementById('pval').style.color=pr.c;
+  document.getElementById('pdesc').textContent=pr.d;
+  document.getElementById('pimg').src=pr.s;
+  document.getElementById('prizeModal').classList.add('show');
+}
+
+function closePrize(){
+  document.getElementById('prizeModal').classList.remove('show');
+  ball=null; trail=[]; phase='idle';
+  document.getElementById('dragLbl').style.opacity='1';
+  draw();
+}
+
+// EVENTOS
+app.addEventListener('touchstart',e=>{if(phase!=='idle')return;e.preventDefault();isDrag=true;lastX=e.touches[0].clientX;},{passive:false});
+app.addEventListener('touchmove',e=>{if(!isDrag)return;e.preventDefault();const dx=e.touches[0].clientX-lastX;lastX=e.touches[0].clientX;aimX=Math.max(.05,Math.min(.95,aimX+dx/app.clientWidth));moveHand(aimX);draw();},{passive:false});
+app.addEventListener('touchend',()=>{if(!isDrag)return;isDrag=false;if(phase==='idle'&&chances>0)launch();});
+app.addEventListener('mousedown',e=>{if(phase!=='idle')return;isDrag=true;lastX=e.clientX;});
+app.addEventListener('mousemove',e=>{if(!isDrag)return;const dx=e.clientX-lastX;lastX=e.clientX;aimX=Math.max(.05,Math.min(.95,aimX+dx/app.clientWidth));moveHand(aimX);draw();});
+app.addEventListener('mouseup',()=>{if(!isDrag)return;isDrag=false;if(phase==='idle'&&chances>0)launch();});
+
+moveHand(aimX);
+updDots();
+setInterval(()=>{if(phase==='idle')draw();},1000/30);
+</script>
+</body>
+</html>
