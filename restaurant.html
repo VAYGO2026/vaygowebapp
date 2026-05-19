@@ -183,6 +183,44 @@ function startJungleAudio(){
 
   // Tucán — patrón grave y repetitivo
   jungleBird(now+1.0, 380, [1,1,0.9,1.1,1], 0.13);
+
+  /* ── GUACAMAYAS — grito estridente y agudo ── */
+  function macaw(t){
+    // Grito principal — sawtooth agudo con glide
+    const o1 = _ac.createOscillator(); o1.type='sawtooth';
+    o1.frequency.setValueAtTime(900, t);
+    o1.frequency.linearRampToValueAtTime(1400, t+0.08);
+    o1.frequency.linearRampToValueAtTime(800, t+0.18);
+    o1.frequency.linearRampToValueAtTime(1200, t+0.26);
+    o1.frequency.linearRampToValueAtTime(700, t+0.38);
+
+    const lp = _ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3000;
+    const g1 = _ac.createGain();
+    g1.gain.setValueAtTime(0, t);
+    g1.gain.linearRampToValueAtTime(0.22, t+0.04);
+    g1.gain.setValueAtTime(0.22, t+0.30);
+    g1.gain.exponentialRampToValueAtTime(0.001, t+0.42);
+    o1.connect(lp); lp.connect(g1); g1.connect(master);
+    o1.start(t); o1.stop(t+0.45);
+
+    // Segundo grito — eco más corto
+    const o2 = _ac.createOscillator(); o2.type='sawtooth';
+    o2.frequency.setValueAtTime(1000, t+0.55);
+    o2.frequency.linearRampToValueAtTime(1500, t+0.62);
+    o2.frequency.linearRampToValueAtTime(850, t+0.72);
+    const lp2 = _ac.createBiquadFilter(); lp2.type='lowpass'; lp2.frequency.value=3000;
+    const g2 = _ac.createGain();
+    g2.gain.setValueAtTime(0, t+0.55);
+    g2.gain.linearRampToValueAtTime(0.18, t+0.58);
+    g2.gain.exponentialRampToValueAtTime(0.001, t+0.75);
+    o2.connect(lp2); lp2.connect(g2); g2.connect(master);
+    o2.start(t+0.55); o2.stop(t+0.78);
+
+    const next = t + 5 + Math.random()*8;
+    setTimeout(()=> macaw(next), (next-_ac.currentTime)*1000);
+  }
+  macaw(now+2.0);
+  macaw(now+3.5); // Segunda guacamaya respondiendo
   // Mono aullador — grave y largo
   function howler(t){
     const o = _ac.createOscillator(); o.type='sawtooth';
