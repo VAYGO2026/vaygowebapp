@@ -62,11 +62,11 @@ html,body{
   text-align:center;
   letter-spacing:0.03em;
   overflow:hidden;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-  border: 1px solid rgba(255,255,255,0.28);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.20);
+  background: rgba(0,0,0,0.38);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 2px 8px rgba(0,0,0,0.35);
   transition: transform 0.14s, background 0.14s;
   text-shadow: 0 1px 6px rgba(0,0,0,0.6);
 }
@@ -79,10 +79,22 @@ html,body{
 }
 
 .city-btn.coming{
-  background: rgba(255,255,255,0.04);
-  border-color: rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.28);
+  border-color: rgba(255,255,255,0.12);
   color: rgba(255,255,255,0.45);
   cursor: default;
+}
+
+.where-label{
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:0.10em;
+  text-transform:uppercase;
+  color:#3B9EFF;
+  text-shadow: 0 0 12px rgba(59,158,255,0.6);
+  margin-bottom:6px;
+  padding-left:4px;
 }
 .city-btn.coming:active{ transform:none; }
 
@@ -106,6 +118,7 @@ html,body{
 
   <!-- Solo los botones, el resto ya viene en la imagen -->
   <div class="cities">
+    <div class="where-label">Where are you?</div>
     <button class="city-btn" onclick="location.href='app.html?city=cozumel'">Cozumel</button>
     <button class="city-btn coming" disabled>Playa del Carmen <span class="next-tag">NEXT</span></button>
     <button class="city-btn coming" disabled>Tulum <span class="next-tag">NEXT</span></button>
