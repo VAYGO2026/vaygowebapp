@@ -179,16 +179,7 @@ function startJungleAudio(){
   windSrc.connect(windFlt); windFlt.connect(windG); windG.connect(master);
   windSrc.start();
 
-  /* ── AGUA CORRIENTE — río/cascada ── */
-  const waterSrc = ac.createBufferSource(); waterSrc.buffer=pinkNoise(8); waterSrc.loop=true;
-  const waterFlt = ac.createBiquadFilter(); waterFlt.type='bandpass'; waterFlt.frequency.value=1800; waterFlt.Q.value=0.4;
-  const waterFlt2= ac.createBiquadFilter(); waterFlt2.type='highpass'; waterFlt2.frequency.value=600;
-  // LFO simula el flujo del agua
-  const lfo  = ac.createOscillator(); lfo.type='sine'; lfo.frequency.value=0.3;
-  const lfoG = ac.createGain(); lfoG.gain.value=0.12; lfo.connect(lfoG);
-  const waterG = ac.createGain(); waterG.gain.value=0.40; lfoG.connect(waterG.gain);
-  waterSrc.connect(waterFlt); waterFlt.connect(waterFlt2); waterFlt2.connect(waterG); waterG.connect(master);
-  lfo.start(); waterSrc.start();
+  
 
   /* ── GOTITAS — agua cayendo ── */
   function drip(t){
