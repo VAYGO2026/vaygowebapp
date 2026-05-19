@@ -144,120 +144,95 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
 </div>
 
 <script>
-/* ══ AUDIO — COCINANDO EN LA SELVA ══ */
-let _ac = null;
-
+/* ══ AUDIO — SELVA + AGUA ══ */
 function startJungleAudio(){
-  _ac = new (window.AudioContext || window.webkitAudioContext)();
-  const SR  = _ac.sampleRate;
-  const now = _ac.currentTime;
+  const ac  = new (window.AudioContext || window.webkitAudioContext)();
+  const SR  = ac.sampleRate;
+  const now = ac.currentTime;
 
-  const master = _ac.createGain();
+  const master = ac.createGain();
   master.gain.setValueAtTime(0, now);
-  master.gain.linearRampToValueAtTime(0.85, now + 2);
-  master.connect(_ac.destination);
+  master.gain.linearRampToValueAtTime(0.9, now+2.5);
+  master.connect(ac.destination);
 
-  
-
-  
-
-  
-
-  /* ── PÁJAROS DE SELVA — diferentes a los del index/app ── */
-  function jungleBird(t, base, pattern, vol){
-    pattern.forEach((f,i)=>{
-      const o = _ac.createOscillator(); o.type='triangle';
-      o.frequency.setValueAtTime(base*f, t+i*0.12);
-      o.frequency.linearRampToValueAtTime(base*f*1.1, t+i*0.12+0.06);
-      o.frequency.linearRampToValueAtTime(base*f*0.85, t+i*0.12+0.11);
-      const g = _ac.createGain();
-      g.gain.setValueAtTime(0, t+i*0.12);
-      g.gain.linearRampToValueAtTime(vol, t+i*0.12+0.02);
-      g.gain.exponentialRampToValueAtTime(0.001, t+i*0.12+0.11);
-      o.connect(g); g.connect(master);
-      o.start(t+i*0.12); o.stop(t+i*0.12+0.13);
-    });
-    const next = t + 3 + Math.random()*6;
-    setTimeout(()=> jungleBird(next, base, pattern, vol), (next-_ac.currentTime)*1000);
-  }
-
-  // Tucán — patrón grave y repetitivo
-  jungleBird(now+1.0, 380, [1,1,0.9,1.1,1], 0.13);
-
-  /* ── GUACAMAYAS — grito estridente y agudo ── */
-  function macaw(t){
-    // Grito principal — sawtooth agudo con glide
-    const o1 = _ac.createOscillator(); o1.type='sawtooth';
-    o1.frequency.setValueAtTime(900, t);
-    o1.frequency.linearRampToValueAtTime(1400, t+0.08);
-    o1.frequency.linearRampToValueAtTime(800, t+0.18);
-    o1.frequency.linearRampToValueAtTime(1200, t+0.26);
-    o1.frequency.linearRampToValueAtTime(700, t+0.38);
-
-    const lp = _ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3000;
-    const g1 = _ac.createGain();
-    g1.gain.setValueAtTime(0, t);
-    g1.gain.linearRampToValueAtTime(0.22, t+0.04);
-    g1.gain.setValueAtTime(0.22, t+0.30);
-    g1.gain.exponentialRampToValueAtTime(0.001, t+0.42);
-    o1.connect(lp); lp.connect(g1); g1.connect(master);
-    o1.start(t); o1.stop(t+0.45);
-
-    // Segundo grito — eco más corto
-    const o2 = _ac.createOscillator(); o2.type='sawtooth';
-    o2.frequency.setValueAtTime(1000, t+0.55);
-    o2.frequency.linearRampToValueAtTime(1500, t+0.62);
-    o2.frequency.linearRampToValueAtTime(850, t+0.72);
-    const lp2 = _ac.createBiquadFilter(); lp2.type='lowpass'; lp2.frequency.value=3000;
-    const g2 = _ac.createGain();
-    g2.gain.setValueAtTime(0, t+0.55);
-    g2.gain.linearRampToValueAtTime(0.18, t+0.58);
-    g2.gain.exponentialRampToValueAtTime(0.001, t+0.75);
-    o2.connect(lp2); lp2.connect(g2); g2.connect(master);
-    o2.start(t+0.55); o2.stop(t+0.78);
-
-    const next = t + 5 + Math.random()*8;
-    setTimeout(()=> macaw(next), (next-_ac.currentTime)*1000);
-  }
-  macaw(now+2.0);
-  macaw(now+3.5); // Segunda guacamaya respondiendo
-  // Mono aullador — grave y largo
-  function howler(t){
-    const o = _ac.createOscillator(); o.type='sawtooth';
-    o.frequency.setValueAtTime(180, t);
-    o.frequency.linearRampToValueAtTime(280, t+0.4);
-    o.frequency.linearRampToValueAtTime(150, t+1.0);
-    const lp = _ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=600;
-    const g  = _ac.createGain();
-    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.10,t+0.15);
-    g.gain.linearRampToValueAtTime(0,t+1.0);
-    o.connect(lp); lp.connect(g); g.connect(master);
-    o.start(t); o.stop(t+1.1);
-    const next = t + 8 + Math.random()*10;
-    setTimeout(()=> howler(next), (next-_ac.currentTime)*1000);
-  }
-  howler(now+4.0);
-
-  /* ── VIENTO EN LA SELVA — brisa suave ── */
-  function wind(){
-    const dur=10;
-    const buf=_ac.createBuffer(2,Math.ceil(SR*dur),SR);
+  /* ── SELVA — ruido rosa filtrado ── */
+  function pinkNoise(dur){
+    const len=Math.ceil(SR*dur), buf=ac.createBuffer(2,len,SR);
     for(let ch=0;ch<2;ch++){
       const d=buf.getChannelData(ch);
-      for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+      let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+      for(let i=0;i<len;i++){
+        const w=Math.random()*2-1;
+        b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+        b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+        b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+        d[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11; b6=w*0.115926;
+      }
     }
-    const src=_ac.createBufferSource(); src.buffer=buf; src.loop=true;
-    const lp=_ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=350;
-    const lfo=_ac.createOscillator(); lfo.type='sine'; lfo.frequency.value=0.05;
-    const lfoG=_ac.createGain(); lfoG.gain.value=0.05; lfo.connect(lfoG);
-    const g=_ac.createGain(); g.gain.value=0.12; lfoG.connect(g.gain);
-    src.connect(lp); lp.connect(g); g.connect(master);
-    lfo.start(); src.start();
+    return buf;
   }
-  wind();
+
+  // Viento de selva suave
+  const windSrc = ac.createBufferSource(); windSrc.buffer=pinkNoise(10); windSrc.loop=true;
+  const windFlt = ac.createBiquadFilter(); windFlt.type='lowpass'; windFlt.frequency.value=400;
+  const windG   = ac.createGain(); windG.gain.value=0.35;
+  windSrc.connect(windFlt); windFlt.connect(windG); windG.connect(master);
+  windSrc.start();
+
+  /* ── AGUA CORRIENTE — río/cascada ── */
+  const waterSrc = ac.createBufferSource(); waterSrc.buffer=pinkNoise(8); waterSrc.loop=true;
+  const waterFlt = ac.createBiquadFilter(); waterFlt.type='bandpass'; waterFlt.frequency.value=1800; waterFlt.Q.value=0.4;
+  const waterFlt2= ac.createBiquadFilter(); waterFlt2.type='highpass'; waterFlt2.frequency.value=600;
+  // LFO simula el flujo del agua
+  const lfo  = ac.createOscillator(); lfo.type='sine'; lfo.frequency.value=0.3;
+  const lfoG = ac.createGain(); lfoG.gain.value=0.12; lfo.connect(lfoG);
+  const waterG = ac.createGain(); waterG.gain.value=0.40; lfoG.connect(waterG.gain);
+  waterSrc.connect(waterFlt); waterFlt.connect(waterFlt2); waterFlt2.connect(waterG); waterG.connect(master);
+  lfo.start(); waterSrc.start();
+
+  /* ── GOTITAS — agua cayendo ── */
+  function drip(t){
+    const freq = 800 + Math.random()*600;
+    const o = ac.createOscillator(); o.type='sine';
+    o.frequency.setValueAtTime(freq, t);
+    o.frequency.exponentialRampToValueAtTime(freq*0.5, t+0.12);
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0.08, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t+0.12);
+    o.connect(g); g.connect(master);
+    o.start(t); o.stop(t+0.14);
+    const next = t + 0.8 + Math.random()*2.5;
+    setTimeout(()=> drip(next), (next-ac.currentTime)*1000);
+  }
+  drip(now+1.0);
+
+  /* ── PÁJAROS DE SELVA ── */
+  function chirp(t,f1,f2,dur,vol){
+    const o=ac.createOscillator(); o.type='sine';
+    o.frequency.setValueAtTime(f1,t);
+    o.frequency.exponentialRampToValueAtTime(f2,t+dur*0.6);
+    o.frequency.exponentialRampToValueAtTime(f1*0.9,t+dur);
+    const vib=ac.createOscillator(); vib.type='sine'; vib.frequency.value=18;
+    const vibG=ac.createGain(); vibG.gain.value=f1*0.025;
+    vib.connect(vibG); vibG.connect(o.frequency);
+    const g=ac.createGain();
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.connect(g); g.connect(master);
+    vib.start(t); vib.stop(t+dur+0.1);
+    o.start(t); o.stop(t+dur+0.1);
+  }
+
+  function bird(t){ 
+    chirp(t, 1600, 2200, 0.3, 0.10);
+    chirp(t+0.4, 2000, 1500, 0.25, 0.08);
+    const next=t+4+Math.random()*6;
+    setTimeout(()=>bird(next),(next-ac.currentTime)*1000);
+  }
+  bird(now+1.5);
 }
 
-// Arrancar al cargar
+// Auto-arrancar al cargar
 window.addEventListener('load', ()=>{ try{ startJungleAudio(); }catch(e){} });
 document.addEventListener('click', startJungleAudio, {once:true});
 document.addEventListener('touchstart', startJungleAudio, {once:true});
