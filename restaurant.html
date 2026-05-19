@@ -157,66 +157,11 @@ function startJungleAudio(){
   master.gain.linearRampToValueAtTime(0.85, now + 2);
   master.connect(_ac.destination);
 
-  /* ── FUEGO CREPITANDO — ruido filtrado con variación ── */
-  function makeFire(){
-    const dur = 8;
-    const buf = _ac.createBuffer(1, Math.ceil(SR*dur), SR);
-    const d   = buf.getChannelData(0);
-    for(let i=0;i<d.length;i++) d[i] = Math.random()*2-1;
-    const src = _ac.createBufferSource(); src.buffer=buf; src.loop=true;
+  
 
-    // Filtro para crackle del fuego
-    const hp = _ac.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=800;
-    const lp = _ac.createBiquadFilter(); lp.type='lowpass';  lp.frequency.value=3500;
+  
 
-    // LFO simula las llamas subiendo y bajando
-    const lfo = _ac.createOscillator(); lfo.type='sine'; lfo.frequency.value=0.8;
-    const lfoG= _ac.createGain(); lfoG.gain.value=0.08;
-    lfo.connect(lfoG);
-
-    const g = _ac.createGain(); g.gain.value=0.18;
-    lfoG.connect(g.gain);
-    src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(master);
-    lfo.start(); src.start();
-  }
-  makeFire();
-
-  /* ── BURBUJEO/HERVOR — olla cocinando ── */
-  function bubble(t){
-    const freq = 400 + Math.random()*300;
-    const dur  = 0.04 + Math.random()*0.06;
-    const o = _ac.createOscillator(); o.type='sine';
-    o.frequency.setValueAtTime(freq, t);
-    o.frequency.exponentialRampToValueAtTime(freq*0.6, t+dur);
-    const g = _ac.createGain();
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.06+Math.random()*0.04, t+0.005);
-    g.gain.exponentialRampToValueAtTime(0.001, t+dur);
-    o.connect(g); g.connect(master);
-    o.start(t); o.stop(t+dur+0.01);
-    // Siguiente burbuja
-    const next = t + 0.1 + Math.random()*0.3;
-    setTimeout(()=> bubble(next), (next - _ac.currentTime)*1000);
-  }
-  bubble(now + 0.5);
-
-  /* ── VAPOR/CHISPORROTEO — sartén ── */
-  function sizzle(){
-    const dur = 6;
-    const buf = _ac.createBuffer(1, Math.ceil(SR*dur), SR);
-    const d   = buf.getChannelData(0);
-    for(let i=0;i<d.length;i++) d[i] = Math.random()*2-1;
-    const src = _ac.createBufferSource(); src.buffer=buf; src.loop=true;
-    const bp  = _ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=2500; bp.Q.value=0.8;
-    const lfo = _ac.createOscillator(); lfo.type='sine'; lfo.frequency.value=1.2;
-    const lfoG= _ac.createGain(); lfoG.gain.value=0.06;
-    lfo.connect(lfoG);
-    const g = _ac.createGain(); g.gain.value=0.10;
-    lfoG.connect(g.gain);
-    src.connect(bp); bp.connect(g); g.connect(master);
-    lfo.start(); src.start();
-  }
-  sizzle();
+  
 
   /* ── PÁJAROS DE SELVA — diferentes a los del index/app ── */
   function jungleBird(t, base, pattern, vol){
@@ -274,8 +219,9 @@ function startJungleAudio(){
   wind();
 }
 
-// Arrancar al primer toque
-document.addEventListener('click',    startJungleAudio, {once:true});
+// Arrancar al cargar
+window.addEventListener('load', ()=>{ try{ startJungleAudio(); }catch(e){} });
+document.addEventListener('click', startJungleAudio, {once:true});
 document.addEventListener('touchstart', startJungleAudio, {once:true});
 </script>
 
