@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Restaurants — VAYGO</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Great+Vibes&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -62,18 +62,113 @@
       pointer-events: none;
     }
 
+    /* ── Header text block ── */
+    .header-block {
+      position: absolute;
+      top: 0;
+      left: 0; right: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding-top: 48px;
+    }
+
+    .sun-icon {
+      width: 34px;
+      margin-bottom: 10px;
+      opacity: 0.95;
+    }
+
+    .h-top {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: 4.5px;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 0 1px 14px rgba(0,0,0,0.9);
+    }
+
+    .h-script {
+      font-family: 'Great Vibes', cursive;
+      font-size: 64px;
+      font-weight: 400;
+      color: #fff;
+      line-height: 1.05;
+      margin-top: 0px;
+      text-shadow:
+        0 2px 20px rgba(0,0,0,0.9),
+        0 0 50px rgba(0,0,0,0.6);
+      letter-spacing: 1px;
+    }
+
+    .h-island {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 0 1px 14px rgba(0,0,0,0.9);
+      margin-top: 2px;
+    }
+
+    .h-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 8px;
+      width: 200px;
+    }
+
+    .h-divider::before,
+    .h-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.42);
+    }
+
+    .h-diamond {
+      width: 5px; height: 5px;
+      background: rgba(255,255,255,0.6);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+
+    .h-tagline {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.80);
+      text-shadow: 0 1px 10px rgba(0,0,0,0.8);
+      margin-top: 8px;
+    }
+
     /* ── Cards wrapper ── */
     .cards-wrap {
       position: absolute;
-      top: 53%;
+      top: 40%;
       left: 0;
       right: 0;
       z-index: 10;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: flex-start;
       gap: 10px;
-      padding: 0 18px;
+      padding: 0 0 0 28px;
+    }
+
+    .cards-inner {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
     }
 
     /* ── Glassmorphism card ── */
@@ -123,7 +218,27 @@
 <body>
   <div class="app">
 
+    <!-- Header text -->
+    <div class="header-block">
+      <svg class="sun-icon" viewBox="0 0 34 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17 1 L17 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M8 3.5 L6.5 2.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M26 3.5 L27.5 2.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M3 10 L1.5 9.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M31 10 L32.5 9.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M17 1 Q17 13 4 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M17 1 Q17 13 30 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M4 21 Q17 17 30 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="h-top">The Most Exclusive</div>
+      <div class="h-script">restaurants</div>
+      <div class="h-island">On The Island</div>
+      <div class="h-divider"><div class="h-diamond"></div></div>
+      <div class="h-tagline">Explore &nbsp;–&nbsp; Play &nbsp;–&nbsp; Win</div>
+    </div>
+
     <div class="cards-wrap">
+      <div class="cards-inner">
 
       <div class="card">
         <div class="card-name">The Original Lobster House</div>
@@ -145,8 +260,7 @@
         <div class="card-desc">Italian Mediterranean Timeless Classic</div>
       </div>
 
+      </div>
     </div>
-
-  </div>
 </body>
 </html>
