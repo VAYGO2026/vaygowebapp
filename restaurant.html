@@ -3,44 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>The Most Exclusive Spots</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <title>Restaurants — VAYGO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     html, body {
-      margin: 0;
-      padding: 0;
       width: 100%;
       height: 100%;
-      overflow: hidden;
-      font-family: 'Inter', sans-serif;
-      background: #0a0e0a;
-    }
-
-    .page {
-      position: relative;
-      width: 100%;
-      height: 100dvh;
-      overflow: hidden;
+      background: #060E1C;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
     }
 
-    /* Background */
-    .bg {
-      position: absolute;
-      inset: 0;
+    /* ── Contenedor principal — igual que .app en app.html ── */
+    .app {
+      width: 390px;
+      height: 100dvh;
+      max-height: 844px;
+      border-radius: 32px;
+      overflow: hidden;
+      position: relative;
       background: url('./fondo-restaurant.webp') center center / cover no-repeat;
-      z-index: 0;
     }
 
-    /* Dark overlay top and bottom to match the dark vignette */
-    .bg::before {
+    /* Overlay oscuro con vignette */
+    .app::before {
       content: '';
       position: absolute;
       inset: 0;
@@ -54,53 +49,47 @@
           rgba(5, 12, 5, 0.88) 100%
         );
       z-index: 1;
+      pointer-events: none;
     }
 
-    /* Left/right dark edge vignette */
-    .bg::after {
+    /* Vignette lateral */
+    .app::after {
       content: '';
       position: absolute;
       inset: 0;
-      background:
-        radial-gradient(ellipse at center, transparent 40%, rgba(5,12,5,0.55) 100%);
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(5,12,5,0.45) 100%);
       z-index: 2;
+      pointer-events: none;
     }
 
-    /* Content wrapper */
-    .content {
-      position: relative;
+    /* ── Cards wrapper ── */
+    .cards-wrap {
+      position: absolute;
+      top: 53%;
+      left: 0;
+      right: 0;
       z-index: 10;
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 100%;
-      height: 100dvh;
-      padding: 195px 0 40px 0;
-    }
-
-    /* Cards list */
-    .cards {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: stretch;
       gap: 10px;
-      padding: 18px 18px 0;
+      padding: 0 18px;
     }
 
-    /* Glassmorphism card */
+    /* ── Glassmorphism card ── */
     .card {
+      white-space: nowrap;
       background: rgba(10, 18, 10, 0.52);
       border: 1px solid rgba(255, 255, 255, 0.13);
       border-radius: 16px;
-      padding: 14px 18px 14px;
+      padding: 14px 18px;
       backdrop-filter: blur(18px) saturate(1.2);
       -webkit-backdrop-filter: blur(18px) saturate(1.2);
       box-shadow:
         0 4px 24px rgba(0, 0, 0, 0.38),
         inset 0 1px 0 rgba(255,255,255,0.08);
       cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
+      transition: background 0.13s;
     }
 
     .card:active {
@@ -108,7 +97,6 @@
     }
 
     .card-name {
-      font-family: 'Inter', sans-serif;
       font-size: 15px;
       font-weight: 700;
       color: #ffffff;
@@ -120,75 +108,43 @@
       font-size: 12px;
       font-weight: 400;
       color: rgba(255, 255, 255, 0.70);
-      margin-bottom: 0;
       letter-spacing: 0.1px;
     }
 
-    .card-meta {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .card-rating {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 14px;
-      font-weight: 700;
-      color: #f0c330;
-    }
-
-    .star {
-      font-size: 15px;
-      color: #f0c330;
-      line-height: 1;
-    }
-
-    .card-price {
-      font-size: 13px;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.55);
-      letter-spacing: 0.5px;
-    }
-
-    /* Spacer bottom */
-    .spacer {
-      height: 40px;
+    /* ── Responsive: pantallas menores a 390px — igual que app.html ── */
+    @media (max-width: 430px) {
+      .app {
+        width: 100%;
+        border-radius: 0;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <div class="bg"></div>
+  <div class="app">
 
-    <div class="content">
+    <div class="cards-wrap">
 
-      <div class="cards">
-
-        <div class="card">
-          <div class="card-name">The Original Lobster House</div>
-          <div class="card-desc">Seafood clásico premium</div>
-        </div>
-
-        <div class="card">
-          <div class="card-name">Buccanos</div>
-          <div class="card-desc">Beach luxury / Sunset Club</div>
-        </div>
-
-        <div class="card">
-          <div class="card-name">Azul Madera</div>
-          <div class="card-desc">Mexican-Mediterranean Fusion</div>
-        </div>
-
-        <div class="card">
-          <div class="card-name">Guido's</div>
-          <div class="card-desc">Italian Mediterranean Timeless Classic</div>
-        </div>
-
+      <div class="card">
+        <div class="card-name">The Original Lobster House</div>
+        <div class="card-desc">Seafood clásico premium</div>
       </div>
 
-      <div class="spacer"></div>
+      <div class="card">
+        <div class="card-name">Buccanos</div>
+        <div class="card-desc">Beach luxury / Sunset Club</div>
+      </div>
+
+      <div class="card">
+        <div class="card-name">Azul Madera</div>
+        <div class="card-desc">Mexican-Mediterranean Fusion</div>
+      </div>
+
+      <div class="card">
+        <div class="card-name">Guido's</div>
+        <div class="card-desc">Italian Mediterranean Timeless Classic</div>
+      </div>
+
     </div>
 
   </div>
