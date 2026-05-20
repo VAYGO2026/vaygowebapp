@@ -82,10 +82,10 @@ html,body{
   font-family: 'Pacifico', cursive;
   font-size: 52px;
   font-weight: 400;
-  color: #f4a44a;
+  color: #d4f56a;
   line-height: 1.1;
   margin-top: 2px;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.85), 0 0 40px rgba(220,120,30,0.3);
+  text-shadow: 0 2px 20px rgba(0,0,0,0.85), 0 0 40px rgba(140,210,40,0.3);
 }
 
 .h-bottom {
@@ -221,33 +221,180 @@ html,body{
   text-shadow:0 1px 4px rgba(0,0,0,0.7);
 }
 
-/* ── Botón BACK ── */
-.back-btn{
-  position:absolute;
-  bottom:24px;left:24px;
-  z-index:20;
-  padding:10px 18px;
-  border-radius:50px;
-  background:rgba(0,0,0,0.45);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,0.25);
-  display:flex;align-items:center;justify-content:center;
-  text-decoration:none;
-  color:#fff;
-  font-family:'DM Sans',sans-serif;
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:0.12em;
-  box-shadow:0 2px 12px rgba(0,0,0,0.4);
+/* ── Bottom Nav Bar ── */
+.bottom-nav {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 30;
+  height: 72px;
+  background: rgba(4, 10, 20, 0.82);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 4px 8px;
 }
 
-/* ── Responsive: pantallas menores a 390px ── */
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 6px 2px;
+  border-radius: 12px;
+  transition: transform 0.15s;
+  background: none;
+  border: none;
+}
+
+.nav-item:active { transform: scale(0.88); }
+
+.nav-icon {
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.nav-icon svg { width: 22px; height: 22px; }
+
+.nav-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Per-icon neon colors */
+.nav-city   .nav-icon svg { filter: drop-shadow(0 0 5px rgba(0,220,255,0.8)); }
+.nav-city   .nav-label    { color: #00dcff; }
+
+.nav-join   .nav-icon svg { filter: drop-shadow(0 0 5px rgba(220,80,255,0.8)); }
+.nav-join   .nav-label    { color: #dc50ff; }
+
+.nav-ig     .nav-icon svg { filter: drop-shadow(0 0 5px rgba(255,100,100,0.8)); }
+.nav-ig     .nav-label    { color: #ff8c69; font-size: 7px; }
+
+.nav-rate   .nav-icon svg { filter: drop-shadow(0 0 5px rgba(255,210,0,0.9)); }
+.nav-rate   .nav-label    { color: #ffd200; }
+
+.nav-qr     .nav-icon svg { filter: drop-shadow(0 0 5px rgba(80,255,160,0.8)); }
+.nav-qr     .nav-label    { color: #50ffa0; }
+
+/* Modal JOIN */
+.modal-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(8px);
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  width: 88%;
+  background: rgba(8,15,30,0.95);
+  border: 1px solid rgba(220,80,255,0.3);
+  border-radius: 20px;
+  padding: 24px 20px;
+  box-shadow: 0 0 40px rgba(220,80,255,0.2);
+}
+
+.modal-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 4px;
+  letter-spacing: 0.05em;
+}
+
+.modal-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  margin-bottom: 18px;
+  letter-spacing: 0.04em;
+}
+
+.modal-input {
+  width: 100%;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  margin-bottom: 10px;
+  outline: none;
+}
+.modal-input::placeholder { color: rgba(255,255,255,0.3); }
+.modal-input:focus { border-color: rgba(220,80,255,0.6); }
+
+.modal-submit {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #dc50ff, #7b2fff);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  margin-top: 4px;
+  box-shadow: 0 0 20px rgba(220,80,255,0.4);
+}
+
+.modal-close {
+  display: block;
+  text-align: center;
+  margin-top: 12px;
+  color: rgba(255,255,255,0.35);
+  font-size: 11px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+}
+
+/* QR modal */
+.qr-box {
+  border-color: rgba(80,255,160,0.3);
+  box-shadow: 0 0 40px rgba(80,255,160,0.15);
+  text-align: center;
+}
+.qr-canvas {
+  margin: 16px auto;
+  display: block;
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px;
+}
+.qr-link {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  color: #50ffa0;
+  word-break: break-all;
+  margin-top: 8px;
+}
+
+/* ── Responsive ── */
 @media(max-width:430px){
-  .app{
-    width:100vw;
-    border-radius:0;
-  }
+  .app{ width:100%; border-radius:0; }
 }
 </style>
 </head>
@@ -379,10 +526,116 @@ html,body{
     </div>
   </div>
 
-  <!-- Botón BACK -->
-  <a href="index.html" class="back-btn">BACK</a>
+  <!-- ── BOTTOM NAV ── -->
+  <nav class="bottom-nav">
+
+    <!-- CITY -->
+    <a class="nav-item nav-city" href="index.html">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#00dcff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          <circle cx="12" cy="9" r="2.5"/>
+        </svg>
+      </div>
+      <span class="nav-label">City</span>
+    </a>
+
+    <!-- JOIN VAYGO -->
+    <button class="nav-item nav-join" onclick="document.getElementById('joinModal').classList.add('open')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#dc50ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <span class="nav-label">Join Vaygo</span>
+    </button>
+
+    <!-- INSTAGRAM -->
+    <a class="nav-item nav-ig" href="https://instagram.com/vaygo.mx" target="_blank">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ff8c69" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="#ff8c69" stroke="none"/>
+        </svg>
+      </div>
+      <span class="nav-label">Follow Us&#10;@vaygo.mx</span>
+    </a>
+
+    <!-- RATE US -->
+    <button class="nav-item nav-rate" onclick="">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ffd200" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <span class="nav-label">Rate Us</span>
+    </button>
+
+    <!-- QR -->
+    <button class="nav-item nav-qr" onclick="document.getElementById('qrModal').classList.add('open')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#50ffa0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18h3M14 21h3M21 18v3"/>
+        </svg>
+      </div>
+      <span class="nav-label">QR / Share</span>
+    </button>
+
+  </nav>
+
+  <!-- ── JOIN MODAL ── -->
+  <div class="modal-overlay" id="joinModal">
+    <div class="modal-box">
+      <div class="modal-title">Join VAYGO</div>
+      <div class="modal-sub">List your venue, restaurant or tour</div>
+      <input class="modal-input" type="text" placeholder="Business name"/>
+      <input class="modal-input" type="text" placeholder="Category (Restaurant / Tour / Bar...)"/>
+      <input class="modal-input" type="tel" placeholder="WhatsApp / Phone"/>
+      <input class="modal-input" type="email" placeholder="Email"/>
+      <button class="modal-submit">SEND REQUEST</button>
+      <span class="modal-close" onclick="document.getElementById('joinModal').classList.remove('open')">✕ &nbsp;Close</span>
+    </div>
+  </div>
+
+  <!-- ── QR MODAL ── -->
+  <div class="modal-overlay" id="qrModal">
+    <div class="modal-box qr-box">
+      <div class="modal-title">Share VAYGO</div>
+      <div class="modal-sub">Scan or copy the link</div>
+      <canvas class="qr-canvas" id="qrCanvas" width="160" height="160"></canvas>
+      <div class="qr-link" id="qrLink"></div>
+      <button class="modal-submit" style="background:linear-gradient(135deg,#50ffa0,#00c97a);box-shadow:0 0 20px rgba(80,255,160,0.4)" onclick="navigator.share ? navigator.share({url: window.location.href}) : navigator.clipboard.writeText(window.location.href)">
+        SHARE LINK
+      </button>
+      <span class="modal-close" onclick="document.getElementById('qrModal').classList.remove('open')">✕ &nbsp;Close</span>
+    </div>
+  </div>
 
 </div>
+
+<script>
+/* ── QR Modal ── */
+function drawQR(){
+  const url = window.location.href;
+  document.getElementById('qrLink').textContent = url;
+  const canvas = document.getElementById('qrCanvas');
+  const ctx = canvas.getContext('2d');
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' + encodeURIComponent(url);
+  img.onload = () => ctx.drawImage(img, 0, 0, 160, 160);
+}
+document.getElementById('qrModal').addEventListener('click', e => { if(e.target===e.currentTarget) e.currentTarget.classList.remove('open'); });
+document.getElementById('joinModal').addEventListener('click', e => { if(e.target===e.currentTarget) e.currentTarget.classList.remove('open'); });
+window.addEventListener('load', drawQR);
+</script>
 
 <script>
 /* ══ SONIDO AMBIENTAL TROPICAL ══ */
