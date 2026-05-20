@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <title>VAYGO — Welcome</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{
@@ -21,11 +21,9 @@ html,body{
   border-radius:32px;
   overflow:hidden;
   position:relative;
-  /* IMAGEN COMPLETA DE FONDO */
   background: url("fondo-inicio.webp") center top / cover no-repeat;
 }
 
-/* Gradiente suave solo en la parte baja para que los botones se lean mejor */
 .app::after{
   content:'';
   position:absolute;
@@ -36,67 +34,112 @@ html,body{
   z-index:0;
 }
 
-/* BOTONES — pegados al fondo */
-.cities{
-  position:absolute;
-  bottom:auto;
-  top:52%;
-  left:28px;right:28px;
-  z-index:10;
-  display:flex;
-  flex-direction:column;
-  gap:11px;
-}
-
-.city-btn{
-  width:100%;
-  position:relative;
-  border:none;
-  border-radius:50px;
-  padding:10px 20px;
-  cursor:pointer;
-  font-family:'DM Sans',sans-serif;
-  font-size:15px;
-  font-weight:700;
-  color:#fff;
-  text-align:center;
-  letter-spacing:0.03em;
-  overflow:hidden;
-  background: rgba(0,0,0,0.38);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.18);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 2px 8px rgba(0,0,0,0.35);
-  transition: transform 0.14s, background 0.14s;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.6);
-}
-
-.city-btn::before{ display:none; }
-
-.city-btn:active{
-  transform:scale(0.97);
-  background:rgba(255,255,255,0.15);
-}
-
-.city-btn.coming{
-  background: rgba(0,0,0,0.28);
-  border-color: rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.45);
-  cursor: default;
-}
-
+/* ── WHERE LABEL ── */
 .where-label{
   font-family:'DM Sans',sans-serif;
-  font-size:13px;
+  font-size:16px;
   font-weight:700;
   letter-spacing:0.10em;
   text-transform:uppercase;
   color:#3B9EFF;
   text-shadow: 0 0 12px rgba(59,158,255,0.6);
-  margin-bottom:6px;
-  padding-left:4px;
+  margin-bottom:12px;
+  text-align:center;
 }
-.city-btn.coming:active{ transform:none; }
+
+/* ── CITIES wrapper ── */
+.cities{
+  position:absolute;
+  top:52%;
+  left:0; right:0;
+  z-index:10;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:11px;
+  padding: 0 48px;
+}
+
+/* ── @property for neon rotation ── */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotateBorder {
+  from { --angle: 0deg; }
+  to   { --angle: 360deg; }
+}
+
+/* ── Base city button — same as restaurant cards ── */
+.city-btn {
+  width: 100%;
+  position: relative;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 14px 18px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  letter-spacing: 0.03em;
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.38);
+  transition: transform 0.13s;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+
+  /* Neon rotating border */
+  background-image:
+    linear-gradient(#0a120a, #0a120a),
+    conic-gradient(
+      from var(--angle),
+      rgba(180,220,80,0.15) 0deg,
+      rgba(180,220,80,0.15) 60deg,
+      rgba(220,255,100,0.5) 90deg,
+      rgba(255,255,180,1.0) 130deg,
+      rgba(220,255,100,0.5) 170deg,
+      rgba(180,220,80,0.15) 200deg,
+      rgba(180,220,80,0.15) 360deg
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  animation: rotateBorder 3s linear infinite;
+}
+
+/* Stagger neon per button */
+.city-btn:nth-child(2) { animation-delay: 0s; }
+.city-btn:nth-child(3) { animation-delay: 0.75s; }
+.city-btn:nth-child(4) { animation-delay: 1.5s; }
+.city-btn:nth-child(5) { animation-delay: 2.25s; }
+.city-btn:nth-child(6) { animation-delay: 3s; }
+
+.city-btn:active {
+  transform: scale(0.97);
+}
+
+/* Disabled / coming soon buttons — same shape, dimmer neon */
+.city-btn.coming {
+  cursor: default;
+  background-image:
+    linear-gradient(#0a120a, #0a120a),
+    conic-gradient(
+      from var(--angle),
+      rgba(180,220,80,0.06) 0deg,
+      rgba(180,220,80,0.06) 60deg,
+      rgba(220,255,100,0.18) 90deg,
+      rgba(255,255,180,0.38) 130deg,
+      rgba(220,255,100,0.18) 170deg,
+      rgba(180,220,80,0.06) 200deg,
+      rgba(180,220,80,0.06) 360deg
+    );
+  color: rgba(255,255,255,0.45);
+}
+
+.city-btn.coming:active { transform: none; }
 
 .next-tag{
   font-size:10px;
@@ -107,16 +150,16 @@ html,body{
   vertical-align:middle;
   text-shadow: 0 0 8px rgba(255,215,0,0.8);
 }
-@keyframes tapPulse{
-  0%,100%{opacity:1;transform:translateY(0);}
-  50%{opacity:0.6;transform:translateY(-6px);}
+
+/* Responsive */
+@media(max-width:430px){
+  .app{ width:100%; border-radius:0; }
 }
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- Solo los botones, el resto ya viene en la imagen -->
   <div class="cities">
     <div class="where-label">Where are you?</div>
     <button class="city-btn" onclick="location.href='app.html?city=cozumel'">Cozumel</button>
@@ -129,7 +172,7 @@ html,body{
 </div>
 
 <script>
-/* ══ AUDIO AMBIENTAL TROPICAL — igual estilo que la app ══ */
+/* ══ AUDIO AMBIENTAL TROPICAL ══ */
 let _ac = null;
 
 function playIntro(){
@@ -137,13 +180,11 @@ function playIntro(){
   const SR  = _ac.sampleRate;
   const now = _ac.currentTime;
 
-  // Master gain con fade in
   const master = _ac.createGain();
   master.gain.setValueAtTime(0, now);
   master.gain.linearRampToValueAtTime(0.9, now + 2.5);
   master.connect(_ac.destination);
 
-  /* ── Ruido rosa — brisa y mar suave ── */
   function makePinkNoise(dur){
     const len = Math.ceil(SR * dur);
     const buf = _ac.createBuffer(2, len, SR);
@@ -162,7 +203,6 @@ function playIntro(){
     return buf;
   }
 
-  // Olas suaves con LFO
   const oceanSrc = _ac.createBufferSource();
   oceanSrc.buffer = makePinkNoise(10);
   oceanSrc.loop = true;
@@ -175,7 +215,6 @@ function playIntro(){
   oceanSrc.connect(oceanFlt); oceanFlt.connect(oceanG); oceanG.connect(master);
   lfo.start(); oceanSrc.start();
 
-  /* ── Pájaros tropicales ── */
   function chirp(t, f1, f2, dur, vol){
     const o = _ac.createOscillator(); o.type='sine';
     o.frequency.setValueAtTime(f1, t);
@@ -196,29 +235,27 @@ function playIntro(){
     notes.forEach((f,i) => chirp(t+i*0.07, base*f, base*f*1.3, 0.06, vol));
   }
 
-  function bird1(t){ trill(t,1800,[1,1.2,1.4,1.2,1],0.13); trill(t+0.5,2200,[1,0.9,1.1],0.09); schedule(bird1, t, 4, 5); }
-  function bird2(t){ chirp(t,900,1400,0.4,0.11); chirp(t+0.45,1400,900,0.35,0.09); chirp(t+0.85,1100,1600,0.3,0.07); schedule(bird2, t, 7, 8); }
-  function bird3(t){ for(let i=0;i<6;i++) chirp(t+i*0.09,2800+i*80,3200,0.07,0.08); schedule(bird3, t, 3, 4); }
-
   function schedule(fn, t, minGap, maxGap){
     const next = t + minGap + Math.random()*maxGap;
     setTimeout(()=> fn(next), (next - _ac.currentTime)*1000);
   }
+
+  function bird1(t){ trill(t,1800,[1,1.2,1.4,1.2,1],0.13); trill(t+0.5,2200,[1,0.9,1.1],0.09); schedule(bird1, t, 4, 5); }
+  function bird2(t){ chirp(t,900,1400,0.4,0.11); chirp(t+0.45,1400,900,0.35,0.09); chirp(t+0.85,1100,1600,0.3,0.07); schedule(bird2, t, 7, 8); }
+  function bird3(t){ for(let i=0;i<6;i++) chirp(t+i*0.09,2800+i*80,3200,0.07,0.08); schedule(bird3, t, 3, 4); }
 
   bird1(now + 1.5);
   bird2(now + 3.5);
   bird3(now + 1.0);
 }
 
-// Bucle del audio — reinicia cada 12s
 let loopTimer = null;
 function loopIntro(){
   playIntro();
   loopTimer = setTimeout(loopIntro, 12000);
 }
 
-// Arrancar al primer toque en cualquier parte
-document.addEventListener('click',    loopIntro, {once:true});
+document.addEventListener('click',     loopIntro, {once:true});
 document.addEventListener('touchstart', loopIntro, {once:true});
 </script>
 
