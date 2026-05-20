@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Win Your Discount — Lobster House</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;600;700;800&family=Pacifico&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+
+    html, body {
+      width:100%; height:100%;
+      background:#060E1C;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'DM Sans', sans-serif;
+      overflow:hidden;
+    }
+
+    .app {
+      width:390px;
+      height:100dvh;
+      max-height:844px;
+      border-radius:32px;
+      overflow:hidden;
+      position:relative;
+      background:#000;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* ── BACK ── */
+    .back-btn {
+      position:absolute; top:16px; left:16px;
+      z-index:30;
+      padding:7px 14px; border-radius:50px;
+      background:rgba(0,0,0,0.55);
+      backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,0.20);
+      color:#fff; font-size:11px; font-weight:700;
+      letter-spacing:0.10em; text-decoration:none;
+    }
+
+    /* ── TANK SCENE ── */
+    .tank-scene {
+      position:relative;
+      width:100%;
+      flex:1;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* Tank image fills the scene */
+    .tank-bg {
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit:cover;
+      object-position:center top;
+    }
+
+    /* ── LOBSTERS CONTAINER ── */
+    .lobsters {
+      position:absolute;
+      bottom:90px;
+      left:0; right:0;
+      display:flex;
+      justify-content:space-around;
+      align-items:flex-end;
+      padding:0 12px;
+      gap:8px;
+    }
+
+    .lobster-slot {
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:8px;
+    }
+
+    /* Flip card */
+    .flip-card {
+      width:100px; height:110px;
+      perspective:600px;
+      cursor:pointer;
+      transition:transform 0.12s;
+    }
+    .flip-card:active { transform:scale(0.93); }
+    .flip-card.disabled { cursor:default; opacity:0.4; filter:grayscale(0.6); }
+    .flip-card.selected { opacity:1 !important; filter:none !important; }
+
+    .flip-inner {
+      width:100%; height:100%;
+      position:relative;
+      transform-style:preserve-3d;
+      transition:transform 0.7s cubic-bezier(0.4,0.2,0.2,1);
+    }
+    .flip-inner.flipped { transform:rotateY(180deg); }
+
+    .flip-front, .flip-back {
+      position:absolute; inset:0;
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
+      border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+    }
+
+    .flip-front img {
+      width:100%; height:100%;
+      object-fit:contain;
+      filter:drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+    }
+
+    .flip-back {
+      transform:rotateY(180deg);
+      background:linear-gradient(135deg,#8B0000,#c0392b);
+      border:3px solid #f1c40f;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .discount-pct {
+      font-family:'Anton', sans-serif;
+      font-size:36px;
+      color:#f1c40f;
+      text-shadow:0 2px 8px rgba(0,0,0,0.8);
+      line-height:1;
+    }
+
+    .discount-label {
+      font-size:10px; font-weight:800;
+      color:rgba(255,255,255,0.85);
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+    }
+
+    /* Pick button */
+    .pick-btn {
+      width:90px;
+      padding:7px 4px;
+      border-radius:50px;
+      background:linear-gradient(135deg,#c0392b,#8B0000);
+      border:2px solid #f1c40f;
+      color:#f1c40f;
+      font-family:'DM Sans', sans-serif;
+      font-size:10px; font-weight:800;
+      letter-spacing:0.10em; text-transform:uppercase;
+      cursor:pointer;
+      box-shadow:0 4px 12px rgba(0,0,0,0.5);
+      transition:transform 0.12s, opacity 0.3s;
+    }
+    .pick-btn:active { transform:scale(0.93); }
+    .pick-btn.hidden { opacity:0; pointer-events:none; }
+    .pick-btn.disabled-btn { opacity:0.3; pointer-events:none; }
+
+    /* ── BOTTOM PANEL ── */
+    .bottom-panel {
+      position:absolute;
+      bottom:0; left:0; right:0;
+      background:rgba(5,2,0,0.85);
+      backdrop-filter:blur(16px);
+      border-top:1px solid rgba(255,180,50,0.20);
+      padding:12px 16px 20px;
+      z-index:10;
+    }
+
+    .instruction {
+      font-family:'Anton', sans-serif;
+      font-size:13px; letter-spacing:1px;
+      color:#f1c40f;
+      text-align:center;
+      text-shadow:0 1px 6px rgba(0,0,0,0.8);
+    }
+
+    /* ── WIN MODAL ── */
+    .win-overlay {
+      display:none;
+      position:absolute; inset:0;
+      z-index:50;
+      background:rgba(0,0,0,0.88);
+      backdrop-filter:blur(10px);
+      align-items:center; justify-content:center;
+      overflow-y:auto;
+    }
+    .win-overlay.open { display:flex; }
+
+    .win-sheet {
+      width:88%;
+      background:linear-gradient(160deg,#1a0000,#2d0a00);
+      border:2px solid rgba(241,196,15,0.5);
+      border-radius:24px;
+      padding:24px 20px 28px;
+      text-align:center;
+      box-shadow:0 0 60px rgba(241,196,15,0.2);
+      margin:auto;
+    }
+
+    .win-emoji { font-size:48px; margin-bottom:8px; }
+
+    .win-title {
+      font-family:'Anton', sans-serif;
+      font-size:15px; letter-spacing:3px;
+      color:rgba(255,255,255,0.6);
+      text-transform:uppercase;
+      margin-bottom:4px;
+    }
+
+    .win-discount {
+      font-family:'Anton', sans-serif;
+      font-size:64px; line-height:1;
+      color:#f1c40f;
+      text-shadow:0 0 30px rgba(241,196,15,0.7);
+      margin-bottom:4px;
+    }
+
+    .win-sub {
+      font-size:12px; color:rgba(255,255,255,0.55);
+      margin-bottom:18px;
+      letter-spacing:0.05em;
+    }
+
+    /* QR box */
+    .qr-wrap {
+      background:#fff;
+      border-radius:14px;
+      padding:12px;
+      display:inline-block;
+      margin-bottom:14px;
+    }
+
+    .serial-code {
+      font-family:'DM Sans', sans-serif;
+      font-size:14px; font-weight:800;
+      color:#f1c40f;
+      letter-spacing:3px;
+      margin-bottom:6px;
+    }
+
+    .valid-until {
+      font-size:10px; color:rgba(255,255,255,0.35);
+      margin-bottom:18px;
+      letter-spacing:0.05em;
+    }
+
+    .win-note {
+      background:rgba(241,196,15,0.08);
+      border:1px solid rgba(241,196,15,0.20);
+      border-radius:12px;
+      padding:10px 14px;
+      font-size:11px; color:rgba(255,255,255,0.55);
+      line-height:1.5;
+      margin-bottom:16px;
+    }
+    .win-note strong { color:#f1c40f; }
+
+    .win-close {
+      font-size:11px; color:rgba(255,255,255,0.25);
+      cursor:pointer; letter-spacing:0.10em;
+      text-transform:uppercase;
+    }
+
+    /* Confetti */
+    @keyframes confettiFall {
+      0%   { transform:translateY(-10px) rotate(0deg); opacity:1; }
+      100% { transform:translateY(120px) rotate(720deg); opacity:0; }
+    }
+    .confetti-piece {
+      position:absolute;
+      width:8px; height:8px;
+      border-radius:2px;
+      animation:confettiFall 1.2s ease-in forwards;
+      pointer-events:none;
+      z-index:60;
+    }
+
+    @media(max-width:430px){ .app{ width:100%; border-radius:0; } }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <a href="lobster.html" class="back-btn">← BACK</a>
+
+  <!-- Tank scene -->
+  <div class="tank-scene">
+    <img class="tank-bg" src="./lobster-tank-empty.webp" id="tankBg" alt="Lobster Tank"/>
+
+    <!-- Lobsters -->
+    <div class="lobsters">
+      <div class="lobster-slot">
+        <div class="flip-card" id="card0" onclick="pickLobster(0)">
+          <div class="flip-inner" id="inner0">
+            <div class="flip-front"><img src="./lobster-single.webp" alt="Lobster"/></div>
+            <div class="flip-back">
+              <div class="discount-pct" id="pct0"></div>
+              <div class="discount-label">OFF</div>
+            </div>
+          </div>
+        </div>
+        <button class="pick-btn" id="btn0" onclick="pickLobster(0)">🦞 Pick me!</button>
+      </div>
+
+      <div class="lobster-slot">
+        <div class="flip-card" id="card1" onclick="pickLobster(1)">
+          <div class="flip-inner" id="inner1">
+            <div class="flip-front"><img src="./lobster-single.webp" alt="Lobster"/></div>
+            <div class="flip-back">
+              <div class="discount-pct" id="pct1"></div>
+              <div class="discount-label">OFF</div>
+            </div>
+          </div>
+        </div>
+        <button class="pick-btn" id="btn1" onclick="pickLobster(1)">🦞 Pick me!</button>
+      </div>
+
+      <div class="lobster-slot">
+        <div class="flip-card" id="card2" onclick="pickLobster(2)">
+          <div class="flip-inner" id="inner2">
+            <div class="flip-front"><img src="./lobster-single.webp" alt="Lobster"/></div>
+            <div class="flip-back">
+              <div class="discount-pct" id="pct2"></div>
+              <div class="discount-label">OFF</div>
+            </div>
+          </div>
+        </div>
+        <button class="pick-btn" id="btn2" onclick="pickLobster(2)">🦞 Pick me!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom panel -->
+  <div class="bottom-panel">
+    <div class="instruction" id="instruction">🦞 PULL A LOBSTER &amp; WIN YOUR DISCOUNT!</div>
+  </div>
+
+  <!-- WIN MODAL -->
+  <div class="win-overlay" id="winOverlay">
+    <div class="win-sheet">
+      <div class="win-emoji">🎉</div>
+      <div class="win-title">You Won!</div>
+      <div class="win-discount" id="winPct"></div>
+      <div class="win-sub">DISCOUNT · The Original Lobster House</div>
+      <div class="qr-wrap">
+        <div id="qrCode"></div>
+      </div>
+      <div class="serial-code" id="winSerial"></div>
+      <div class="valid-until" id="winExpiry"></div>
+      <div class="win-note">
+        Show this QR to your server.<br>
+        <strong>Minimum spend: $20 USD</strong><br>
+        One use only · Valid today only.
+      </div>
+      <div class="win-close" onclick="document.getElementById('winOverlay').classList.remove('open')">✕ Close</div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain: "vaygo-app.firebaseapp.com",
+  projectId: "vaygo-app",
+  storageBucket: "vaygo-app.firebasestorage.app",
+  messagingSenderId: "499741267414",
+  appId: "1:499741267414:web:e69cd43156adaea11bc077"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+
+// ── Assign discounts randomly ──
+const discounts = [10, 15, 20];
+const shuffled = discounts.sort(() => Math.random() - 0.5);
+shuffled.forEach((d, i) => {
+  document.getElementById('pct' + i).textContent = d + '%';
+});
+
+let played = false;
+
+// Generate serial: VYG-XXXX-XXXX
+function genSerial() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const part = n => Array.from({length:n}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+  return `VYG-${part(4)}-${part(4)}`;
+}
+
+function todayStr() {
+  return new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+}
+
+function launchConfetti() {
+  const colors = ['#f1c40f','#e74c3c','#fff','#e67e22','#f39c12'];
+  for(let i=0;i<28;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `
+      left:${20+Math.random()*60}%;
+      top:${10+Math.random()*20}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-delay:${Math.random()*0.4}s;
+      animation-duration:${0.9+Math.random()*0.5}s;
+    `;
+    document.querySelector('.app').appendChild(el);
+    setTimeout(() => el.remove(), 1500);
+  }
+}
+
+window.pickLobster = async function(idx) {
+  if(played) return;
+  played = true;
+
+  // Flip selected
+  document.getElementById('inner' + idx).classList.add('flipped');
+  document.getElementById('card' + idx).classList.add('selected');
+
+  // Disable & dim others
+  [0,1,2].forEach(i => {
+    if(i !== idx) {
+      document.getElementById('card' + i).classList.add('disabled');
+      document.getElementById('btn' + i).classList.add('disabled-btn');
+    }
+    document.getElementById('btn' + i).classList.add('hidden');
+  });
+
+  document.getElementById('instruction').textContent = '🎉 You won a discount!';
+
+  const discount = shuffled[idx];
+  const serial = genSerial();
+  const today = todayStr();
+  const todayISO = new Date().toISOString().split('T')[0];
+
+  // Save to Firebase
+  try {
+    await setDoc(doc(db, 'codes', serial), {
+      prize: discount + '% OFF',
+      restName: 'The Original Lobster House',
+      venue: 'The Original Lobster House',
+      used: false,
+      createdAt: serverTimestamp(),
+      expiresDate: todayISO,
+      expiresStr: today,
+      game: 'lobster',
+      city: 'Cozumel'
+    });
+  } catch(e) {
+    console.warn('Firebase error:', e);
+  }
+
+  // Show win modal after flip completes
+  setTimeout(() => {
+    document.getElementById('winPct').textContent = discount + '%';
+    document.getElementById('winSerial').textContent = serial;
+    document.getElementById('winExpiry').textContent = `Valid today only · ${today}`;
+
+    // Generate QR
+    document.getElementById('qrCode').innerHTML = '';
+    new QRCode(document.getElementById('qrCode'), {
+      text: serial,
+      width: 160, height: 160,
+      colorDark: '#000', colorLight: '#fff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+
+    launchConfetti();
+    document.getElementById('winOverlay').classList.add('open');
+  }, 800);
+};
+</script>
+
+</body>
+</html>
