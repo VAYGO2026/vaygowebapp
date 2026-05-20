@@ -41,8 +41,8 @@ html,body{
   font-weight:700;
   letter-spacing:0.10em;
   text-transform:uppercase;
-  color:#3B9EFF;
-  text-shadow: 0 0 12px rgba(59,158,255,0.6);
+  color:#00BFFF;
+  text-shadow: 0 0 16px rgba(0,191,255,0.9), 0 0 30px rgba(0,150,255,0.5);
   margin-bottom:12px;
   text-align:center;
 }
@@ -92,22 +92,22 @@ html,body{
   transition: transform 0.13s;
   text-shadow: 0 1px 6px rgba(0,0,0,0.6);
 
-  /* Neon rotating border */
   background-image:
-    linear-gradient(#0a120a, #0a120a),
+    linear-gradient(#060f1a, #060f1a),
     conic-gradient(
       from var(--angle),
-      rgba(180,220,80,0.15) 0deg,
-      rgba(180,220,80,0.15) 60deg,
-      rgba(220,255,100,0.5) 90deg,
-      rgba(255,255,180,1.0) 130deg,
-      rgba(220,255,100,0.5) 170deg,
-      rgba(180,220,80,0.15) 200deg,
-      rgba(180,220,80,0.15) 360deg
+      rgba(0,150,255,0.08) 0deg,
+      rgba(0,150,255,0.08) 50deg,
+      rgba(0,220,255,0.7) 85deg,
+      rgba(180,245,255,1.0) 120deg,
+      rgba(0,220,255,0.7) 155deg,
+      rgba(0,150,255,0.08) 190deg,
+      rgba(0,150,255,0.08) 360deg
     );
   background-origin: border-box;
   background-clip: padding-box, border-box;
   animation: rotateBorder 3s linear infinite;
+  box-shadow: 0 0 8px rgba(0,200,255,0.35), 0 4px 24px rgba(0,0,0,0.38);
 }
 
 /* Stagger neon per button */
@@ -125,16 +125,16 @@ html,body{
 .city-btn.coming {
   cursor: default;
   background-image:
-    linear-gradient(#0a120a, #0a120a),
+    linear-gradient(#060f1a, #060f1a),
     conic-gradient(
       from var(--angle),
-      rgba(180,220,80,0.06) 0deg,
-      rgba(180,220,80,0.06) 60deg,
-      rgba(220,255,100,0.18) 90deg,
-      rgba(255,255,180,0.38) 130deg,
-      rgba(220,255,100,0.18) 170deg,
-      rgba(180,220,80,0.06) 200deg,
-      rgba(180,220,80,0.06) 360deg
+      rgba(0,150,255,0.05) 0deg,
+      rgba(0,150,255,0.05) 60deg,
+      rgba(0,200,255,0.20) 90deg,
+      rgba(120,230,255,0.40) 130deg,
+      rgba(0,200,255,0.20) 170deg,
+      rgba(0,150,255,0.05) 200deg,
+      rgba(0,150,255,0.05) 360deg
     );
   color: rgba(255,255,255,0.45);
 }
