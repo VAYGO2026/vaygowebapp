@@ -41,8 +41,8 @@ html,body{
   font-weight:700;
   letter-spacing:0.10em;
   text-transform:uppercase;
-  color:#00BFFF;
-  text-shadow: 0 0 16px rgba(0,191,255,0.9), 0 0 30px rgba(0,150,255,0.5);
+  color:#ffffff;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.8);
   margin-bottom:12px;
   text-align:center;
 }
@@ -72,11 +72,11 @@ html,body{
   to   { --angle: 360deg; }
 }
 
-/* ── Base city button — same as restaurant cards ── */
+/* ── Base city button ── */
 .city-btn {
   width: 100%;
   position: relative;
-  border: 2px solid transparent;
+  border: none;
   border-radius: 16px;
   padding: 14px 18px;
   cursor: pointer;
@@ -86,59 +86,68 @@ html,body{
   color: #fff;
   text-align: center;
   letter-spacing: 0.03em;
-  backdrop-filter: blur(18px) saturate(1.2);
-  -webkit-backdrop-filter: blur(18px) saturate(1.2);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.38);
   transition: transform 0.13s;
   text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.38);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  isolation: isolate;
+}
 
-  background-image:
-    linear-gradient(#060f1a, #060f1a),
-    conic-gradient(
-      from var(--angle),
-      rgba(0,150,255,0.08) 0deg,
-      rgba(0,150,255,0.08) 50deg,
-      rgba(0,220,255,0.7) 85deg,
-      rgba(180,245,255,1.0) 120deg,
-      rgba(0,220,255,0.7) 155deg,
-      rgba(0,150,255,0.08) 190deg,
-      rgba(0,150,255,0.08) 360deg
-    );
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
+/* Neon ring — sits behind button, only the 2px gap shows */
+.city-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 18px;
+  z-index: -1;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--angle),
+    transparent 0deg,
+    transparent 55deg,
+    rgba(0,200,255,0.6) 85deg,
+    rgba(160,240,255,1.0) 120deg,
+    rgba(0,200,255,0.6) 155deg,
+    transparent 185deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
   animation: rotateBorder 3s linear infinite;
-  box-shadow: 0 0 8px rgba(0,200,255,0.35), 0 4px 24px rgba(0,0,0,0.38);
 }
 
-/* Stagger neon per button */
-.city-btn:nth-child(2) { animation-delay: 0s; }
-.city-btn:nth-child(3) { animation-delay: 0.75s; }
-.city-btn:nth-child(4) { animation-delay: 1.5s; }
-.city-btn:nth-child(5) { animation-delay: 2.25s; }
-.city-btn:nth-child(6) { animation-delay: 3s; }
+/* Stagger per button */
+.city-btn:nth-child(2)::before { animation-delay: 0s; }
+.city-btn:nth-child(3)::before { animation-delay: 0.75s; }
+.city-btn:nth-child(4)::before { animation-delay: 1.5s; }
+.city-btn:nth-child(5)::before { animation-delay: 2.25s; }
+.city-btn:nth-child(6)::before { animation-delay: 3s; }
 
-.city-btn:active {
-  transform: scale(0.97);
-}
+.city-btn:active { transform: scale(0.97); background: rgba(255,255,255,0.15); }
 
-/* Disabled / coming soon buttons — same shape, dimmer neon */
+/* Coming soon — dimmer neon */
 .city-btn.coming {
   cursor: default;
-  background-image:
-    linear-gradient(#060f1a, #060f1a),
-    conic-gradient(
-      from var(--angle),
-      rgba(0,150,255,0.05) 0deg,
-      rgba(0,150,255,0.05) 60deg,
-      rgba(0,200,255,0.20) 90deg,
-      rgba(120,230,255,0.40) 130deg,
-      rgba(0,200,255,0.20) 170deg,
-      rgba(0,150,255,0.05) 200deg,
-      rgba(0,150,255,0.05) 360deg
-    );
+  background: rgba(0,0,0,0.28);
   color: rgba(255,255,255,0.45);
 }
-
+.city-btn.coming::before {
+  background: conic-gradient(
+    from var(--angle),
+    transparent 0deg,
+    transparent 60deg,
+    rgba(0,180,255,0.25) 90deg,
+    rgba(120,220,255,0.45) 120deg,
+    rgba(0,180,255,0.25) 150deg,
+    transparent 180deg,
+    transparent 360deg
+  );
+}
 .city-btn.coming:active { transform: none; }
 
 .next-tag{
