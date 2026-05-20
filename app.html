@@ -227,10 +227,10 @@ html,body{
   bottom: 0; left: 0; right: 0;
   z-index: 30;
   height: 72px;
-  background: rgba(4, 10, 20, 0.82);
+  background: rgba(180, 220, 50, 0.55);
   backdrop-filter: blur(20px) saturate(1.4);
   -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid rgba(212, 245, 106, 0.25);
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -273,20 +273,20 @@ html,body{
 }
 
 /* Per-icon neon colors */
-.nav-city   .nav-icon svg { filter: drop-shadow(0 0 5px rgba(0,220,255,0.8)); }
-.nav-city   .nav-label    { color: #00dcff; }
+.nav-city   .nav-icon svg { filter: none; }
+.nav-city   .nav-label    { color: #000000; }
 
-.nav-join   .nav-icon svg { filter: drop-shadow(0 0 5px rgba(220,80,255,0.8)); }
-.nav-join   .nav-label    { color: #dc50ff; }
+.nav-join   .nav-icon svg { filter: none; }
+.nav-join   .nav-label    { color: #000000; }
 
-.nav-ig     .nav-icon svg { filter: drop-shadow(0 0 5px rgba(255,100,100,0.8)); }
-.nav-ig     .nav-label    { color: #ff8c69; font-size: 7px; }
+.nav-ig     .nav-icon svg { filter: none; }
+.nav-ig     .nav-label    { color: #000000; font-size: 7px; }
 
-.nav-rate   .nav-icon svg { filter: drop-shadow(0 0 5px rgba(255,210,0,0.9)); }
-.nav-rate   .nav-label    { color: #ffd200; }
+.nav-rate   .nav-icon svg { filter: none; }
+.nav-rate   .nav-label    { color: #000000; }
 
-.nav-qr     .nav-icon svg { filter: drop-shadow(0 0 5px rgba(80,255,160,0.8)); }
-.nav-qr     .nav-label    { color: #50ffa0; }
+.nav-qr     .nav-icon svg { filter: none; }
+.nav-qr     .nav-label    { color: #000000; }
 
 /* Modal JOIN */
 .modal-overlay {
@@ -387,7 +387,7 @@ html,body{
 .qr-link {
   font-family: 'DM Sans', sans-serif;
   font-size: 11px;
-  color: #50ffa0;
+  color: #000000;
   word-break: break-all;
   margin-top: 8px;
 }
@@ -532,7 +532,7 @@ html,body{
     <!-- CITY -->
     <a class="nav-item nav-city" href="index.html">
       <div class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#00dcff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
           <circle cx="12" cy="9" r="2.5"/>
         </svg>
@@ -543,7 +543,7 @@ html,body{
     <!-- JOIN VAYGO -->
     <button class="nav-item nav-join" onclick="document.getElementById('joinModal').classList.add('open')">
       <div class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#dc50ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
           <circle cx="9" cy="7" r="4"/>
           <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
@@ -556,10 +556,10 @@ html,body{
     <!-- INSTAGRAM -->
     <a class="nav-item nav-ig" href="https://instagram.com/vaygo.mx" target="_blank">
       <div class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ff8c69" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
           <circle cx="12" cy="12" r="4"/>
-          <circle cx="17.5" cy="6.5" r="1" fill="#ff8c69" stroke="none"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="#000000" stroke="none"/>
         </svg>
       </div>
       <span class="nav-label">Follow Us&#10;@vaygo.mx</span>
@@ -568,7 +568,7 @@ html,body{
     <!-- RATE US -->
     <button class="nav-item nav-rate" onclick="">
       <div class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ffd200" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
         </svg>
       </div>
@@ -578,7 +578,7 @@ html,body{
     <!-- QR -->
     <button class="nav-item nav-qr" onclick="document.getElementById('qrModal').classList.add('open')">
       <div class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#50ffa0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="7" height="7" rx="1"/>
           <rect x="14" y="3" width="7" height="7" rx="1"/>
           <rect x="3" y="14" width="7" height="7" rx="1"/>
