@@ -4,162 +4,363 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>The Original Lobster House</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@600;700;800&family=Righteous&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Righteous&family=Pacifico&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0; padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
 
     html, body {
-      width: 100%; height: 100%;
-      background: #060E1C;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'DM Sans', sans-serif;
+      width:100%; height:100%;
+      background:#060E1C;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'DM Sans', sans-serif;
     }
 
     .app {
-      width: 390px;
-      height: 100dvh;
-      max-height: 844px;
-      border-radius: 32px;
-      overflow: hidden;
-      position: relative;
+      width:390px;
+      height:100dvh;
+      max-height:844px;
+      border-radius:32px;
+      overflow:hidden;
+      position:relative;
       background: url('./fondo-lobster.webp') center center / cover no-repeat;
     }
 
-    /* Vignette top */
+    /* Vignette */
     .app::before {
-      content: '';
-      position: absolute;
-      inset: 0;
+      content:'';
+      position:absolute; inset:0;
       background: linear-gradient(
         to bottom,
-        rgba(0,0,0,0.45) 0%,
-        rgba(0,0,0,0.0) 35%,
-        rgba(0,0,0,0.0) 55%,
-        rgba(0,0,0,0.15) 75%
+        rgba(0,0,0,0.50) 0%,
+        rgba(0,0,0,0.0)  30%,
+        rgba(0,0,0,0.0)  50%,
+        rgba(0,0,0,0.20) 70%
       );
-      z-index: 1;
-      pointer-events: none;
+      z-index:1; pointer-events:none;
     }
 
-    /* ── BACK button ── */
+    /* ── BACK ── */
     .back-btn {
-      position: absolute;
-      top: 18px; left: 18px;
-      z-index: 20;
-      padding: 8px 16px;
-      border-radius: 50px;
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.22);
-      color: #fff;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-decoration: none;
-      cursor: pointer;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      position:absolute; top:18px; left:18px;
+      z-index:20;
+      padding:8px 16px; border-radius:50px;
+      background:rgba(0,0,0,0.45);
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,0.22);
+      color:#fff; font-size:12px; font-weight:700;
+      letter-spacing:0.12em; text-decoration:none; cursor:pointer;
     }
 
     /* ── BOTTOM BANNER ── */
     .banner {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      z-index: 10;
-      background: rgba(10, 5, 0, 0.62);
-      backdrop-filter: blur(20px) saturate(1.3);
-      -webkit-backdrop-filter: blur(20px) saturate(1.3);
-      border-top: 1px solid rgba(255,180,80,0.18);
-      padding: 18px 20px 28px;
+      position:absolute; bottom:0; left:0; right:0;
+      z-index:10;
+      background:rgba(10,5,0,0.62);
+      backdrop-filter:blur(20px) saturate(1.3);
+      -webkit-backdrop-filter:blur(20px) saturate(1.3);
+      border-top:1px solid rgba(255,180,80,0.22);
+      padding:14px 16px 28px;
+      display:flex; flex-direction:column; gap:12px;
     }
 
-    /* Restaurant name in banner */
-    .banner-title {
-      font-family: 'Righteous', sans-serif;
-      font-size: 15px;
-      font-weight: 400;
-      color: rgba(255,200,100,0.90);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-align: center;
-      margin-bottom: 14px;
-      text-shadow: 0 1px 8px rgba(0,0,0,0.7);
+    /* ── INFO BUTTON (opens modal) ── */
+    .info-btn {
+      width:100%;
+      background: linear-gradient(
+        180deg,
+        rgba(255,210,100,0.28) 0%,
+        rgba(200,110,20,0.22) 50%,
+        rgba(120,50,0,0.32) 100%
+      );
+      border: 1px solid rgba(255,190,80,0.50);
+      border-bottom: 4px solid rgba(150,60,0,0.70);
+      border-radius: 100px;
+      padding: 13px 22px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px;
+      transition: transform 0.12s, box-shadow 0.12s, border-bottom 0.12s;
+      box-shadow:
+        0 8px 20px rgba(0,0,0,0.50),
+        0 3px 0 rgba(255,220,120,0.15) inset,
+        0 -2px 0 rgba(0,0,0,0.25) inset;
+      transform: perspective(500px) rotateX(2deg);
+    }
+    .info-btn:active {
+      transform: perspective(500px) rotateX(2deg) translateY(4px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.45), 0 1px 0 rgba(255,200,100,0.10) inset;
+      border-bottom: 1px solid rgba(150,60,0,0.70);
     }
 
-    /* Action buttons row */
+    .info-btn-left { display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
+
+    .info-btn-name {
+      font-family:'Righteous', sans-serif;
+      font-size:14px; font-weight:400;
+      color:rgba(255,210,120,0.95);
+      letter-spacing:1.5px; text-transform:uppercase;
+    }
+
+    .info-btn-sub {
+      font-size:10px; font-weight:600;
+      color:rgba(255,255,255,0.50);
+      letter-spacing:0.08em;
+    }
+
+    .info-btn-ratings {
+      display:flex; flex-direction:column; align-items:flex-end; gap:2px;
+    }
+
+    .rating-pill {
+      font-size:10px; font-weight:800;
+      color:#fff; letter-spacing:0.05em;
+      background:rgba(255,255,255,0.10);
+      border-radius:20px; padding:2px 8px;
+    }
+
+    .chevron {
+      font-size:16px; color:rgba(255,200,100,0.7); margin-left:4px;
+    }
+
+    /* ── ACTION BUTTONS ── */
     .actions {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      gap: 8px;
+      display:flex; justify-content:space-around; align-items:center; gap:8px;
     }
 
     .action-btn {
-      flex: 1;
+      flex:1; display:flex; flex-direction:column; align-items:center; gap:5px;
+      cursor:pointer; text-decoration:none;
+      padding:10px 4px; border-radius:14px;
+      background:rgba(255,255,255,0.07);
+      border:1px solid rgba(255,180,80,0.20);
+      transition:transform 0.14s, background 0.14s;
+    }
+    .action-btn:active { transform:scale(0.92); background:rgba(255,255,255,0.14); }
+
+    .action-icon { width:26px; height:26px; display:flex; align-items:center; justify-content:center; }
+    .action-icon svg { width:24px; height:24px; }
+
+    .action-label {
+      font-size:9px; font-weight:800;
+      letter-spacing:0.10em; text-transform:uppercase;
+      color:rgba(255,255,255,0.80); text-align:center;
+    }
+
+    /* ── INFO MODAL ── */
+    .modal-overlay {
+      display:none; position:absolute; inset:0;
+      z-index:50;
+      background:rgba(0,0,0,0.70);
+      backdrop-filter:blur(10px);
+      align-items:flex-end; justify-content:center;
+    }
+    .modal-overlay.open { display:flex; }
+
+    .modal-sheet {
+      width:100%;
+      background:rgba(12,6,0,0.96);
+      border-top:1px solid rgba(255,180,80,0.25);
+      border-radius:24px 24px 0 0;
+      padding:20px 22px 40px;
+      max-height:80dvh;
+      overflow-y:auto;
+    }
+
+    .modal-handle {
+      width:40px; height:4px;
+      background:rgba(255,255,255,0.2);
+      border-radius:4px;
+      margin:0 auto 18px;
+    }
+
+    .modal-name {
+      font-family:'Pacifico', cursive;
+      font-size:22px; color:#ffc864;
+      text-align:center; margin-bottom:2px;
+      text-shadow:0 2px 12px rgba(0,0,0,0.8);
+    }
+
+    .modal-since {
+      font-family:'Righteous', sans-serif;
+      font-size:11px; color:rgba(255,200,120,0.65);
+      text-align:center; letter-spacing:3px;
+      text-transform:uppercase; margin-bottom:16px;
+    }
+
+    .modal-ratings {
+      display:flex; gap:8px; justify-content:center; margin-bottom:18px;
+    }
+
+    .modal-rating-card {
+      flex:1; background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,180,80,0.18);
+      border-radius:12px; padding:10px 8px;
+      text-align:center;
+    }
+
+    .modal-rating-source {
+      font-size:10px; font-weight:500;
+      letter-spacing:0.05em;
+      color:rgba(255,255,255,0.65); margin-bottom:4px;
+    }
+
+    .modal-rating-stars {
+      font-size:18px; color:#ffd200;
+      text-shadow:0 0 8px rgba(255,210,0,0.6);
+      margin-bottom:2px;
+    }
+
+    .modal-rating-num {
+      font-size:15px; font-weight:800; color:#fff;
+    }
+
+    .modal-rating-reviews {
+      font-size:9px; color:rgba(255,255,255,0.40);
+      margin-top:2px;
+    }
+
+    .modal-badge {
+      display:inline-block;
+      background:rgba(255,210,0,0.15);
+      border:1px solid rgba(255,210,0,0.35);
+      border-radius:20px;
+      padding:3px 10px;
+      font-size:9px; font-weight:800;
+      color:#ffd200; letter-spacing:0.08em;
+      text-transform:uppercase;
+      margin-top:4px;
+    }
+
+    .modal-desc {
+      font-size:13px; font-weight:400; line-height:1.6;
+      color:rgba(255,255,255,0.72);
+      margin-bottom:18px;
+      border-top:1px solid rgba(255,180,80,0.12);
+      padding-top:16px;
+    }
+
+    .modal-info-row {
+      display:flex; align-items:flex-start; gap:10px;
+      margin-bottom:10px;
+    }
+
+    .modal-info-icon { font-size:14px; margin-top:1px; flex-shrink:0; }
+
+    .modal-info-text {
+      font-size:12px; color:rgba(255,255,255,0.60);
+      line-height:1.4;
+    }
+
+    .modal-info-text a {
+      color:rgba(255,200,100,0.80);
+      text-decoration:none;
+    }
+
+    .modal-close {
+      display:block; text-align:center;
+      margin-top:18px;
+      font-size:11px; font-weight:700;
+      color:rgba(255,255,255,0.30);
+      letter-spacing:0.10em; cursor:pointer;
+      text-transform:uppercase;
+    }
+
+    /* ── VERTICAL TAB ── */
+    .side-tab {
+      position: absolute;
+      left: 0;
+      top: 35%;
+      transform: translateY(-50%);
+      z-index: 20;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
-      cursor: pointer;
+      justify-content: center;
+      gap: 8px;
       text-decoration: none;
-      padding: 10px 4px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,180,80,0.20);
-      transition: transform 0.14s, background 0.14s;
+      cursor: pointer;
+      background: linear-gradient(180deg, rgba(255,220,60,1.0) 0%, rgba(220,130,0,1.0) 100%);
+      border: 1.5px solid rgba(255,240,120,0.8);
+      border-left: none;
+      border-radius: 0 18px 18px 0;
+      padding: 22px 13px;
+      box-shadow:
+        4px 0 24px rgba(255,180,0,0.45),
+        6px 0 40px rgba(255,150,0,0.25),
+        inset -2px 0 0 rgba(255,255,255,0.20),
+        inset 0 2px 0 rgba(255,255,255,0.25);
+      animation: tabPulse 2s ease-in-out infinite;
+      transition: transform 0.14s, box-shadow 0.14s;
     }
 
-    .action-btn:active {
-      transform: scale(0.92);
-      background: rgba(255,255,255,0.14);
+    @keyframes tabPulse {
+      0%,100% {
+        box-shadow:
+          4px 0 24px rgba(255,180,0,0.45),
+          6px 0 40px rgba(255,150,0,0.25),
+          inset -2px 0 0 rgba(255,255,255,0.20),
+          inset 0 2px 0 rgba(255,255,255,0.25);
+        transform: translateY(-50%) translateX(0px);
+      }
+      50% {
+        box-shadow:
+          6px 0 32px rgba(255,200,0,0.75),
+          10px 0 55px rgba(255,160,0,0.45),
+          inset -2px 0 0 rgba(255,255,255,0.20),
+          inset 0 2px 0 rgba(255,255,255,0.25);
+        transform: translateY(-50%) translateX(3px);
+      }
     }
 
-    .action-icon {
-      width: 26px; height: 26px;
-      display: flex; align-items: center; justify-content: center;
+    .side-tab:active {
+      transform: translateY(-50%) translateX(-2px);
+      box-shadow: 2px 0 10px rgba(0,0,0,0.45);
+      animation-play-state: paused;
     }
 
-    .action-icon svg {
-      width: 24px; height: 24px;
+    .side-tab-icon { font-size:22px; line-height:1; }
+
+    .side-tab-text {
+      font-family:'DM Sans', sans-serif;
+      font-size:11px; font-weight:800;
+      letter-spacing:0.14em; text-transform:uppercase;
+      color:rgba(50,15,0,0.95);
+      writing-mode:vertical-rl;
+      text-orientation:mixed;
+      transform:rotate(180deg);
+      line-height:1.3;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.35);
     }
 
-    .action-label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.80);
-      text-align: center;
-    }
-
-    /* Responsive */
-    @media(max-width: 430px) {
-      .app { width: 100%; border-radius: 0; }
-    }
+    @media(max-width:430px){ .app{ width:100%; border-radius:0; } }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- Back -->
+  <a href="cubilete.html" class="side-tab">
+    <span class="side-tab-icon">🎲</span>
+    <span class="side-tab-text">Win your discount</span>
+  </a>
+
   <a href="restaurant.html" class="back-btn">← BACK</a>
 
   <!-- Bottom banner -->
   <div class="banner">
-    <div class="banner-title">The Original Lobster House</div>
 
+    <!-- INFO button -->
+    <button class="info-btn" onclick="document.getElementById('infoModal').classList.add('open')">
+      <div class="info-btn-left">
+        <span class="info-btn-name">The Original Lobster House</span>
+        <span class="info-btn-sub">Cozumel · Since 1983 · Tap for info</span>
+      </div>
+      <span class="chevron">›</span>
+    </button>
+
+    <!-- Action buttons -->
     <div class="actions">
 
-      <!-- Instagram -->
-      <a class="action-btn" href="https://instagram.com" target="_blank">
+      <a class="action-btn" href="https://www.instagram.com/theoriginallobsterhouse" target="_blank">
         <div class="action-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="#ff8c69" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5"/>
@@ -170,8 +371,7 @@
         <span class="action-label">Instagram</span>
       </a>
 
-      <!-- Web -->
-      <a class="action-btn" href="#" target="_blank">
+      <a class="action-btn" href="https://www.theoriginallobsterhouse.com" target="_blank">
         <div class="action-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="#60cfff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/>
@@ -181,8 +381,7 @@
         <span class="action-label">Website</span>
       </a>
 
-      <!-- Menu -->
-      <a class="action-btn" href="#" target="_blank">
+      <a class="action-btn" href="https://www.theoriginallobsterhouse.com/menu" target="_blank">
         <div class="action-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="#ffd200" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
@@ -193,8 +392,7 @@
         <span class="action-label">Menú</span>
       </a>
 
-      <!-- Ubicación -->
-      <a class="action-btn" href="https://maps.google.com" target="_blank">
+      <a class="action-btn" href="https://maps.google.com/?q=The+Original+Lobster+House+Cozumel" target="_blank">
         <div class="action-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="#50ffa0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
@@ -204,6 +402,51 @@
         <span class="action-label">Ubicación</span>
       </a>
 
+    </div>
+  </div>
+
+  <!-- INFO MODAL -->
+  <div class="modal-overlay" id="infoModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+
+      <div class="modal-name">The Original Lobster House</div>
+      <div class="modal-since">Since 1983 · Cozumel, México</div>
+
+      <div class="modal-ratings">
+        <div class="modal-rating-card">
+          <div class="modal-rating-source">Google</div>
+          <div class="modal-rating-stars">⭐</div>
+          <div class="modal-rating-num">4.7</div>
+          <div class="modal-rating-reviews">~500 reseñas</div>
+        </div>
+        <div class="modal-rating-card">
+          <div class="modal-rating-source">TripAdvisor</div>
+          <div class="modal-rating-stars">⭐</div>
+          <div class="modal-rating-num">4.5</div>
+          <div class="modal-rating-reviews">+670 reviews</div>
+          <div><span class="modal-badge">✈ Travellers' Choice</span></div>
+        </div>
+      </div>
+
+      <div class="modal-desc">
+        The Original Lobster House is a premium seafood restaurant in Cozumel established in 1983. Known for its fresh Caribbean lobster, romantic tropical atmosphere, candlelight dining, live music, and upscale island vibe. The restaurant blends fine seafood dining with a cozy jungle-style Caribbean experience, making it one of the most iconic lobster restaurants in Cozumel.
+      </div>
+
+      <div class="modal-info-row">
+        <span class="modal-info-icon">📍</span>
+        <span class="modal-info-text">Carretera Costera Norte, Manzana 4 Km 4.5, Zona Hotelera Nte., 77600 Cozumel, Q.R., México</span>
+      </div>
+      <div class="modal-info-row">
+        <span class="modal-info-icon">📞</span>
+        <span class="modal-info-text"><a href="tel:+529871015964">+52 987 101 5964</a></span>
+      </div>
+      <div class="modal-info-row">
+        <span class="modal-info-icon">🌐</span>
+        <span class="modal-info-text"><a href="https://www.theoriginallobsterhouse.com" target="_blank">theoriginallobsterhouse.com</a></span>
+      </div>
+
+      <span class="modal-close" onclick="document.getElementById('infoModal').classList.remove('open')">✕ &nbsp; Cerrar</span>
     </div>
   </div>
 
