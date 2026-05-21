@@ -41,7 +41,7 @@ html,body{
 }
 
 /* ── Status Bar ── */
-.status-bar{
+.status-bar{display:none!important;
   position:absolute;top:0;left:0;right:0;
   z-index:10;
   display:flex;justify-content:space-between;align-items:center;
@@ -540,11 +540,6 @@ window.addEventListener('load', loadUserCount);
 <div class="app">
 
   <!-- Status Bar -->
-  <div class="status-bar">
-    <span>9:41</span>
-    <span>&#9679;&#9679;&#9679;</span>
-  </div>
-
   <!-- Header text -->
   <div class="header-block">
     <svg class="h-sun" viewBox="0 0 34 22" fill="none" xmlns="http://www.w3.org/2000/svg">
