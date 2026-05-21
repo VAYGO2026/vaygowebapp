@@ -34,6 +34,9 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;touch-action:no
 .st-sub{font-size:14px;color:rgba(255,255,255,0.4);margin-top:4px;letter-spacing:1px;}
 
 /* Líneas de color bandera en los bordes */
+.flag-left,.flag-right{display:none!important;}
+.game .flag-left{display:none!important;}
+.game .flag-right{display:none!important;}
 .game .flag-left,
 .game .flag-right{
   position:absolute;top:0;bottom:0;width:4px;z-index:1;pointer-events:none;
@@ -243,21 +246,21 @@ function handleTap(){
     shakeCup(()=>{
       tiro++; updDots();
       setStatus('😬 NOT YET!', 'Shake harder... the dice are waiting!');
-      document.getElementById('hint').textContent='👆 TAP TO ROLL AGAIN';
+      const h1=document.getElementById('hint'); if(h1) h1.textContent='👆 TAP TO ROLL AGAIN';
       animating=false;
     });
   } else if(tiro===1){
     shakeCup(()=>{
       tiro++; updDots();
       setStatus('🔥 SO CLOSE!', 'One last roll to reveal your prize!');
-      document.getElementById('hint').textContent='👆 TAP FOR THE FINAL ROLL';
+      const h2=document.getElementById('hint'); if(h2) h2.textContent='👆 TAP FOR THE FINAL ROLL';
       flyNormalDice();
       animating=false;
     });
   } else {
     shakeCup(()=>{
       tiro++; updDots();
-      document.getElementById('hint').style.display='none';
+      const h3=document.getElementById('hint'); if(h3) h3.style.display='none';
       setStatus('🎲 REVEALING YOUR PRIZE!','');
       resetDice(()=>{ flyAllWithPrize(); });
     });
