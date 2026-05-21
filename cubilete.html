@@ -11,7 +11,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;touch-action:no
 .app{width:100%;max-width:430px;height:100dvh;margin:0 auto;position:relative;display:flex;flex-direction:column;background:#000;}
 
 /* HEADER */
-.hdr{display:none!important;}
 .hdr{height:54px;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0;z-index:20;border-bottom:1px solid rgba(201,168,76,0.15);}
 .back{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;text-decoration:none;}
 .logo-n{font-family:'Anton',sans-serif;font-size:18px;color:#C9A84C;letter-spacing:4px;text-align:center;}
@@ -29,14 +28,11 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;touch-action:no
 }
 
 /* STATUS */
-.status{position:absolute;bottom:20px;left:0;right:0;text-align:center;z-index:10;pointer-events:none;}
+.status{position:absolute;bottom:25px;left:0;right:0;text-align:center;z-index:10;pointer-events:none;}
 .st-title{font-family:'Anton',sans-serif;font-size:26px;color:#fff;letter-spacing:2px;}
 .st-sub{font-size:14px;color:rgba(255,255,255,0.4);margin-top:4px;letter-spacing:1px;}
 
 /* Líneas de color bandera en los bordes */
-.flag-left,.flag-right{display:none!important;}
-.game .flag-left{display:none!important;}
-.game .flag-right{display:none!important;}
 .game .flag-left,
 .game .flag-right{
   position:absolute;top:0;bottom:0;width:4px;z-index:1;pointer-events:none;
@@ -55,7 +51,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;touch-action:no
 /* CUP */
 #cup{
   position:absolute;
-  left:50%;top:8%;
+  left:50%;top:5%;
   transform:translateX(-50%);
   width:70%;max-width:280px;
   z-index:8;cursor:pointer;
@@ -66,7 +62,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;touch-action:no
 #cupImg{width:100%;display:block;}
 
 /* HINT */
-#hint{display:none!important;}
 #hint{
   position:absolute;bottom:18px;left:0;right:0;
   text-align:center;z-index:10;
@@ -112,7 +107,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;touch-action:no
 .fly4{animation:fly4 0.7s cubic-bezier(0.2,0.8,0.3,1) forwards;animation-delay:0.28s;}
 
 /* NAV */
-.nav{display:none!important;}
 .nav{height:54px;background:rgba(0,0,0,0.98);border-top:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-around;flex-shrink:0;z-index:20;}
 .ni{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
 .ni .ico{font-size:15px;}
@@ -135,10 +129,27 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;touch-action:no
 .pbtn{background:linear-gradient(180deg,#C9A84C,#8B6914);border:none;border-radius:50px;padding:14px 0;color:#fff;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;width:100%;box-shadow:0 4px 0 #5A4008;}
 
 #serpCanvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:199;}
+.hdr{display:none!important;}
+.nav{display:none!important;}
+.flag-left,.flag-right{display:none!important;}
+#hint{display:none!important;}
 </style>
 </head>
 <body>
 <div class="app">
+  <div class="hdr">
+    <a href="app.html" class="back">&#8249;</a>
+    <div><div class="logo-n">VAYGO</div><div class="logo-s">DICE CHALLENGE</div></div>
+    <div class="rolls-box">
+      <span class="rolls-lbl">ROLLS</span>
+      <div class="rolls-dots">
+        <div class="rdot" id="d0"></div>
+        <div class="rdot" id="d1"></div>
+        <div class="rdot" id="d2"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="game" id="game">
     <div class="flag-left"></div>
     <div class="flag-right"></div>
@@ -160,7 +171,10 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;touch-action:no
     <div id="hint">👆 TAP OR SHAKE TO ROLL</div>
   </div>
 
-  </div>
+  <div class="nav">
+    <div class="ni"><div class="ico">🧭</div><span>EXPLORE</span></div>
+    <div class="ni"><div class="ico">🎁</div><span>REWARDS</span></div>
+    <div class="nc"><div class="ico">🏆</div><div class="lbl">PLAY</div></div>
     <div class="ni"><div class="ico">📍</div><span>MAP</span></div>
     <div class="ni"><div class="ico">👤</div><span>PROFILE</span></div>
   </div>
@@ -246,21 +260,21 @@ function handleTap(){
     shakeCup(()=>{
       tiro++; updDots();
       setStatus('😬 NOT YET!', 'Shake harder... the dice are waiting!');
-      const h1=document.getElementById('hint'); if(h1) h1.textContent='👆 TAP TO ROLL AGAIN';
+      document.getElementById('hint').textContent='👆 TAP TO ROLL AGAIN';
       animating=false;
     });
   } else if(tiro===1){
     shakeCup(()=>{
       tiro++; updDots();
       setStatus('🔥 SO CLOSE!', 'One last roll to reveal your prize!');
-      const h2=document.getElementById('hint'); if(h2) h2.textContent='👆 TAP FOR THE FINAL ROLL';
+      document.getElementById('hint').textContent='👆 TAP FOR THE FINAL ROLL';
       flyNormalDice();
       animating=false;
     });
   } else {
     shakeCup(()=>{
       tiro++; updDots();
-      const h3=document.getElementById('hint'); if(h3) h3.style.display='none';
+      document.getElementById('hint').style.display='none';
       setStatus('🎲 REVEALING YOUR PRIZE!','');
       resetDice(()=>{ flyAllWithPrize(); });
     });
