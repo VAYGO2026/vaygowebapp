@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>VAYGO — Panel Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain: "vaygo-app.firebaseapp.com",
+  projectId: "vaygo-app",
+  storageBucket: "vaygo-app.firebasestorage.app",
+  messagingSenderId: "499741267414",
+  appId: "1:499741267414:web:e69cd43156adaea11bc077"
+});
+const db = firebase.firestore();
+</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;}
@@ -163,15 +176,67 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;}
 
 <script>
 const PASS = 'vaygo2026';
-const KEY = 'vaygo_venues_v2';
 let currentTab = 'all';
 let editId = null;
+let allVenues = [];
+
+// ── Firebase helpers ──
+async function loadVenues() {
+  try {
+    const snap = await db.collection('venues').orderBy('name').get();
+    if(snap.empty) {
+      // First time - seed with initial venues
+      await seedVenues();
+    } else {
+      allVenues = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      render();
+    }
+  } catch(e) {
+    console.error('Error loading venues:', e);
+  }
+}
+
+async function saveVenueToFirebase(venue) {
+  const { id, ...data } = venue;
+  if(id && typeof id === 'string') {
+    await db.collection('venues').doc(id).set(data);
+  } else {
+    const ref = await db.collection('venues').add(data);
+    venue.id = ref.id;
+  }
+}
+
+async function seedVenues() {
+  const t = today();
+  const initial = [
+    {name:'Aquí + Ahora Coffee',    cat:'EAT',   plan:'trial', phone:'', start:t, status:'trial'},
+    {name:'Maple Bakehouse Café',   cat:'EAT',   plan:'trial', phone:'', start:t, status:'trial'},
+    {name:'Coffee Bean',            cat:'EAT',   plan:'trial', phone:'', start:t, status:'trial'},
+    {name:'Café de Isla',           cat:'EAT',   plan:'trial', phone:'', start:t, status:'trial'},
+    {name:'Sucré / Salé Café',      cat:'EAT',   plan:'trial', phone:'', start:t, status:'trial'},
+    {name:'Corazón Contento',       cat:'EAT',   plan:'trial', phone:'', start:t, status:'trial'},
+    {name:'Bajau Steakhouse',       cat:'EAT',   plan:'trial', phone:'', start:t, status:'trial'},
+    {name:'Buccanos',               cat:'EAT',   plan:'trial', phone:'', start:t, status:'trial'},
+    {name:'Guidos',                 cat:'EAT',   plan:'trial', phone:'', start:t, status:'trial'},
+    {name:'987 Cocina & Cocktails', cat:'DRINK', plan:'trial', phone:'', start:t, status:'trial'},
+    {name:'Okumi',                  cat:'DRINK', plan:'banner_top', phone:'', start:t, status:'active'},
+    {name:'Azul Madera',            cat:'EAT',   plan:'trial', phone:'', start:t, status:'trial'},
+    {name:'10 Experiences',         cat:'TOURS', plan:'trial', phone:'', start:t, status:'trial'},
+  ];
+  const batch = db.batch();
+  initial.forEach(v => {
+    const ref = db.collection('venues').doc();
+    batch.set(ref, v);
+  });
+  await batch.commit();
+  await loadVenues();
+}
 
 function doLogin() {
   if(document.getElementById('loginPass').value === PASS) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('panel').style.display = 'block';
-    render();
+    loadVenues();
   } else {
     document.getElementById('loginError').style.display = 'block';
   }
@@ -183,14 +248,7 @@ function doLogout() {
   document.getElementById('loginPass').value = '';
 }
 
-function getVenues() {
-  try {
-    const d = localStorage.getItem(KEY);
-    return d ? JSON.parse(d) : initVenues();
-  } catch(e) { return initVenues(); }
-}
-
-function saveVenues(v) { localStorage.setItem(KEY, JSON.stringify(v)); }
+function getVenues() { return allVenues; }
 
 function today() { return new Date().toISOString().split('T')[0]; }
 
@@ -235,29 +293,9 @@ function planPrice(p) { return p==='card_top'?2500:p==='card_std'?2000:p==='bann
 function planLabel(p) { return p==='card_top'?'🃏 Card Top 🔥':p==='card_std'?'🃏 Card 🔥':p==='banner_top'?'🏆 Banner Top 🔥':p==='banner_std'?'🏆 Banner 🔥':'🎁 Prueba'; }
 function planBadgeClass(p) { return p==='card_top'||p==='card_std'?'plan-card-b':p==='banner_top'||p==='banner_std'?'plan-banner-b':'plan-trial-b'; }
 
-function initVenues() {
-  const t = today();
-  const venues = [
-    {id:1,  name:'Aquí + Ahora Coffee',    cat:'EAT',   plan:'trial', phone:'',            start:t, status:'trial'},
-    {id:2,  name:'Maple Bakehouse Café',   cat:'EAT',   plan:'trial', phone:'',            start:t, status:'trial'},
-    {id:3,  name:'Coffee Bean',            cat:'EAT',   plan:'trial', phone:'',            start:t, status:'trial'},
-    {id:4,  name:'Café de Isla',           cat:'EAT',   plan:'trial', phone:'',            start:t, status:'trial'},
-    {id:5,  name:'Sucré / Salé Café',      cat:'EAT',   plan:'trial', phone:'',            start:t, status:'trial'},
-    {id:6,  name:'Corazón Contento',       cat:'EAT',   plan:'trial', phone:'',            start:t, status:'trial'},
-    {id:7,  name:'Bajau Steakhouse',       cat:'EAT',   plan:'trial', phone:'',            start:t, status:'trial'},
-    {id:8,  name:'Buccanos',               cat:'EAT',   plan:'trial', phone:'',            start:t, status:'trial'},
-    {id:9,  name:'Guidos',                 cat:'EAT',   plan:'trial', phone:'',            start:t, status:'trial'},
-    {id:10, name:'987 Cocina & Cocktails', cat:'DRINK', plan:'trial', phone:'',            start:t, status:'trial'},
-    {id:11, name:'Okumi',                  cat:'DRINK', plan:'banner',phone:'',            start:t, status:'active'},
-    {id:12, name:'Azul Madera',            cat:'EAT',   plan:'trial', phone:'',            start:t, status:'trial'},
-    {id:13, name:'10 Experiences',         cat:'TOURS', plan:'trial', phone:'',            start:t, status:'trial'},
-  ];
-  saveVenues(venues);
-  return venues;
-}
 
 function render() {
-  const venues = getVenues();
+  const venues = allVenues;
   // Stats
   let active=0, warn=0, susp=0, rev=0;
   venues.forEach(v => {
@@ -337,18 +375,14 @@ function setTab(t, el) {
   render();
 }
 
-function activate(id) {
-  const v = getVenues(); const item = v.find(x=>x.id===id);
-  if(!item) return;
-  item.status = 'active'; item.start = today();
-  saveVenues(v); render();
+async function activate(id) {
+  await db.collection('venues').doc(id).update({status: 'active', start: today()});
+  await loadVenues();
 }
 
-function suspend(id) {
-  const v = getVenues(); const item = v.find(x=>x.id===id);
-  if(!item) return;
-  item.status = 'suspended';
-  saveVenues(v); render();
+async function suspend(id) {
+  await db.collection('venues').doc(id).update({status: 'suspended'});
+  await loadVenues();
 }
 
 function openModal(id=null) {
@@ -378,30 +412,24 @@ function editVenue(id){ openModal(id); }
 
 function closeModal(){ document.getElementById('modalOverlay').classList.remove('show'); editId=null; }
 
-function saveVenue() {
+async function saveVenue() {
   const name = document.getElementById('fName').value.trim();
   if(!name){alert('Ingresa el nombre del venue');return;}
-  const venues = getVenues();
+  const data = {
+    name,
+    cat:    document.getElementById('fCat').value,
+    plan:   document.getElementById('fPlan').value,
+    phone:  document.getElementById('fPhone').value.trim(),
+    start:  document.getElementById('fStart').value,
+    status: document.getElementById('fStatus').value
+  };
   if(editId) {
-    const v = venues.find(x=>x.id===editId);
-    if(v){
-      v.name=name; v.cat=document.getElementById('fCat').value;
-      v.plan=document.getElementById('fPlan').value;
-      v.phone=document.getElementById('fPhone').value.trim();
-      v.start=document.getElementById('fStart').value;
-      v.status=document.getElementById('fStatus').value;
-    }
+    await db.collection('venues').doc(editId).update(data);
   } else {
-    venues.push({
-      id: Math.max(...venues.map(x=>x.id),0)+1,
-      name, cat:document.getElementById('fCat').value,
-      plan:document.getElementById('fPlan').value,
-      phone:document.getElementById('fPhone').value.trim(),
-      start:document.getElementById('fStart').value,
-      status:document.getElementById('fStatus').value
-    });
+    await db.collection('venues').add(data);
   }
-  saveVenues(venues); closeModal(); render();
+  closeModal();
+  await loadVenues();
 }
 
 document.getElementById('fStart').value = today();
