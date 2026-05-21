@@ -159,15 +159,16 @@
       z-index: 10;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
       gap: 10px;
-      padding: 0 0 0 28px;
+      padding: 0 28px;
     }
 
     .cards-inner {
       display: inline-flex;
       flex-direction: column;
       align-items: stretch;
+      width: max-content;
       gap: 10px;
     }
 
@@ -297,22 +298,22 @@
     <div class="cards-wrap">
       <div class="cards-inner">
 
-      <div class="card" onclick="location.href='lobster.html'" style="cursor:pointer;">
+      <div class="card" onclick="location.href='lobster.html'" style="cursor:pointer;min-width:max-content;width:100%;">
         <div class="card-name">The Original Lobster House</div>
         <div class="card-desc">Seafood clásico premium</div>
       </div>
 
-      <div class="card">
+      <div class="card" style="min-width:max-content;width:100%;">
         <div class="card-name">Buccanos</div>
         <div class="card-desc">Beach luxury / Sunset Club</div>
       </div>
 
-      <div class="card">
+      <div class="card" style="min-width:max-content;width:100%;">
         <div class="card-name">Azul Madera</div>
         <div class="card-desc">Mexican-Mediterranean Fusion</div>
       </div>
 
-      <div class="card">
+      <div class="card" style="min-width:max-content;width:100%;">
         <div class="card-name">Guido's</div>
         <div class="card-desc">Italian Mediterranean Timeless Classic</div>
       </div>
