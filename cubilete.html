@@ -5,6 +5,112 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>VAYGO — Dice Challenge</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain: "vaygo-app.firebaseapp.com",
+  projectId: "vaygo-app",
+  storageBucket: "vaygo-app.firebasestorage.app",
+  messagingSenderId: "1234567890",
+  appId: "vaygo-app"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+
+// REST CONFIG
+const REST_ID   = "lobster";
+const REST_NAME = "Lobster";
+const CLOSE_HOUR = 23; // 11pm
+const CLOSE_MIN  = 59;
+const MIN_PURCHASE = "$20 USD";
+
+function genCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const seg = n => Array.from({length:n},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+  return `VYG-${seg(4)}-${seg(4)}`;
+}
+
+function getExpiry(){
+  const now = new Date();
+  const exp = new Date(now);
+  exp.setHours(CLOSE_HOUR, CLOSE_MIN, 59, 0);
+  if(exp <= now) exp.setDate(exp.getDate()+1);
+  return exp;
+}
+
+window.saveAndShowQR = async function(prizeLabel){
+  const today = new Date().toISOString().slice(0,10);
+  const spinKey = `${REST_ID}_${today}`;
+
+  // Check if already played today
+  const existing = localStorage.getItem('vaygo_spin_'+REST_ID);
+  if(existing){
+    const data = JSON.parse(existing);
+    if(data.spinKey === spinKey){
+      // Show existing code
+      showQRModal(data.code, prizeLabel, data.expires);
+      return;
+    }
+  }
+
+  // Generate new code
+  const code = genCode();
+  const expires = getExpiry();
+  const expiresStr = `Valid until: 11:59 pm today`;
+
+  const codeData = {
+    code,
+    prize: prizeLabel,
+    restId: REST_ID,
+    restName: REST_NAME,
+    spinKey,
+    spunAt: serverTimestamp(),
+    expiresAt: expires.toISOString(),
+    expiresStr,
+    used: false,
+    uid: 'anonymous_' + Date.now()
+  };
+
+  try {
+    await setDoc(doc(db, 'codes', code), codeData);
+    localStorage.setItem('vaygo_spin_'+REST_ID, JSON.stringify({
+      code, spinKey, expires: expires.toISOString(), prize: prizeLabel
+    }));
+  } catch(e){ console.error(e); }
+
+  showQRModal(code, prizeLabel, expires.toISOString());
+};
+
+function showQRModal(code, prize, expiresISO){
+  const expires = new Date(expiresISO);
+  const timeStr = expires.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  
+  document.getElementById('qr-code-txt').textContent = code;
+  document.getElementById('qr-prize').textContent = prize;
+  document.getElementById('qr-valid').textContent = `Valid until: ${timeStr} today`;
+  document.getElementById('qr-min').textContent = `Valid on orders of ${MIN_PURCHASE} or more`;
+  document.getElementById('qr-rest').textContent = REST_NAME;
+
+  // Generate QR
+  const qrDiv = document.getElementById('qr-canvas');
+  qrDiv.innerHTML = '';
+  new QRCode(qrDiv, {
+    text: code,
+    width: 200,
+    height: 200,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+
+  document.getElementById('qrModal').style.display = 'flex';
+}
+</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{width:100%;height:100%;background:#000;overflow:hidden;touch-action:none;font-family:'DM Sans',sans-serif;}
@@ -129,6 +235,21 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;touch-action:no
 .pbtn{background:linear-gradient(180deg,#C9A84C,#8B6914);border:none;border-radius:50px;padding:14px 0;color:#fff;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;width:100%;box-shadow:0 4px 0 #5A4008;}
 
 #serpCanvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:199;}
+
+/* QR MODAL */
+#qrModal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.97);padding:20px;}
+.qr-box{background:#0a0a1a;border-radius:24px;padding:28px 22px;text-align:center;width:100%;max-width:340px;border:2px solid #7B2FBE;}
+.qr-your-prize{font-size:10px;color:#00CFFF;text-transform:uppercase;letter-spacing:3px;margin-bottom:10px;}
+.qr-prize-val{font-family:'Anton',sans-serif;font-size:52px;line-height:1;color:#fff;margin-bottom:4px;}
+.qr-rest-name{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:16px;}
+.qr-code-pill{background:#111;border-radius:10px;padding:10px 20px;font-family:monospace;font-size:18px;font-weight:700;color:#fff;letter-spacing:2px;margin-bottom:8px;display:inline-block;}
+.qr-valid{font-size:12px;margin-bottom:16px;}
+.qr-valid span{color:#f59e0b;font-weight:700;}
+#qr-canvas{display:flex;justify-content:center;margin:0 auto 12px;width:200px;height:200px;}
+#qr-canvas img{border-radius:8px;}
+.qr-hint{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:16px;}
+.qr-min-box{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:10px;font-size:11px;color:rgba(255,255,255,0.6);}
+.qr-min-box strong{color:#f59e0b;}
 .hdr{display:none!important;}
 .nav{display:none!important;}
 .flag-left,.flag-right{display:none!important;}
@@ -511,11 +632,10 @@ function setStatus(t,s){
 }
 
 function showPrize(prize){
-  document.getElementById('prizeDieImg').src=prize.img;
-  document.getElementById('pval').textContent=prize.label;
-  document.getElementById('pval').style.color=prize.color;
-  document.getElementById('pdesc').textContent=prize.desc;
-  document.getElementById('prizeModal').classList.add('show');
+  // Skip old modal, go straight to QR
+  if(window.saveAndShowQR){
+    window.saveAndShowQR(prize.label);
+  }
 }
 
 function closePrize(){
