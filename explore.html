@@ -159,15 +159,15 @@
       z-index: 10;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: flex-start;
       gap: 10px;
-      padding: 0 28px;
+      padding: 0 0 0 28px;
     }
 
     .cards-inner {
       display: inline-flex;
       flex-direction: column;
-      align-items: center;
+      align-items: stretch;
       gap: 10px;
     }
 
@@ -185,7 +185,6 @@
 
     /* ── Glassmorphism card ── */
     .card {
-      min-width: max-content;
       white-space: nowrap;
       position: relative;
       border: 2px solid transparent;
@@ -298,23 +297,23 @@
       <div class="cards-inner">
 
       <div class="card" onclick="location.href='lobster.html'" style="cursor:pointer;">
-        <div class="card-name">The Original Lobster House</div>
-        <div class="card-desc">Seafood clásico premium</div>
+        <div class="card-name">Punta Sur Eco Beach Park</div>
+        <div class="card-desc">Lighthouse, crocodiles &amp; wild Caribbean shore</div>
       </div>
 
       <div class="card">
-        <div class="card-name">Buccanos</div>
-        <div class="card-desc">Beach luxury / Sunset Club</div>
+        <div class="card-name">El Cielo Sandbar</div>
+        <div class="card-desc">Starfish paradise · Crystal shallow waters</div>
       </div>
 
       <div class="card">
-        <div class="card-name">Azul Madera</div>
-        <div class="card-desc">Mexican-Mediterranean Fusion</div>
+        <div class="card-name">Chankanaab Adventure Park</div>
+        <div class="card-desc">Snorkel, dolphins &amp; ancient Mayan replicas</div>
       </div>
 
       <div class="card">
-        <div class="card-name">Guido's</div>
-        <div class="card-desc">Italian Mediterranean Timeless Classic</div>
+        <div class="card-name">Columbia Reef Deep Dive</div>
+        <div class="card-desc">World-class wall diving · UNESCO protected</div>
       </div>
 
       </div>
