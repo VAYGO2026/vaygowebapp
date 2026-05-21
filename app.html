@@ -224,6 +224,116 @@ html,body{
 }
 
 /* ── Bottom Nav Bar ── */
+.user-counter {
+  position: absolute;
+  bottom: 78px;
+  right: 48px;
+  z-index: 29;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  pointer-events: none;
+}
+.user-counter-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  color: #FFD700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.user-counter-num {
+  font-family: 'Anton', sans-serif;
+  font-size: 17px;
+  color: #FFD700;
+  line-height: 1;
+}
+
+/* RATE MODAL */
+#rateModal {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0,0,0,0.8);
+  align-items: center;
+  justify-content: center;
+}
+#rateModal.open { display: flex; }
+.rate-box {
+  background: #0D1E35;
+  border: 1px solid #1A2E4A;
+  border-radius: 24px;
+  padding: 28px 24px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+}
+.rate-title {
+  font-family: 'Anton', sans-serif;
+  font-size: 22px;
+  color: #fff;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.rate-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 20px;
+}
+.rate-stars {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.rate-star {
+  font-size: 36px;
+  cursor: pointer;
+  filter: grayscale(1);
+  transition: filter 0.2s, transform 0.1s;
+}
+.rate-star.active {
+  filter: grayscale(0);
+  transform: scale(1.15);
+}
+.rate-comment {
+  width: 100%;
+  background: #0A1628;
+  border: 1px solid #1A2E4A;
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #fff;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  resize: none;
+  margin-bottom: 16px;
+}
+.rate-comment:focus { border-color: #C9A84C; }
+.rate-send {
+  width: 100%;
+  background: linear-gradient(90deg, #C9A84C, #f0c060);
+  border: none;
+  border-radius: 12px;
+  padding: 13px;
+  color: #000;
+  font-family: 'Anton', sans-serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+.rate-cancel {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.3);
+  font-size: 12px;
+  cursor: pointer;
+}
+
 .bottom-nav {
   position: absolute;
   bottom: 0; left: 0; right: 0;
@@ -399,6 +509,32 @@ html,body{
   .app{ width:100%; border-radius:0; }
 }
 </style>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain: "vaygo-app.firebaseapp.com",
+  projectId: "vaygo-app",
+  storageBucket: "vaygo-app.firebasestorage.app",
+  messagingSenderId: "499741267414",
+  appId: "1:499741267414:web:e69cd43156adaea11bc077"
+});
+const db = firebase.firestore();
+
+// Load user count from Firebase
+async function loadUserCount() {
+  try {
+    const snap = await db.collection('stats').doc('global').get();
+    if(snap.exists()) {
+      const count = snap.data().totalUsers || 0;
+      document.getElementById('userCount').textContent = count.toLocaleString();
+    }
+  } catch(e) { console.log('stats error', e); }
+}
+window.addEventListener('load', loadUserCount);
+</script>
 </head>
 <body>
 <div class="app">
@@ -528,6 +664,12 @@ html,body{
     </div>
   </div>
 
+  <!-- USER COUNTER -->
+  <div class="user-counter">
+    <span class="user-counter-text">USERS</span>
+    <span class="user-counter-num" id="userCount">...</span>
+  </div>
+
   <!-- ── BOTTOM NAV ── -->
   <nav class="bottom-nav">
 
@@ -568,7 +710,7 @@ html,body{
     </a>
 
     <!-- RATE US -->
-    <button class="nav-item nav-rate" onclick="">
+    <button class="nav-item nav-rate" onclick="document.getElementById('rateModal').classList.add('open')">
       <div class="nav-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
@@ -591,6 +733,25 @@ html,body{
     </button>
 
   </nav>
+
+
+  <!-- ── RATE MODAL ── -->
+  <div id="rateModal">
+    <div class="rate-box">
+      <div class="rate-title">RATE VAYGO</div>
+      <div class="rate-sub">How was your experience?</div>
+      <div class="rate-stars" id="rateStars">
+        <span class="rate-star" onclick="setRating(1)">⭐</span>
+        <span class="rate-star" onclick="setRating(2)">⭐</span>
+        <span class="rate-star" onclick="setRating(3)">⭐</span>
+        <span class="rate-star" onclick="setRating(4)">⭐</span>
+        <span class="rate-star" onclick="setRating(5)">⭐</span>
+      </div>
+      <textarea class="rate-comment" id="rateComment" placeholder="Tell us what you think... (optional)" rows="3"></textarea>
+      <button class="rate-send" onclick="sendRating()">SEND RATING</button><br>
+      <button class="rate-cancel" onclick="document.getElementById('rateModal').classList.remove('open')">Cancel</button>
+    </div>
+  </div>
 
   <!-- ── JOIN MODAL ── -->
   <div class="modal-overlay" id="joinModal">
@@ -739,5 +900,34 @@ document.addEventListener('touchstart', startAmbient, {once:true});
 window.addEventListener('load', ()=>{ try{ startAmbient(); }catch(e){} });
 </script>
 
+
+<script>
+let selectedRating = 0;
+
+function setRating(n) {
+  selectedRating = n;
+  const stars = document.querySelectorAll('.rate-star');
+  stars.forEach((s, i) => {
+    s.classList.toggle('active', i < n);
+  });
+}
+
+async function sendRating() {
+  if(!selectedRating) { alert('Please select a rating'); return; }
+  const comment = document.getElementById('rateComment').value.trim();
+  try {
+    await db.collection('ratings').add({
+      stars: selectedRating,
+      comment: comment,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch(e) { console.log('rating error', e); }
+  document.getElementById('rateModal').classList.remove('open');
+  selectedRating = 0;
+  document.querySelectorAll('.rate-star').forEach(s => s.classList.remove('active'));
+  document.getElementById('rateComment').value = '';
+  alert('Thanks for your rating! ⭐');
+}
+</script>
 </body>
 </html>
