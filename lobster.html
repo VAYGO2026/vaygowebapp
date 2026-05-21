@@ -41,7 +41,7 @@
 
     /* ── BACK ── */
     .back-btn {
-      position:absolute; top:18px; left:18px;
+      position:absolute; top:40px; left:18px;
       z-index:20;
       padding:8px 16px; border-radius:50px;
       background:rgba(0,0,0,0.45);
@@ -77,7 +77,7 @@
       border-radius: 100px;
       padding: 13px 22px;
       cursor: pointer;
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center; justify-content: center;
       gap: 10px;
       transition: transform 0.12s, box-shadow 0.12s, border-bottom 0.12s;
       box-shadow:
@@ -350,11 +350,7 @@
 
     <!-- INFO button -->
     <button class="info-btn" onclick="document.getElementById('infoModal').classList.add('open')">
-      <div class="info-btn-left">
-        <span class="info-btn-name">The Original Lobster House</span>
-        <span class="info-btn-sub">Cozumel · Since 1983 · Tap for info</span>
-      </div>
-      <span class="chevron">›</span>
+      <span class="info-btn-name" style="width:100%;text-align:center;">The Original Lobster House</span>
     </button>
 
     <!-- Action buttons -->
