@@ -387,9 +387,10 @@ let animFrame = null;
 function startScanner() {
   const constraints = {
     video: {
-      facingMode: { ideal: 'environment' }, // cámara trasera preferida
-      width: { ideal: 640 },
-      height: { ideal: 480 }
+      facingMode: { ideal: 'environment' },
+      width: { ideal: 1280 },
+      height: { ideal: 720 },
+      focusMode: { ideal: 'continuous' }
     }
   };
 
@@ -443,7 +444,7 @@ function scanLoop() {
 
     // jsQR lee el frame — funciona en todos los navegadores
     const code = jsQR(imageData.data, imageData.width, imageData.height, {
-      inversionAttempts: 'dontInvert'
+      inversionAttempts: 'attemptBoth'
     });
 
     if(code && code.data) {
