@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Dive — VAYGO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Righteous&family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #060E1C;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Contenedor principal — igual que .app en app.html ── */
+    .app {
+      width: 390px;
+      height: 100dvh;
+      max-height: 844px;
+      border-radius: 32px;
+      overflow: hidden;
+      position: relative;
+      background: url('./fondo-dive.webp') center center / cover no-repeat;
+    }
+
+    /* Overlay oscuro con vignette */
+    .app::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom,
+          rgba(5, 12, 5, 0.55) 0%,
+          rgba(5, 12, 5, 0.10) 28%,
+          rgba(5, 12, 5, 0.05) 48%,
+          rgba(5, 12, 5, 0.20) 65%,
+          rgba(5, 12, 5, 0.60) 82%,
+          rgba(5, 12, 5, 0.88) 100%
+        );
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Vignette lateral */
+    .app::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(5,12,5,0.45) 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* ── Header text block ── */
+    .header-block {
+      position: absolute;
+      top: 0;
+      left: 0; right: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding-top: 48px;
+    }
+
+    .sun-icon {
+      width: 34px;
+      margin-bottom: 10px;
+      opacity: 0.95;
+    }
+
+    .h-top {
+      font-family: 'Righteous', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.88);
+      text-shadow: 0 1px 14px rgba(0,0,0,0.9);
+    }
+
+    .h-script {
+      font-family: 'Pacifico', cursive;
+      font-size: 58px;
+      font-weight: 400;
+      color: #d4f56a;
+      line-height: 1.1;
+      margin-top: 4px;
+      text-shadow:
+        0 2px 20px rgba(0,0,0,0.85),
+        0 0 40px rgba(140,210,40,0.3);
+      letter-spacing: 0px;
+    }
+
+    .h-island {
+      font-family: 'Righteous', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 7px;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 0 1px 14px rgba(0,0,0,0.9);
+      margin-top: 6px;
+    }
+
+    .h-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+      width: 200px;
+    }
+
+    .h-divider::before,
+    .h-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(212,245,106,0.40);
+    }
+
+    .h-diamond {
+      width: 5px; height: 5px;
+      background: rgba(212,245,106,0.70);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+
+    .h-tagline {
+      font-family: 'Righteous', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.80);
+      text-shadow: 0 1px 10px rgba(0,0,0,0.8);
+      margin-top: 8px;
+    }
+
+    /* ── Cards wrapper ── */
+    .cards-wrap {
+      position: absolute;
+      top: 34%;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 0 28px;
+    }
+
+    .cards-inner {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    /* ── Neon border rotation only ── */
+    @keyframes rotateBorder {
+      from { --angle: 0deg; }
+      to   { --angle: 360deg; }
+    }
+
+    @property --angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    /* ── Glassmorphism card ── */
+    .card {
+      white-space: nowrap;
+      position: relative;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 14px 18px;
+      backdrop-filter: blur(18px) saturate(1.2);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+      cursor: pointer;
+      transition: background 0.13s;
+
+      background-image:
+        linear-gradient(#0a120a, #0a120a),
+        conic-gradient(
+          from var(--angle),
+          rgba(180,220,80,0.15) 0deg,
+          rgba(180,220,80,0.15) 60deg,
+          rgba(220,255,100,0.5) 90deg,
+          rgba(255,255,180,1.0) 130deg,
+          rgba(220,255,100,0.5) 170deg,
+          rgba(180,220,80,0.15) 200deg,
+          rgba(180,220,80,0.15) 360deg
+        );
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.38);
+    }
+
+    .cards-inner .card:nth-child(1) { animation: rotateBorder 3s linear infinite; animation-delay: 0s; }
+    .cards-inner .card:nth-child(2) { animation: rotateBorder 3s linear infinite; animation-delay: 0.75s; }
+    .cards-inner .card:nth-child(3) { animation: rotateBorder 3s linear infinite; animation-delay: 1.5s; }
+    .cards-inner .card:nth-child(4) { animation: rotateBorder 3s linear infinite; animation-delay: 2.25s; }
+
+    .card > * { position: relative; z-index: 2; }
+
+    .card:active {
+      background: rgba(15, 25, 15, 0.68);
+    }
+
+    .card-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 1px;
+      letter-spacing: 0.1px;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.70);
+      letter-spacing: 0.1px;
+    }
+
+    /* ── Botón BACK ── */
+    .back-btn {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      z-index: 20;
+      padding: 10px 18px;
+      border-radius: 50px;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+
+    /* ── Responsive: pantallas menores a 390px — igual que app.html ── */
+    @media (max-width: 430px) {
+      .app {
+        width: 100%;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- Header text -->
+    <div class="header-block">
+      <svg class="sun-icon" viewBox="0 0 34 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17 1 L17 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M8 3.5 L6.5 2.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M26 3.5 L27.5 2.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M3 10 L1.5 9.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M31 10 L32.5 9.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M17 1 Q17 13 4 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M17 1 Q17 13 30 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M4 21 Q17 17 30 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="h-top">Explore Reefs &amp; Cenotes</div>
+      <div class="h-script" style="font-size:36px;white-space:nowrap;">Dive Into Paradise</div>
+      <div class="h-divider"><div class="h-diamond"></div></div>
+      <div class="h-tagline">Explore &nbsp;–&nbsp; Play &nbsp;–&nbsp; Win</div>
+    </div>
+
+    <div class="cards-wrap">
+      <div class="cards-inner">
+
+      <div class="card" onclick="location.href='lobster.html'" style="cursor:pointer;">
+        <div class="card-name">Palancar Reef</div>
+        <div class="card-desc">Wall diving · Coral gardens · Sea turtles</div>
+      </div>
+
+      <div class="card">
+        <div class="card-name">Columbia Deep Wall</div>
+        <div class="card-desc">UNESCO protected · World-class visibility</div>
+      </div>
+
+      <div class="card">
+        <div class="card-name">Cenote Dos Ojos</div>
+        <div class="card-desc">Underground caves · Crystal clear fresh water</div>
+      </div>
+
+      <div class="card">
+        <div class="card-name">Santa Rosa Wall &amp; Drift Dive</div>
+        <div class="card-desc">Strong currents · Eagle rays · Open ocean thrill</div>
+      </div>
+
+      </div>
+    </div>
+
+    <!-- Botón BACK -->
+    <a href="app.html" class="back-btn">BACK</a>
+
+  </div>
+
+<script>
+/* ══ SONIDO AMBIENTAL TROPICAL ══ */
+let started = false;
+
+function startAmbient(){
+  if(started) return;
+  started = true;
+
+  const ac = new (window.AudioContext || window.webkitAudioContext)();
+  const SR = ac.sampleRate;
+  const master = ac.createGain();
+  master.gain.value = 0;
+  master.connect(ac.destination);
+  master.gain.linearRampToValueAtTime(1.0, ac.currentTime + 3);
+
+  /* ── OLAS DEL MAR ── */
+  function makeOcean(){
+    const bufLen = SR * 8;
+    const buf = ac.createBuffer(2, bufLen, SR);
+    for(let ch=0; ch<2; ch++){
+      const d = buf.getChannelData(ch);
+      let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+      for(let i=0;i<bufLen;i++){
+        const w = Math.random()*2-1;
+        b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+        b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+        b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+        d[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11;
+        b6=w*0.115926;
+      }
+    }
+    const src = ac.createBufferSource();
+    src.buffer = buf; src.loop = true;
+    const lp = ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=800; lp.Q.value=0.5;
+    const lfo = ac.createOscillator(); lfo.type='sine'; lfo.frequency.value=0.16;
+    const lfoG = ac.createGain(); lfoG.gain.value=0.35;
+    lfo.connect(lfoG);
+    const g = ac.createGain(); g.gain.value=0.55;
+    lfoG.connect(g.gain);
+    src.connect(lp); lp.connect(g); g.connect(master);
+    lfo.start(); src.start();
+  }
+  makeOcean();
+
+  /* ── PÁJAROS TROPICALES ── */
+  function chirp(t, freq1, freq2, dur, vol){
+    const osc = ac.createOscillator(); osc.type='sine';
+    osc.frequency.setValueAtTime(freq1, t);
+    osc.frequency.exponentialRampToValueAtTime(freq2, t + dur*0.6);
+    osc.frequency.exponentialRampToValueAtTime(freq1*0.9, t + dur);
+    const vib = ac.createOscillator(); vib.type='sine'; vib.frequency.value=18;
+    const vibG = ac.createGain(); vibG.gain.value=freq1*0.03;
+    vib.connect(vibG); vibG.connect(osc.frequency);
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    osc.connect(g); g.connect(master);
+    vib.start(t); vib.stop(t + dur + 0.1);
+    osc.start(t); osc.stop(t + dur + 0.1);
+  }
+
+  function trill(t, baseFreq, notes, vol){
+    notes.forEach((f, i) => {
+      chirp(t + i*0.07, baseFreq*f, baseFreq*f*1.3, 0.06, vol);
+    });
+  }
+
+  function bird1(t){
+    trill(t, 1800, [1, 1.2, 1.4, 1.2, 1], 0.14);
+    trill(t + 0.5, 2200, [1, 0.9, 1.1], 0.10);
+    const next = t + 4 + Math.random()*5;
+    if(next < ac.currentTime + 300) setTimeout(()=> bird1(next), (next - ac.currentTime)*1000);
+  }
+
+  function bird2(t){
+    chirp(t,      900,  1400, 0.4,  0.12);
+    chirp(t+0.45, 1400, 900,  0.35, 0.10);
+    chirp(t+0.85, 1100, 1600, 0.3,  0.08);
+    const next = t + 7 + Math.random()*8;
+    if(next < ac.currentTime + 300) setTimeout(()=> bird2(next), (next - ac.currentTime)*1000);
+  }
+
+  function bird3(t){
+    for(let i=0;i<6;i++) chirp(t + i*0.09, 2800+i*80, 3200, 0.07, 0.09);
+    const next = t + 3 + Math.random()*4;
+    if(next < ac.currentTime + 300) setTimeout(()=> bird3(next), (next - ac.currentTime)*1000);
+  }
+
+  const now = ac.currentTime;
+  bird1(now + 2);
+  bird2(now + 4);
+  bird3(now + 1.5);
+}
+
+document.addEventListener('click',     startAmbient, {once:true});
+document.addEventListener('touchstart', startAmbient, {once:true});
+window.addEventListener('load', ()=>{ try{ startAmbient(); }catch(e){} });
+</script>
+
+</body>
+</html>
