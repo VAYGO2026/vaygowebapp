@@ -2,10 +2,10 @@
   "name": "VAYGO",
   "short_name": "VAYGO",
   "description": "Spin. Win. Explore. — Exclusive rewards in Cozumel",
-  "start_url": "/app.html",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#060E1C",
-  "theme_color": "#FF2D7A",
+  "theme_color": "#060E1C",
   "orientation": "portrait",
   "icons": [
     {
