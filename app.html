@@ -533,9 +533,16 @@ const db = firebase.firestore();
 async function loadUserCount() {
   try {
     const snap = await db.collection('stats').doc('users').get();
+    console.log('snap exists:', snap.exists());
+    console.log('snap data:', JSON.stringify(snap.data()));
     if(snap.exists()) {
-      const count = snap.data().count || 0;
+      const data = snap.data();
+      const count = data.count || data.totalUsers || data.total || Object.values(data)[0] || 0;
       document.getElementById('userCount').textContent = count.toLocaleString();
+    } else {
+      // Count users collection directly
+      const usersSnap = await db.collection('users').get();
+      document.getElementById('userCount').textContent = usersSnap.size.toLocaleString();
     }
   } catch(e) { console.log('stats error', e); }
 }
