@@ -385,8 +385,13 @@ async function activate(id) {
 
 async function deleteVenue(id) {
   if(!confirm('¿Eliminar este venue? Esta acción no se puede deshacer.')) return;
-  await db.collection('venues').doc(id).delete();
-  await loadVenues();
+  try {
+    await db.collection('venues').doc(id).delete();
+    await loadVenues();
+  } catch(e) {
+    alert('Error al eliminar: ' + e.message);
+    console.error(e);
+  }
 }
 
 async function suspend(id) {
