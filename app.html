@@ -532,9 +532,9 @@ const db = firebase.firestore();
 // Load user count from Firebase
 async function loadUserCount() {
   try {
-    const snap = await db.collection('stats').doc('global').get();
+    const snap = await db.collection('stats').doc('users').get();
     if(snap.exists()) {
-      const count = snap.data().totalUsers || 0;
+      const count = snap.data().count || 0;
       document.getElementById('userCount').textContent = count.toLocaleString();
     }
   } catch(e) { console.log('stats error', e); }
