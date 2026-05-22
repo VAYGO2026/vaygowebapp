@@ -51,6 +51,55 @@
       letter-spacing:0.12em; text-decoration:none; cursor:pointer;
     }
 
+    /* ── LEFT SIDE TABS ── */
+    .left-tabs {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .left-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      text-decoration: none;
+      cursor: pointer;
+      width: 56px;
+      padding: 12px 6px;
+      background: rgba(10,5,0,0.62);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,180,80,0.22);
+      border-left: none;
+      border-radius: 0 14px 14px 0;
+      box-shadow:
+        3px 0 18px rgba(0,0,0,0.45),
+        inset -1px 0 0 rgba(255,200,100,0.08);
+      transition: transform 0.14s, background 0.14s, box-shadow 0.14s;
+    }
+
+    .left-tab:active {
+      transform: translateX(-3px);
+      background: rgba(255,255,255,0.10);
+      box-shadow: 1px 0 6px rgba(0,0,0,0.35);
+    }
+
+    .left-tab-icon { width:22px; height:22px; display:flex; align-items:center; justify-content:center; }
+    .left-tab-icon svg { width:20px; height:20px; }
+
+    .left-tab-label {
+      font-size:8px; font-weight:800;
+      letter-spacing:0.08em; text-transform:uppercase;
+      color:rgba(255,255,255,0.75); text-align:center;
+      line-height:1.2;
+    }
+
     /* ── BOTTOM BANNER ── */
     .banner {
       position:absolute; bottom:0; left:0; right:0;
@@ -60,7 +109,7 @@
       -webkit-backdrop-filter:blur(20px) saturate(1.3);
       border-top:1px solid rgba(255,180,80,0.22);
       padding:14px 16px 28px;
-      display:flex; flex-direction:column; gap:12px;
+      display:flex; flex-direction:column; gap:10px;
     }
 
     /* ── INFO BUTTON (opens modal) ── */
@@ -92,8 +141,6 @@
       border-bottom: 1px solid rgba(150,60,0,0.70);
     }
 
-    .info-btn-left { display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
-
     .info-btn-name {
       font-family:'Righteous', sans-serif;
       font-size:14px; font-weight:400;
@@ -101,49 +148,66 @@
       letter-spacing:1.5px; text-transform:uppercase;
     }
 
-    .info-btn-sub {
-      font-size:10px; font-weight:600;
-      color:rgba(255,255,255,0.50);
-      letter-spacing:0.08em;
+    /* ── DISCOUNT TAB (below main button) ── */
+    .discount-tab {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-decoration: none;
+      cursor: pointer;
+      background: linear-gradient(
+        180deg,
+        rgba(255,220,60,1.0) 0%,
+        rgba(220,130,0,1.0) 100%
+      );
+      border: 1.5px solid rgba(255,240,120,0.8);
+      border-radius: 100px;
+      padding: 11px 22px;
+      box-shadow:
+        0 6px 22px rgba(255,180,0,0.40),
+        0 3px 0 rgba(255,255,255,0.20) inset,
+        0 -2px 0 rgba(0,0,0,0.20) inset;
+      animation: discountPulse 2s ease-in-out infinite;
+      transition: transform 0.14s, box-shadow 0.14s;
     }
 
-    .info-btn-ratings {
-      display:flex; flex-direction:column; align-items:flex-end; gap:2px;
+    @keyframes discountPulse {
+      0%,100% { box-shadow: 0 6px 22px rgba(255,180,0,0.40), 0 3px 0 rgba(255,255,255,0.20) inset, 0 -2px 0 rgba(0,0,0,0.20) inset; }
+      50%      { box-shadow: 0 8px 32px rgba(255,200,0,0.70), 0 3px 0 rgba(255,255,255,0.20) inset, 0 -2px 0 rgba(0,0,0,0.20) inset; }
     }
 
-    .rating-pill {
-      font-size:10px; font-weight:800;
-      color:#fff; letter-spacing:0.05em;
-      background:rgba(255,255,255,0.10);
-      border-radius:20px; padding:2px 8px;
+    .discount-tab:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+      animation-play-state: paused;
     }
 
-    .chevron {
-      font-size:16px; color:rgba(255,200,100,0.7); margin-left:4px;
+    .discount-tab-icon { font-size:18px; line-height:1; }
+
+    .discount-tab-text-wrap {
+      display: flex; flex-direction: column; align-items: center; gap: 1px;
     }
 
-    /* ── ACTION BUTTONS ── */
-    .actions {
-      display:flex; justify-content:space-around; align-items:center; gap:8px;
+    .discount-tab-title {
+      font-family:'DM Sans', sans-serif;
+      font-size:12px; font-weight:800;
+      letter-spacing:0.14em; text-transform:uppercase;
+      color:rgba(50,15,0,0.95);
+      text-shadow: 0 1px 0 rgba(255,255,255,0.30);
     }
 
-    .action-btn {
-      flex:1; display:flex; flex-direction:column; align-items:center; gap:5px;
-      cursor:pointer; text-decoration:none;
-      padding:10px 4px; border-radius:14px;
-      background:rgba(255,255,255,0.07);
-      border:1px solid rgba(255,180,80,0.20);
-      transition:transform 0.14s, background 0.14s;
+    .discount-tab-sub {
+      font-size:9px; font-weight:600;
+      color:rgba(60,20,0,0.70);
+      letter-spacing:0.06em;
     }
-    .action-btn:active { transform:scale(0.92); background:rgba(255,255,255,0.14); }
 
-    .action-icon { width:26px; height:26px; display:flex; align-items:center; justify-content:center; }
-    .action-icon svg { width:24px; height:24px; }
-
-    .action-label {
-      font-size:9px; font-weight:800;
-      letter-spacing:0.10em; text-transform:uppercase;
-      color:rgba(255,255,255,0.80); text-align:center;
+    .discount-tab-arrow {
+      font-size:20px; font-weight:800;
+      color:rgba(50,15,0,0.70);
+      margin-left:2px;
     }
 
     /* ── INFO MODAL ── */
@@ -265,85 +329,60 @@
       text-transform:uppercase;
     }
 
-    /* ── VERTICAL TAB ── */
-    .side-tab {
-      position: absolute;
-      left: 0;
-      top: 35%;
-      transform: translateY(-50%);
-      z-index: 20;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      text-decoration: none;
-      cursor: pointer;
-      background: linear-gradient(180deg, rgba(255,220,60,1.0) 0%, rgba(220,130,0,1.0) 100%);
-      border: 1.5px solid rgba(255,240,120,0.8);
-      border-left: none;
-      border-radius: 0 18px 18px 0;
-      padding: 18px 10px;
-      box-shadow:
-        4px 0 24px rgba(255,180,0,0.45),
-        6px 0 40px rgba(255,150,0,0.25),
-        inset -2px 0 0 rgba(255,255,255,0.20),
-        inset 0 2px 0 rgba(255,255,255,0.25);
-      animation: tabPulse 2s ease-in-out infinite;
-      transition: transform 0.14s, box-shadow 0.14s;
-    }
-
-    @keyframes tabPulse {
-      0%,100% {
-        box-shadow:
-          4px 0 24px rgba(255,180,0,0.45),
-          6px 0 40px rgba(255,150,0,0.25),
-          inset -2px 0 0 rgba(255,255,255,0.20),
-          inset 0 2px 0 rgba(255,255,255,0.25);
-        transform: translateY(-50%) translateX(0px);
-      }
-      50% {
-        box-shadow:
-          6px 0 32px rgba(255,200,0,0.75),
-          10px 0 55px rgba(255,160,0,0.45),
-          inset -2px 0 0 rgba(255,255,255,0.20),
-          inset 0 2px 0 rgba(255,255,255,0.25);
-        transform: translateY(-50%) translateX(3px);
-      }
-    }
-
-    .side-tab:active {
-      transform: translateY(-50%) translateX(-2px);
-      box-shadow: 2px 0 10px rgba(0,0,0,0.45);
-      animation-play-state: paused;
-    }
-
-    .side-tab-icon { font-size:22px; line-height:1; }
-
-    .side-tab-text {
-      font-family:'DM Sans', sans-serif;
-      font-size:13px; font-weight:800;
-      letter-spacing:0.14em; text-transform:uppercase;
-      color:rgba(50,15,0,0.95);
-      writing-mode:vertical-rl;
-      text-orientation:mixed;
-      transform:rotate(180deg);
-      line-height:1.3;
-      text-shadow: 0 1px 0 rgba(255,255,255,0.35);
-    }
-
     @media(max-width:430px){ .app{ width:100%; border-radius:0; } }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <a href="cubilete.html" class="side-tab">
-    <span class="side-tab-text">WIN YOUR</span>
-    <span class="side-tab-text">DISCOUNT</span>
-  </a>
-
   <a href="restaurant.html" class="back-btn">← BACK</a>
+
+  <!-- Left side action tabs -->
+  <div class="left-tabs">
+
+    <a class="left-tab" href="https://www.instagram.com/theoriginallobsterhouse" target="_blank">
+      <div class="left-tab-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ff8c69" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="#ff8c69" stroke="none"/>
+        </svg>
+      </div>
+      <span class="left-tab-label">Instagram</span>
+    </a>
+
+    <a class="left-tab" href="https://www.theoriginallobsterhouse.com" target="_blank">
+      <div class="left-tab-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#60cfff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </div>
+      <span class="left-tab-label">Website</span>
+    </a>
+
+    <a class="left-tab" href="https://www.theoriginallobsterhouse.com/menu" target="_blank">
+      <div class="left-tab-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ffd200" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1"/>
+          <path d="M9 12h6M9 16h4"/>
+        </svg>
+      </div>
+      <span class="left-tab-label">Menú</span>
+    </a>
+
+    <a class="left-tab" href="https://maps.google.com/?q=The+Original+Lobster+House+Cozumel" target="_blank">
+      <div class="left-tab-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#50ffa0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          <circle cx="12" cy="9" r="2.5"/>
+        </svg>
+      </div>
+      <span class="left-tab-label">Ubicación</span>
+    </a>
+
+  </div>
 
   <!-- Bottom banner -->
   <div class="banner">
@@ -353,52 +392,16 @@
       <span class="info-btn-name" style="width:100%;text-align:center;">The Original Lobster House</span>
     </button>
 
-    <!-- Action buttons -->
-    <div class="actions">
+    <!-- Discount tab below main button -->
+    <a href="cubilete.html" class="discount-tab">
+      <span class="discount-tab-icon">🎲</span>
+      <div class="discount-tab-text-wrap">
+        <span class="discount-tab-title">WIN YOUR DISCOUNT</span>
+        <span class="discount-tab-sub">Tap to play &amp; save</span>
+      </div>
+      <span class="discount-tab-arrow">›</span>
+    </a>
 
-      <a class="action-btn" href="https://www.instagram.com/theoriginallobsterhouse" target="_blank">
-        <div class="action-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#ff8c69" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="2" width="20" height="20" rx="5"/>
-            <circle cx="12" cy="12" r="4"/>
-            <circle cx="17.5" cy="6.5" r="1" fill="#ff8c69" stroke="none"/>
-          </svg>
-        </div>
-        <span class="action-label">Instagram</span>
-      </a>
-
-      <a class="action-btn" href="https://www.theoriginallobsterhouse.com" target="_blank">
-        <div class="action-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#60cfff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-          </svg>
-        </div>
-        <span class="action-label">Website</span>
-      </a>
-
-      <a class="action-btn" href="https://www.theoriginallobsterhouse.com/menu" target="_blank">
-        <div class="action-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#ffd200" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-            <rect x="9" y="3" width="6" height="4" rx="1"/>
-            <path d="M9 12h6M9 16h4"/>
-          </svg>
-        </div>
-        <span class="action-label">Menú</span>
-      </a>
-
-      <a class="action-btn" href="https://maps.google.com/?q=The+Original+Lobster+House+Cozumel" target="_blank">
-        <div class="action-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#50ffa0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-            <circle cx="12" cy="9" r="2.5"/>
-          </svg>
-        </div>
-        <span class="action-label">Ubicación</span>
-      </a>
-
-    </div>
   </div>
 
   <!-- INFO MODAL -->
