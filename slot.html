@@ -24,18 +24,21 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'DM
 /* REELS — overlaid on the white drums */
 .reels-overlay{
   position:absolute;
-  top:33%;left:50%;
+  top:30%;left:50%;
   transform:translateX(-50%);
-  width:58%;max-width:220px;
-  height:26%;
-  display:flex;gap:2%;
+  width:52%;max-width:200px;
+  height:22%;
+  display:flex;gap:1.5%;
   z-index:10;
+  overflow:hidden;
+  border-radius:4px;
 }
 
 .reel{
   flex:1;overflow:hidden;position:relative;
-  border-radius:4px;
-  background:rgba(255,255,255,0.06);
+  border-radius:2px;
+  background:rgba(255,255,255,0.04);
+  clip-path:inset(0 0 0 0);
 }
 
 .reel-inner{
@@ -57,7 +60,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'DM
 /* SPIN BUTTON */
 .spin-btn-wrap{
   position:absolute;
-  top:60%;left:50%;
+  top:57%;left:50%;
   transform:translateX(-50%);
   z-index:20;width:28%;max-width:105px;
 }
