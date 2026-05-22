@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>VAYGO — Slot Machine</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'DM Sans',sans-serif;}
+.app{width:100%;max-width:430px;height:100dvh;margin:0 auto;position:relative;display:flex;flex-direction:column;background:#000;}
+
+/* MACHINE CONTAINER */
+.machine-wrap{
+  flex:1;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Background image */
+.machine-bg{
+  position:absolute;
+  inset:0;
+  background: url('./ChatGPT_Image_22_may_2026__12_49_28.png') center center / contain no-repeat;
+  background-color:#000;
+  z-index:0;
+}
+
+/* REELS OVERLAY — positioned over the white blank area of the machine image */
+.reels-overlay{
+  position:absolute;
+  /* These values position reels over the blank white drums in the image */
+  top: 28%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 78%;
+  max-width: 300px;
+  height: 22%;
+  display:flex;
+  gap:3%;
+  z-index:10;
+  overflow:hidden;
+  border-radius:6px;
+}
+
+.reel{
+  flex:1;
+  overflow:hidden;
+  position:relative;
+  border-radius:4px;
+  background:rgba(0,0,0,0.15);
+}
+
+.reel-inner{
+  display:flex;
+  flex-direction:column;
+  transition:none;
+}
+
+.reel-item{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  font-family:'Anton',sans-serif;
+  font-weight:400;
+  color:#fff;
+  text-shadow:
+    0 0 20px currentColor,
+    0 2px 4px rgba(0,0,0,0.8);
+  line-height:1;
+}
+
+/* SPIN BUTTON — positioned over the red SPIN button in image */
+.spin-btn-wrap{
+  position:absolute;
+  top: 64%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index:20;
+  width:36%;
+  max-width:140px;
+}
+
+.spin-btn{
+  width:100%;
+  background:linear-gradient(180deg,#ff4444 0%,#cc0000 50%,#990000 100%);
+  border:none;
+  border-radius:8px;
+  padding:10px 0;
+  color:#fff;
+  font-family:'Anton',sans-serif;
+  font-size:clamp(14px,4vw,20px);
+  letter-spacing:2px;
+  cursor:pointer;
+  box-shadow:
+    0 4px 0 #660000,
+    0 6px 20px rgba(255,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+  transition:transform 0.1s, box-shadow 0.1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.spin-btn:active:not(:disabled){
+  transform:translateY(3px);
+  box-shadow:0 1px 0 #660000, 0 2px 8px rgba(255,0,0,0.4);
+}
+.spin-btn:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+}
+
+/* BACK BUTTON */
+.back-btn{
+  position:absolute;
+  top:14px;
+  left:14px;
+  z-index:30;
+  width:36px;height:36px;
+  border-radius:50%;
+  background:rgba(0,0,0,0.6);
+  border:1px solid rgba(255,255,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:20px;text-decoration:none;
+  backdrop-filter:blur(8px);
+}
+
+/* LOGO */
+.slot-logo{
+  position:absolute;
+  top:14px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:30;
+  font-family:'Anton',sans-serif;
+  font-size:16px;
+  color:#C9A84C;
+  letter-spacing:4px;
+  text-shadow:0 0 10px rgba(201,168,76,0.5);
+}
+
+/* SHINE EFFECT ON WIN */
+@keyframes shine{
+  0%{opacity:0;transform:translateX(-100%) rotate(25deg);}
+  50%{opacity:0.6;}
+  100%{opacity:0;transform:translateX(200%) rotate(25deg);}
+}
+.reel.win::after{
+  content:'';
+  position:absolute;
+  top:-50%;left:-50%;
+  width:40%;height:200%;
+  background:linear-gradient(to right,transparent,rgba(255,255,255,0.5),transparent);
+  animation:shine 0.6s ease forwards;
+}
+
+/* QR MODAL */
+#qrModal{
+  position:fixed;inset:0;z-index:300;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.97);padding:16px;overflow-y:auto;
+}
+#qrModal.show{display:flex;animation:fadeIn 0.35s ease;}
+@keyframes fadeIn{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
+.qr-box{
+  background:#0a0a1a;
+  border-radius:24px;
+  padding:24px 20px;
+  text-align:center;
+  width:100%;max-width:320px;
+  border:2px solid #C9A84C;
+  box-shadow:0 0 60px rgba(201,168,76,0.3);
+}
+.qr-your-prize{font-size:10px;color:#00CFFF;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px;}
+.qr-prize-val{font-family:'Anton',sans-serif;font-size:64px;line-height:1;color:#fff;margin-bottom:4px;}
+.qr-rest-name{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:14px;}
+.qr-code-pill{background:#111;border-radius:10px;padding:8px 18px;font-family:monospace;font-size:17px;font-weight:700;color:#fff;letter-spacing:2px;margin-bottom:6px;display:inline-block;}
+.qr-valid-txt{font-size:12px;color:#f59e0b;font-weight:700;margin-bottom:14px;}
+#qr-canvas{display:flex;justify-content:center;margin:0 auto 10px;width:264px;height:264px;}
+#qr-canvas img{border-radius:8px;}
+.qr-hint{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:14px;}
+.qr-min-box{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:10px;font-size:11px;color:rgba(255,255,255,0.6);}
+.qr-min-box strong{color:#f59e0b;}
+
+/* CONFETTI CANVAS */
+#serpCanvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:199;}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain: "vaygo-app.firebaseapp.com",
+  projectId: "vaygo-app",
+  storageBucket: "vaygo-app.firebasestorage.app",
+  appId: "vaygo-app"
+});
+const db = firebase.firestore();
+
+const REST_ID      = "lobster";
+const REST_NAME    = "Lobster House";
+const CLOSE_HOUR   = 23;
+const CLOSE_MIN    = 59;
+const MIN_PURCHASE = "$20 USD";
+
+// Prizes
+const PRIZES = ["10% OFF", "15% OFF", "20% OFF"];
+const PRIZE_COLORS = {"10% OFF":"#FF2D9B","15% OFF":"#33DD33","20% OFF":"#FFD700"};
+
+// Reel symbols — the prizes plus decoys
+const SYMBOLS = ["10% OFF","15% OFF","20% OFF","10% OFF","15% OFF","20% OFF","🎰","⭐","🍀","🔔","💎","7️⃣"];
+
+function genCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const seg=n=>Array.from({length:n},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+  return 'VYG-'+seg(4)+'-'+seg(4);
+}
+
+function getExpiry(){
+  const now=new Date(), exp=new Date(now);
+  exp.setHours(CLOSE_HOUR,CLOSE_MIN,59,0);
+  if(exp<=now) exp.setDate(exp.getDate()+1);
+  return exp;
+}
+
+async function saveAndShowQR(prizeLabel){
+  const today=new Date().toISOString().slice(0,10);
+  const spinKey=REST_ID+'_slot_'+today;
+  try{
+    const existing=localStorage.getItem('vaygo_slot_'+REST_ID);
+    if(existing){
+      const data=JSON.parse(existing);
+      if(data.spinKey===spinKey){ displayQRModal(data.code,prizeLabel,data.expires); return; }
+    }
+  }catch(e){}
+
+  const code=genCode(), expires=getExpiry();
+  const codeData={
+    code,prize:prizeLabel,restId:REST_ID,restName:REST_NAME,
+    spinKey,spunAt:firebase.firestore.FieldValue.serverTimestamp(),
+    expiresAt:expires.toISOString(),expiresStr:'Valid until: 11:59 pm today',
+    used:false,uid:'anonymous_'+Date.now(),game:'slot'
+  };
+  try{ await db.collection('codes').doc(code).set(codeData); }catch(e){ console.error(e); }
+  try{ localStorage.setItem('vaygo_slot_'+REST_ID,JSON.stringify({code,spinKey,expires:expires.toISOString(),prize:prizeLabel})); }catch(e){}
+  displayQRModal(code,prizeLabel,expires.toISOString());
+}
+
+function displayQRModal(code,prize,expiresISO){
+  const expires=new Date(expiresISO);
+  const timeStr=expires.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('qr-prize').textContent=prize;
+  document.getElementById('qr-rest').textContent=REST_NAME;
+  document.getElementById('qr-code-txt').textContent=code;
+  document.getElementById('qr-valid').textContent='Valid until: '+timeStr+' today';
+  document.getElementById('qr-min').innerHTML='Valid on orders of <strong>'+MIN_PURCHASE+'</strong> or more';
+  const qrDiv=document.getElementById('qr-canvas');
+  qrDiv.innerHTML='';
+  new QRCode(qrDiv,{text:code,width:240,height:240,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  setTimeout(()=>{
+    const img=qrDiv.querySelector('img');
+    if(img){img.style.padding='12px';img.style.background='#fff';img.style.borderRadius='12px';img.style.display='block';}
+  },100);
+  document.getElementById('qrModal').classList.add('show');
+}
+</script>
+</head>
+<body>
+<div class="app">
+
+  <a href="lobster.html" class="back-btn">‹</a>
+  <div class="slot-logo">VAYGO</div>
+
+  <div class="machine-wrap">
+    <div class="machine-bg"></div>
+
+    <!-- REELS over the white drums -->
+    <div class="reels-overlay" id="reelsOverlay">
+      <div class="reel" id="reel0"><div class="reel-inner" id="inner0"></div></div>
+      <div class="reel" id="reel1"><div class="reel-inner" id="inner1"></div></div>
+      <div class="reel" id="reel2"><div class="reel-inner" id="inner2"></div></div>
+    </div>
+
+    <!-- SPIN BUTTON over the red button -->
+    <div class="spin-btn-wrap">
+      <button class="spin-btn" id="spinBtn" onclick="spin()">SPIN</button>
+    </div>
+  </div>
+
+  <!-- QR MODAL -->
+  <div id="qrModal">
+    <div class="qr-box">
+      <div class="qr-your-prize">🎉 YOUR PRIZE</div>
+      <div class="qr-prize-val" id="qr-prize">20% OFF</div>
+      <div class="qr-rest-name" id="qr-rest">Lobster House</div>
+      <div class="qr-code-pill" id="qr-code-txt">VYG-XXXX-XXXX</div>
+      <div class="qr-valid-txt" id="qr-valid">Valid until: 11:59 pm today</div>
+      <div id="qr-canvas"></div>
+      <div class="qr-hint">Show this QR to the staff to redeem your prize</div>
+      <div class="qr-min-box">⚠️ MINIMUM PURCHASE REQUIRED<br><span id="qr-min">Valid on orders of <strong>$20 USD</strong> or more</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── REEL SETUP ──
+const REEL_SYMBOLS = ["10%","15%","20%","🎰","⭐","🍀","🔔","💎","7️⃣","10%","15%","20%"];
+const PRIZE_LABELS = {"10%":"10% OFF","15%":"15% OFF","20%":"20% OFF"};
+const PRIZE_COLORS_MAP = {"10%":"#00CFFF","15%":"#FF2D9B","20%":"#FFD700"};
+
+let spinning = false;
+let done = false;
+
+function getReelHeight(){
+  return document.getElementById('reelsOverlay').clientHeight;
+}
+
+function buildReels(){
+  for(let r=0;r<3;r++){
+    const inner = document.getElementById('inner'+r);
+    inner.innerHTML='';
+    const h = getReelHeight();
+    // Build long list of symbols
+    const symbols = [...REEL_SYMBOLS,...REEL_SYMBOLS,...REEL_SYMBOLS,...REEL_SYMBOLS];
+    symbols.forEach(sym=>{
+      const div=document.createElement('div');
+      div.className='reel-item';
+      div.style.height=h+'px';
+      const isPercent = sym==='10%'||sym==='15%'||sym==='20%';
+      div.style.color = isPercent ? (PRIZE_COLORS_MAP[sym]||'#fff') : 'rgba(255,255,255,0.7)';
+      div.style.fontSize = isPercent ? (h*0.22)+'px' : (h*0.38)+'px';
+      div.style.fontWeight = isPercent ? '900' : '400';
+      div.style.textShadow = isPercent ? '0 0 12px '+( PRIZE_COLORS_MAP[sym]||'#fff')+', 0 2px 4px rgba(0,0,0,0.9)' : 'none';
+      div.style.letterSpacing = isPercent ? '1px' : '0px';
+      div.textContent=sym;
+      inner.appendChild(div);
+    });
+    // Start at middle
+    inner.style.transform=`translateY(-${h * REEL_SYMBOLS.length}px)`;
+  }
+}
+
+window.addEventListener('load', buildReels);
+window.addEventListener('resize', buildReels);
+
+// ── SOUND ──
+let _ac=null;
+function getAC(){
+  if(!_ac) _ac=new(window.AudioContext||window.webkitAudioContext)();
+  if(_ac.state==='suspended') _ac.resume();
+  return _ac;
+}
+function makeNoise(ac,dur){
+  const buf=ac.createBuffer(1,Math.ceil(ac.sampleRate*dur),ac.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+  return buf;
+}
+function playSpinSound(){
+  try{
+    const ac=getAC(), now=ac.currentTime;
+    // Mechanical spinning click track
+    for(let i=0;i<18;i++){
+      const t=i*0.06;
+      const b=makeNoise(ac,0.04);
+      const s=ac.createBufferSource(); s.buffer=b;
+      const f=ac.createBiquadFilter(); f.type='bandpass'; f.frequency.value=1400+Math.random()*400; f.Q.value=5;
+      const g=ac.createGain();
+      g.gain.setValueAtTime(0.4,now+t);
+      g.gain.exponentialRampToValueAtTime(0.001,now+t+0.035);
+      s.connect(f);f.connect(g);g.connect(ac.destination);
+      s.start(now+t);s.stop(now+t+0.05);
+    }
+  }catch(e){}
+}
+function playWinSound(){
+  try{
+    const ac=getAC(),now=ac.currentTime;
+    [[0,523],[0.12,659],[0.24,784],[0.36,1047],[0.5,1319]].forEach(([t,f])=>{
+      const o=ac.createOscillator(); o.type='sine';
+      const g=ac.createGain();
+      o.frequency.value=f;
+      g.gain.setValueAtTime(0,now+t);
+      g.gain.linearRampToValueAtTime(0.3,now+t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.001,now+t+0.28);
+      o.connect(g);g.connect(ac.destination);
+      o.start(now+t);o.stop(now+t+0.3);
+    });
+  }catch(e){}
+}
+function playStopSound(){
+  try{
+    const ac=getAC(),now=ac.currentTime;
+    const b=makeNoise(ac,0.08);
+    const s=ac.createBufferSource(); s.buffer=b;
+    const f=ac.createBiquadFilter(); f.type='bandpass'; f.frequency.value=800; f.Q.value=3;
+    const g=ac.createGain();
+    g.gain.setValueAtTime(0.5,now);
+    g.gain.exponentialRampToValueAtTime(0.001,now+0.07);
+    s.connect(f);f.connect(g);g.connect(ac.destination);
+    s.start(now);s.stop(now+0.09);
+  }catch(e){}
+}
+
+// ── SPIN LOGIC ──
+function spin(){
+  if(spinning||done) return;
+  spinning=true;
+  document.getElementById('spinBtn').disabled=true;
+  playSpinSound();
+
+  // Pick prize
+  const prize=PRIZES[Math.floor(Math.random()*PRIZES.length)];
+  const prizeShort=prize.replace('% OFF','%');
+
+  const h=getReelHeight();
+  const totalSyms=REEL_SYMBOLS.length;
+
+  // Animate each reel with staggered stop
+  [0,1,2].forEach((r,idx)=>{
+    const inner=document.getElementById('inner'+r);
+    const symbols=[...REEL_SYMBOLS,...REEL_SYMBOLS,...REEL_SYMBOLS,...REEL_SYMBOLS];
+
+    // Pick landing symbol: last reel always shows prize, others random
+    let landSym;
+    if(idx===2){
+      landSym=prizeShort;
+    } else {
+      landSym=REEL_SYMBOLS[Math.floor(Math.random()*REEL_SYMBOLS.length)];
+    }
+
+    // Find landing index in 3rd batch
+    const batchStart=totalSyms*2;
+    let landIdx=batchStart;
+    for(let i=batchStart;i<batchStart+totalSyms;i++){
+      if(symbols[i]===landSym){landIdx=i;break;}
+    }
+
+    // Center the landing symbol
+    const targetY=-(landIdx*h)+(h/2)-(h/2);
+
+    const spinDuration=1200+idx*400;
+    const startY=-(totalSyms*h); // current start
+
+    inner.style.transition='none';
+    inner.style.transform=`translateY(${startY}px)`;
+
+    setTimeout(()=>{
+      inner.style.transition=`transform ${spinDuration}ms cubic-bezier(0.17,0.67,0.12,1.0)`;
+      inner.style.transform=`translateY(${targetY}px)`;
+
+      setTimeout(()=>{
+        playStopSound();
+        // Highlight winning reel
+        if(idx===2){
+          document.getElementById('reel'+r).classList.add('win');
+        }
+
+        if(idx===2){
+          // All stopped
+          setTimeout(()=>{
+            spinning=false;
+            done=true;
+            playWinSound();
+            confetti();
+            setTimeout(()=>saveAndShowQR(prize),800);
+          },400);
+        }
+      },spinDuration);
+    },50+idx*80);
+  });
+}
+
+// ── CONFETTI ──
+let serpCanvas,serpCtx,serpPieces=[],serpRAF=null;
+function confetti(){
+  if(!serpCanvas){
+    serpCanvas=document.createElement('canvas');
+    serpCanvas.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+    document.body.appendChild(serpCanvas);
+  }
+  serpCanvas.width=window.innerWidth;
+  serpCanvas.height=window.innerHeight;
+  serpCtx=serpCanvas.getContext('2d');
+  const COLS=['#C9A84C','#FF2D9B','#00CFFF','#33DD33','#FF8C00','#FFD700','#ffffff'];
+  serpPieces=[];
+  for(let i=0;i<120;i++){
+    const isTape=Math.random()>0.35;
+    serpPieces.push({
+      x:Math.random()*serpCanvas.width,y:-10-Math.random()*120,
+      vx:(Math.random()-0.5)*3,vy:2+Math.random()*4,
+      color:COLS[Math.floor(Math.random()*COLS.length)],
+      angle:Math.random()*Math.PI*2,spin:(Math.random()-0.5)*0.15,
+      wave:Math.random()*Math.PI*2,waveSpd:0.05+Math.random()*0.07,
+      len:isTape?30+Math.random()*45:0,width:isTape?3+Math.random()*4:5+Math.random()*6,
+      alpha:1,isTape,dead:false
+    });
+  }
+  if(serpRAF) cancelAnimationFrame(serpRAF);
+  let frame=0;
+  function loop(){
+    serpCtx.clearRect(0,0,serpCanvas.width,serpCanvas.height);
+    let anyAlive=false;
+    for(const p of serpPieces){
+      if(p.dead) continue;
+      p.wave+=p.waveSpd;p.x+=p.vx+Math.sin(p.wave)*1.5;p.y+=p.vy;p.angle+=p.spin;p.vy+=0.05;
+      if(p.y>serpCanvas.height*0.8) p.alpha-=0.02;
+      if(p.alpha<=0){p.dead=true;continue;}
+      anyAlive=true;
+      serpCtx.save();serpCtx.globalAlpha=p.alpha;serpCtx.translate(p.x,p.y);serpCtx.rotate(p.angle);
+      if(p.isTape){
+        serpCtx.beginPath();
+        const segs=10;serpCtx.moveTo(0,-p.len/2);
+        for(let s=1;s<=segs;s++){const t=s/segs;const ox=Math.sin(t*Math.PI*3+p.wave)*p.width*1.8;serpCtx.lineTo(ox,-p.len/2+p.len*t);}
+        serpCtx.strokeStyle=p.color;serpCtx.lineWidth=p.width;serpCtx.lineCap='round';
+        serpCtx.shadowColor=p.color;serpCtx.shadowBlur=6;serpCtx.stroke();
+        serpCtx.strokeStyle='rgba(255,255,255,0.3)';serpCtx.lineWidth=p.width*0.35;serpCtx.shadowBlur=0;serpCtx.stroke();
+      }else{
+        serpCtx.beginPath();serpCtx.ellipse(0,0,p.width/2,p.width/3,0,0,Math.PI*2);
+        serpCtx.fillStyle=p.color;serpCtx.shadowColor=p.color;serpCtx.shadowBlur=6;serpCtx.fill();
+      }
+      serpCtx.restore();
+    }
+    frame++;
+    if(anyAlive&&frame<350){serpRAF=requestAnimationFrame(loop);}
+    else{serpCtx.clearRect(0,0,serpCanvas.width,serpCanvas.height);serpRAF=null;}
+  }
+  loop();
+}
+</script>
+</body>
+</html>
