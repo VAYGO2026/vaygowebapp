@@ -73,20 +73,36 @@
       cursor: pointer;
       width: 56px;
       padding: 12px 6px;
-      background: rgba(10,5,0,0.62);
-      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255,180,80,0.22);
-      border-left: none;
       border-radius: 0 14px 14px 0;
-      box-shadow:
-        3px 0 18px rgba(0,0,0,0.45),
-        inset -1px 0 0 rgba(255,200,100,0.08);
-      transition: transform 0.14s, background 0.14s, box-shadow 0.14s;
+      border: 2px solid transparent;
+      border-left: none;
+      backdrop-filter: blur(18px) saturate(1.2);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+      background-image:
+        linear-gradient(rgba(10,5,0,0.82), rgba(10,5,0,0.82)),
+        conic-gradient(
+          from var(--angle),
+          rgba(255,180,40,0.12) 0deg,
+          rgba(255,180,40,0.12) 60deg,
+          rgba(255,210,80,0.55) 90deg,
+          rgba(255,255,180,1.0) 130deg,
+          rgba(255,210,80,0.55) 170deg,
+          rgba(255,180,40,0.12) 200deg,
+          rgba(255,180,40,0.12) 360deg
+        );
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      box-shadow: 3px 0 18px rgba(0,0,0,0.45);
+      transition: transform 0.14s, box-shadow 0.14s;
     }
+
+    .left-tab:nth-child(1) { animation: rotateBorder 3s linear infinite; animation-delay: 0s; }
+    .left-tab:nth-child(2) { animation: rotateBorder 3s linear infinite; animation-delay: 0.75s; }
+    .left-tab:nth-child(3) { animation: rotateBorder 3s linear infinite; animation-delay: 1.5s; }
+    .left-tab:nth-child(4) { animation: rotateBorder 3s linear infinite; animation-delay: 2.25s; }
 
     .left-tab:active {
       transform: translateX(-3px);
-      background: rgba(255,255,255,0.10);
       box-shadow: 1px 0 6px rgba(0,0,0,0.35);
     }
 
@@ -104,17 +120,16 @@
     .banner {
       position:absolute; bottom:0; left:0; right:0;
       z-index:10;
-      background:rgba(10,5,0,0.62);
-      backdrop-filter:blur(20px) saturate(1.3);
-      -webkit-backdrop-filter:blur(20px) saturate(1.3);
-      border-top:1px solid rgba(255,180,80,0.22);
-      padding:14px 16px 28px;
+      background:transparent;
+      padding:14px 32px 32px;
       display:flex; flex-direction:column; gap:10px;
+      align-items:center;
     }
 
     /* ── INFO BUTTON (opens modal) ── */
     .info-btn {
-      width:100%;
+      width:auto;
+      min-width:200px;
       background: linear-gradient(
         180deg,
         rgba(255,210,100,0.28) 0%,
@@ -124,7 +139,7 @@
       border: 1px solid rgba(255,190,80,0.50);
       border-bottom: 4px solid rgba(150,60,0,0.70);
       border-radius: 100px;
-      padding: 13px 22px;
+      padding: 13px 28px;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       gap: 10px;
@@ -150,11 +165,12 @@
 
     /* ── DISCOUNT TAB (below main button) ── */
     .discount-tab {
-      width: 100%;
+      width:auto;
+      min-width:200px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       text-decoration: none;
       cursor: pointer;
       background: linear-gradient(
@@ -164,7 +180,7 @@
       );
       border: 1.5px solid rgba(255,240,120,0.8);
       border-radius: 100px;
-      padding: 11px 22px;
+      padding: 10px 26px;
       box-shadow:
         0 6px 22px rgba(255,180,0,0.40),
         0 3px 0 rgba(255,255,255,0.20) inset,
@@ -192,10 +208,11 @@
 
     .discount-tab-title {
       font-family:'DM Sans', sans-serif;
-      font-size:12px; font-weight:800;
-      letter-spacing:0.14em; text-transform:uppercase;
+      font-size:11px; font-weight:800;
+      letter-spacing:0.08em; text-transform:uppercase;
       color:rgba(50,15,0,0.95);
       text-shadow: 0 1px 0 rgba(255,255,255,0.30);
+      text-align: center;
     }
 
     .discount-tab-sub {
@@ -329,6 +346,17 @@
       text-transform:uppercase;
     }
 
+    @property --angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    @keyframes rotateBorder {
+      from { --angle: 0deg; }
+      to   { --angle: 360deg; }
+    }
+
     @media(max-width:430px){ .app{ width:100%; border-radius:0; } }
   </style>
 </head>
@@ -394,10 +422,9 @@
 
     <!-- Discount tab below main button -->
     <a href="cubilete.html" class="discount-tab">
-      <span class="discount-tab-icon">🎲</span>
       <div class="discount-tab-text-wrap">
-        <span class="discount-tab-title">WIN YOUR DISCOUNT</span>
-        <span class="discount-tab-sub">Tap to play &amp; save</span>
+        <span class="discount-tab-title">Play &amp; Get</span>
+        <span class="discount-tab-title">Your Discount Coupon</span>
       </div>
       <span class="discount-tab-arrow">›</span>
     </a>
