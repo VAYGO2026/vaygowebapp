@@ -263,7 +263,7 @@ function displayQRModal(code,prize,expiresISO){
 //   left: ~8%    width:  ~77%
 // These are tuned to the new image — adjust if needed:
 const CFG = {
-  top:    0.265,
+  top:    0.245,
   left:   0.115,
   width:  0.680,
   height: 0.340,
@@ -296,6 +296,9 @@ const img = document.getElementById('machineImg');
 img.addEventListener('load', layout);
 window.addEventListener('resize', layout);
 if(img.complete) layout();
+// Fallback: retry layout after short delay in case image loads fast
+setTimeout(layout, 200);
+setTimeout(layout, 800);
 
 // ── REELS ──
 const REEL_ITEMS=[
