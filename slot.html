@@ -4,48 +4,68 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>VAYGO — Slot Machine</title>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;700;800&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'DM Sans',sans-serif;}
-.app{width:100%;max-width:430px;height:100dvh;margin:0 auto;position:relative;display:flex;flex-direction:column;background:#000;}
-
-.machine-wrap{
-  flex:1;position:relative;overflow:hidden;
+html,body{
+  width:100%;height:100%;
+  background:#000;
   display:flex;align-items:center;justify-content:center;
-  isolation:isolate;
-}
-.machine-bg{
-  position:absolute;inset:0;
-  background:url('./machine.png') center center / contain no-repeat;
-  background-color:#000;
-  z-index:0;
+  overflow:hidden;
+  font-family:'DM Sans',sans-serif;
 }
 
-/* REELS — overlaid on the white drums */
-.reels-overlay{
-  position:absolute;
-  top:29.6%;
-  left:50%;
-  transform:translateX(-50%);
-  width:42.5%;
-  max-width:170px;
-  height:16.5%;
-  display:flex;
-  gap:3.2%;
-  z-index:10;
-  overflow:hidden;
-  border-radius:3px;
+.app{
+  width:100%;max-width:430px;
+  height:100dvh;
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* IMAGE fills the screen */
+#machineImg{
+  display:block;
+  max-width:100%;
+  max-height:100dvh;
+  object-fit:contain;
+  position:relative;
+  z-index:0;
+  user-select:none;
   pointer-events:none;
+}
+
+/* REELS PANEL — injected into black screen area */
+#reelsPanel{
+  position:absolute;
+  z-index:10;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:0;
+}
+
+/* 3 REELS ROW */
+#reelsRow{
+  display:flex;
+  gap:6px;
+  background:rgba(0,0,0,0.0);
 }
 
 .reel{
   flex:1;
   overflow:hidden;
   position:relative;
-  border-radius:2px;
-  background:transparent;
+  border-radius:6px;
+  background:linear-gradient(180deg,#0a0018 0%,#120025 50%,#0a0018 100%);
+  border:1px solid rgba(180,130,255,0.15);
 }
+
+/* top/bottom fade inside reel */
+.reel::before,.reel::after{
+  content:'';position:absolute;left:0;right:0;height:20%;z-index:5;pointer-events:none;
+}
+.reel::before{top:0;background:linear-gradient(to bottom,rgba(10,0,24,0.9),transparent);}
+.reel::after{bottom:0;background:linear-gradient(to top,rgba(10,0,24,0.9),transparent);}
 
 .reel-inner{
   display:flex;flex-direction:column;
@@ -53,59 +73,84 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'DM
 }
 
 .reel-item{
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  flex-shrink:0;
   font-family:'Anton',sans-serif;
-  font-size:clamp(18px,5vw,27px) !important;
-  line-height:0.9;
-  font-weight:700;
   text-align:center;
-  white-space:pre-line;
+  line-height:1;
 }
 
-/* SPIN BUTTON */
-.spin-btn-wrap{
+.reel-pct{font-size:22px;}
+.reel-off{font-size:9px;font-family:'DM Sans',sans-serif;font-weight:800;letter-spacing:2px;margin-top:1px;}
+
+/* PAYLINE */
+#payline{
   position:absolute;
-  top:66.2%;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:20;
-  width:17.5%;
-  max-width:74px;
+  left:0;right:0;
+  top:50%;transform:translateY(-50%);
+  height:1px;
+  background:rgba(255,215,0,0.3);
+  z-index:6;
+  pointer-events:none;
 }
-.spin-btn{
+
+/* STATS BAR */
+#statsBar{
+  display:flex;gap:4px;
+  margin-top:6px;
+}
+.stat-box{
+  flex:1;text-align:center;
+  background:rgba(0,0,0,0.6);
+  border-radius:5px;
+  padding:3px 4px;
+  border:1px solid rgba(255,215,0,0.2);
+}
+.stat-label{font-size:7px;letter-spacing:1px;color:rgba(255,215,0,0.45);text-transform:uppercase;}
+.stat-val{font-family:'Anton',sans-serif;font-size:11px;color:rgba(255,255,255,0.7);}
+
+/* SPIN BUTTON */
+#spinWrap{
+  margin-top:8px;
   width:100%;
-  height:28px;
-  background:linear-gradient(180deg,#ff4d4d 0%,#d40000 48%,#7a0000 100%);
-  border:none;
-  border-radius:6px;
-  color:#fff;
-  font-family:'Anton',sans-serif;
-  font-size:14px;
-  letter-spacing:1.5px;
-  padding:0;
-  cursor:pointer;
-  box-shadow:0 2px 0 #550000,inset 0 1px 0 rgba(255,255,255,0.2);
-  transition:transform 0.1s,box-shadow 0.1s;
 }
-.spin-btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 #550000;}
-.spin-btn:disabled{opacity:0.45;cursor:not-allowed;}
+#spinBtn{
+  width:100%;
+  background:linear-gradient(180deg,#FFD700 0%,#FFA500 50%,#cc7700 100%);
+  border:none;border-radius:8px;
+  color:#1a0a00;
+  font-family:'Anton',sans-serif;
+  font-size:16px;letter-spacing:3px;
+  cursor:pointer;
+  box-shadow:
+    0 3px 0 #7a4400,
+    0 5px 18px rgba(255,180,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+  transition:transform 0.1s,box-shadow 0.1s;
+  height:36px;
+}
+#spinBtn:active:not(:disabled){
+  transform:translateY(3px);
+  box-shadow:0 0 0 #7a4400,0 2px 8px rgba(255,180,0,0.3);
+}
+#spinBtn:disabled{opacity:0.45;cursor:not-allowed;}
 
 /* BACK */
 .back-btn{
-  position:absolute;top:12px;left:12px;z-index:30;
-  width:34px;height:34px;border-radius:50%;
-  background:rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.2);
+  position:fixed;top:12px;left:12px;z-index:100;
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.15);
   display:flex;align-items:center;justify-content:center;
-  color:#fff;font-size:20px;text-decoration:none;
-  backdrop-filter:blur(6px);
+  color:#fff;font-size:18px;text-decoration:none;
 }
 
 /* WIN FLASH */
-@keyframes winFlash{0%,100%{opacity:1;}50%{opacity:0.4;}}
-.reel.win{ animation:winFlash 0.3s ease 3; }
+@keyframes winFlash{
+  0%,100%{box-shadow:inset 0 0 0 rgba(0,0,0,0);}
+  50%{box-shadow:inset 0 0 16px rgba(255,215,0,0.5),0 0 12px rgba(255,215,0,0.4);}
+}
+.reel.win{animation:winFlash 0.3s ease 4;}
 
 /* QR MODAL */
 #qrModal{
@@ -115,11 +160,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'DM
 }
 #qrModal.show{display:flex;animation:fadeIn 0.35s ease;}
 @keyframes fadeIn{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
-.qr-box{
-  background:#0a0a1a;border-radius:24px;padding:24px 20px;
-  text-align:center;width:100%;max-width:320px;
-  border:2px solid #C9A84C;box-shadow:0 0 60px rgba(201,168,76,0.3);
-}
+.qr-box{background:#0a0a1a;border-radius:24px;padding:24px 20px;text-align:center;width:100%;max-width:320px;border:2px solid #C9A84C;box-shadow:0 0 60px rgba(201,168,76,0.3);}
 .qr-your-prize{font-size:10px;color:#00CFFF;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px;}
 .qr-prize-val{font-family:'Anton',sans-serif;font-size:64px;line-height:1;color:#fff;margin-bottom:4px;}
 .qr-rest-name{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:14px;}
@@ -143,43 +184,16 @@ firebase.initializeApp({
   storageBucket:"vaygo-app.firebasestorage.app",
   appId:"vaygo-app"
 });
-const db = firebase.firestore();
-
-const REST_ID      = "lobster";
-const REST_NAME    = "Lobster House";
-const CLOSE_HOUR   = 23;
-const CLOSE_MIN    = 59;
-const MIN_PURCHASE = "$20 USD";
-
-const PRIZES = [
-  { label:"10% OFF", color:"#00CFFF" },
-  { label:"15% OFF", color:"#FF2D9B" },
-  { label:"20% OFF", color:"#FFD700" }
-];
-
-function genCode(){
-  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const seg=n=>Array.from({length:n},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
-  return 'VYG-'+seg(4)+'-'+seg(4);
-}
-function getExpiry(){
-  const now=new Date(),exp=new Date(now);
-  exp.setHours(CLOSE_HOUR,CLOSE_MIN,59,0);
-  if(exp<=now) exp.setDate(exp.getDate()+1);
-  return exp;
-}
+const db=firebase.firestore();
+const REST_ID="lobster",REST_NAME="Lobster House",CLOSE_HOUR=23,CLOSE_MIN=59,MIN_PURCHASE="$20 USD";
+const PRIZES=[{label:"10% OFF",color:"#00CFFF"},{label:"15% OFF",color:"#FF2D9B"},{label:"20% OFF",color:"#FFD700"}];
+function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const s=n=>Array.from({length:n},()=>c[Math.floor(Math.random()*c.length)]).join('');return'VYG-'+s(4)+'-'+s(4);}
+function getExpiry(){const n=new Date(),e=new Date(n);e.setHours(CLOSE_HOUR,CLOSE_MIN,59,0);if(e<=n)e.setDate(e.getDate()+1);return e;}
 async function saveAndShowQR(prize){
-  const today=new Date().toISOString().slice(0,10);
-  const spinKey=REST_ID+'_slot_'+today;
-  try{
-    const ex=localStorage.getItem('vaygo_slot_'+REST_ID);
-    if(ex){const d=JSON.parse(ex);if(d.spinKey===spinKey){displayQRModal(d.code,prize.label,d.expires);return;}}
-  }catch(e){}
+  const today=new Date().toISOString().slice(0,10),spinKey=REST_ID+'_slot_'+today;
+  try{const ex=localStorage.getItem('vaygo_slot_'+REST_ID);if(ex){const d=JSON.parse(ex);if(d.spinKey===spinKey){displayQRModal(d.code,prize.label,d.expires);return;}}}catch(e){}
   const code=genCode(),expires=getExpiry();
-  const data={code,prize:prize.label,restId:REST_ID,restName:REST_NAME,spinKey,
-    spunAt:firebase.firestore.FieldValue.serverTimestamp(),
-    expiresAt:expires.toISOString(),used:false,uid:'anonymous_'+Date.now(),game:'slot'};
-  try{await db.collection('codes').doc(code).set(data);}catch(e){console.error(e);}
+  try{await db.collection('codes').doc(code).set({code,prize:prize.label,restId:REST_ID,restName:REST_NAME,spinKey,spunAt:firebase.firestore.FieldValue.serverTimestamp(),expiresAt:expires.toISOString(),used:false,uid:'anonymous_'+Date.now(),game:'slot'});}catch(e){console.error(e);}
   try{localStorage.setItem('vaygo_slot_'+REST_ID,JSON.stringify({code,spinKey,expires:expires.toISOString(),prize:prize.label}));}catch(e){}
   displayQRModal(code,prize.label,expires.toISOString());
 }
@@ -190,8 +204,7 @@ function displayQRModal(code,prize,expiresISO){
   document.getElementById('qr-code-txt').textContent=code;
   document.getElementById('qr-valid').textContent='Valid until: '+t+' today';
   document.getElementById('qr-min').innerHTML='Valid on orders of <strong>'+MIN_PURCHASE+'</strong> or more';
-  const qrDiv=document.getElementById('qr-canvas');
-  qrDiv.innerHTML='';
+  const qrDiv=document.getElementById('qr-canvas');qrDiv.innerHTML='';
   new QRCode(qrDiv,{text:code,width:240,height:240,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});
   setTimeout(()=>{const img=qrDiv.querySelector('img');if(img){img.style.padding='12px';img.style.background='#fff';img.style.borderRadius='12px';img.style.display='block';}},100);
   document.getElementById('qrModal').classList.add('show');
@@ -199,235 +212,173 @@ function displayQRModal(code,prize,expiresISO){
 </script>
 </head>
 <body>
+
+<a href="lobster.html" class="back-btn">‹</a>
+
 <div class="app">
-  <a href="lobster.html" class="back-btn">‹</a>
+  <!-- BASE IMAGE — machine frame with black screen area -->
+  <img id="machineImg" src="./machine.webp" alt="VAYGO Slot"/>
 
-  <div class="machine-wrap">
-    <div class="machine-bg"></div>
-
-    <!-- 3 REELS over the drums -->
-    <div class="reels-overlay" id="reelsOverlay">
-      <div class="reel" id="reel0"><div class="reel-inner" id="inner0"></div></div>
+  <!-- REELS PANEL — JS positions this over the black screen area -->
+  <div id="reelsPanel">
+    <div id="reelsRow">
+      <div class="reel" id="reel0">
+        <div id="payline"></div>
+        <div class="reel-inner" id="inner0"></div>
+      </div>
       <div class="reel" id="reel1"><div class="reel-inner" id="inner1"></div></div>
       <div class="reel" id="reel2"><div class="reel-inner" id="inner2"></div></div>
     </div>
 
-    <!-- SPIN BUTTON -->
-    <div class="spin-btn-wrap">
-      <button class="spin-btn" id="spinBtn" onclick="spin()">SPIN</button>
+    <div id="statsBar">
+      <div class="stat-box"><div class="stat-label">Credits</div><div class="stat-val">1</div></div>
+      <div class="stat-box"><div class="stat-label">Bet</div><div class="stat-val">MAX</div></div>
+      <div class="stat-box"><div class="stat-label">Win</div><div class="stat-val" id="winStat">—</div></div>
     </div>
-  </div>
 
-  <div id="qrModal">
-    <div class="qr-box">
-      <div class="qr-your-prize">🎉 YOUR PRIZE</div>
-      <div class="qr-prize-val" id="qr-prize">20% OFF</div>
-      <div class="qr-rest-name" id="qr-rest">Lobster House</div>
-      <div class="qr-code-pill" id="qr-code-txt">VYG-XXXX-XXXX</div>
-      <div class="qr-valid-txt" id="qr-valid">Valid until: 11:59 pm today</div>
-      <div id="qr-canvas"></div>
-      <div class="qr-hint">Show this QR to the staff to redeem your prize</div>
-      <div class="qr-min-box">⚠️ MINIMUM PURCHASE REQUIRED<br><span id="qr-min">Valid on orders of <strong>$20 USD</strong> or more</span></div>
+    <div id="spinWrap">
+      <button id="spinBtn" onclick="spin()">SPIN NOW</button>
     </div>
   </div>
 </div>
 
-<script>
-let spinning = false;
-let done = false;
+<!-- QR MODAL -->
+<div id="qrModal">
+  <div class="qr-box">
+    <div class="qr-your-prize">🎉 YOUR PRIZE</div>
+    <div class="qr-prize-val" id="qr-prize">20% OFF</div>
+    <div class="qr-rest-name" id="qr-rest">Lobster House</div>
+    <div class="qr-code-pill" id="qr-code-txt">VYG-XXXX-XXXX</div>
+    <div class="qr-valid-txt" id="qr-valid">Valid until: 11:59 pm today</div>
+    <div id="qr-canvas"></div>
+    <div class="qr-hint">Show this QR to the staff to redeem your prize</div>
+    <div class="qr-min-box">⚠️ MINIMUM PURCHASE REQUIRED<br><span id="qr-min">Valid on orders of <strong>$20 USD</strong> or more</span></div>
+  </div>
+</div>
 
-// Only prizes on reels — repeat for scroll variety
-const REEL_ITEMS = [
-  { label:"10%\nOFF", color:"#00CFFF" },
-  { label:"15%\nOFF", color:"#FF2D9B" },
-  { label:"20%\nOFF", color:"#FFD700" },
-  { label:"10%\nOFF", color:"#00CFFF" },
-  { label:"15%\nOFF", color:"#FF2D9B" },
-  { label:"20%\nOFF", color:"#FFD700" },
-  { label:"10%\nOFF", color:"#00CFFF" },
-  { label:"15%\nOFF", color:"#FF2D9B" },
-  { label:"20%\nOFF", color:"#FFD700" },
+<script>
+// ── IMAGE NATURAL SIZE (px): ~840 x 1120
+// Black screen area in image (as fraction of natural dims):
+//   top:  ~23%   height: ~40%
+//   left: ~8%    width:  ~77%
+// These are tuned to the new image — adjust if needed:
+const CFG = {
+  top:    0.230,
+  left:   0.080,
+  width:  0.770,
+  height: 0.400,
+};
+
+function layout(){
+  const img = document.getElementById('machineImg');
+  const r   = img.getBoundingClientRect();
+  const W=r.width, H=r.height, L=r.left, T=r.top;
+
+  const panel = document.getElementById('reelsPanel');
+  const panelL = L + W * CFG.left;
+  const panelT = T + H * CFG.top;
+  const panelW = W * CFG.width;
+  const panelH = H * CFG.height;
+
+  panel.style.left   = panelL + 'px';
+  panel.style.top    = panelT + 'px';
+  panel.style.width  = panelW + 'px';
+  panel.style.height = panelH + 'px';
+
+  // Reel height = 70% of panel height, rest for stats+button
+  const reelH = Math.floor(panelH * 0.62);
+  document.querySelectorAll('.reel').forEach(r=> r.style.height = reelH+'px');
+
+  buildReels(reelH);
+}
+
+const img = document.getElementById('machineImg');
+img.addEventListener('load', layout);
+window.addEventListener('resize', layout);
+if(img.complete) layout();
+
+// ── REELS ──
+const REEL_ITEMS=[
+  {pct:"10%",off:"OFF",color:"#00CFFF"},
+  {pct:"15%",off:"OFF",color:"#FF2D9B"},
+  {pct:"20%",off:"OFF",color:"#FFD700"},
+  {pct:"10%",off:"OFF",color:"#00CFFF"},
+  {pct:"15%",off:"OFF",color:"#FF2D9B"},
+  {pct:"20%",off:"OFF",color:"#FFD700"},
+  {pct:"10%",off:"OFF",color:"#00CFFF"},
+  {pct:"15%",off:"OFF",color:"#FF2D9B"},
+  {pct:"20%",off:"OFF",color:"#FFD700"},
 ];
 
-function buildReels(){
-  const h = document.getElementById('reelsOverlay').clientHeight;
-  const fs = Math.max(18, Math.min(27, h * 0.24));
+let ITEM_H = 80;
 
-  for(let r = 0; r < 3; r++){
-    const inner = document.getElementById('inner' + r);
-    inner.innerHTML = '';
-    // Build 4 full loops for smooth spinning
-    const items = [...REEL_ITEMS,...REEL_ITEMS,...REEL_ITEMS,...REEL_ITEMS];
-    items.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'reel-item';
-      div.style.height = h + 'px'; // item height = reel height (one item per slot)
+function buildReels(reelH){
+  ITEM_H = reelH;
+  const fs  = Math.round(reelH * 0.24);
+  const fsS = Math.round(reelH * 0.09);
 
-      // font size handled by CSS clamp
-      div.style.color = item.color;
-      div.style.textShadow = `0 0 14px ${item.color}, 0 2px 6px rgba(0,0,0,0.9)`;
-      div.style.fontWeight = '700';
-      div.style.fontFamily = "'DM Sans', sans-serif";
-      div.style.whiteSpace = 'pre';
-      div.style.display = 'flex';
-      div.style.alignItems = 'center';
-      div.style.justifyContent = 'center';
-      div.textContent = item.label;
+  for(let r=0;r<3;r++){
+    const inner=document.getElementById('inner'+r);
+    inner.innerHTML='';
+    const items=[...REEL_ITEMS,...REEL_ITEMS,...REEL_ITEMS,...REEL_ITEMS];
+    items.forEach(item=>{
+      const div=document.createElement('div');
+      div.className='reel-item';
+      div.style.height=reelH+'px';
+      div.innerHTML=`<span class="reel-pct" style="font-size:${fs}px;color:${item.color};text-shadow:0 0 14px ${item.color};">${item.pct}</span><span class="reel-off" style="font-size:${fsS}px;color:${item.color};opacity:0.75;">${item.off}</span>`;
       inner.appendChild(div);
     });
-    // Start position at second loop
-    inner.style.transition = 'none';
-    inner.style.transform = `translateY(-${REEL_ITEMS.length * h}px)`;
+    inner.style.transition='none';
+    inner.style.transform=`translateY(-${REEL_ITEMS.length*reelH}px)`;
   }
-}
-
-window.addEventListener('load', buildReels);
-window.addEventListener('resize', buildReels);
-
-// ── SOUND ──
-let _ac = null;
-function getAC(){
-  if(!_ac) _ac = new(window.AudioContext||window.webkitAudioContext)();
-  if(_ac.state==='suspended') _ac.resume();
-  return _ac;
-}
-function makeNoise(ac,dur){
-  const buf=ac.createBuffer(1,Math.ceil(ac.sampleRate*dur),ac.sampleRate);
-  const d=buf.getChannelData(0);
-  for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
-  return buf;
-}
-function playSpinSound(){
-  try{
-    const ac=getAC(),now=ac.currentTime;
-    for(let i=0;i<20;i++){
-      const t=i*0.055;
-      const b=makeNoise(ac,0.04),s=ac.createBufferSource();s.buffer=b;
-      const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=1200+Math.random()*500;f.Q.value=4;
-      const g=ac.createGain();
-      g.gain.setValueAtTime(0.35,now+t);
-      g.gain.exponentialRampToValueAtTime(0.001,now+t+0.038);
-      s.connect(f);f.connect(g);g.connect(ac.destination);
-      s.start(now+t);s.stop(now+t+0.05);
-    }
-  }catch(e){}
-}
-function playStopSound(){
-  try{
-    const ac=getAC(),now=ac.currentTime;
-    const b=makeNoise(ac,0.08),s=ac.createBufferSource();s.buffer=b;
-    const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=900;f.Q.value=3;
-    const g=ac.createGain();
-    g.gain.setValueAtTime(0.45,now);
-    g.gain.exponentialRampToValueAtTime(0.001,now+0.07);
-    s.connect(f);f.connect(g);g.connect(ac.destination);
-    s.start(now);s.stop(now+0.09);
-  }catch(e){}
-}
-function playWinSound(){
-  try{
-    const ac=getAC(),now=ac.currentTime;
-    [[0,523],[0.13,659],[0.26,784],[0.39,1047],[0.52,1319]].forEach(([t,f])=>{
-      const o=ac.createOscillator();o.type='sine';
-      const g=ac.createGain();o.frequency.value=f;
-      g.gain.setValueAtTime(0,now+t);
-      g.gain.linearRampToValueAtTime(0.28,now+t+0.02);
-      g.gain.exponentialRampToValueAtTime(0.001,now+t+0.28);
-      o.connect(g);g.connect(ac.destination);
-      o.start(now+t);o.stop(now+t+0.3);
-    });
-  }catch(e){}
 }
 
 // ── SPIN ──
+let spinning=false,done=false;
 function spin(){
-  if(spinning || done) return;
-  spinning = true;
-  document.getElementById('spinBtn').disabled = true;
+  if(spinning||done)return;
+  spinning=true;
+  document.getElementById('spinBtn').disabled=true;
   playSpinSound();
 
-  // Pick ONE prize — same for all 3 reels
-  const prize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
-
-  // Find which index in REEL_ITEMS matches the prize
-  const shortLabel = prize.label.replace(' ', '\n'); // "10%\nOFF"
-  const prizePercent = prize.label.split('%')[0] + '%'; // "10%"
-
-  // Find landing index in 3rd batch (index 18-26)
-  const h = document.getElementById('reelsOverlay').clientHeight;
-  const totalItems = REEL_ITEMS.length; // 9
-  let landIdx = totalItems * 2; // start of 3rd batch
-  for(let i = totalItems*2; i < totalItems*3; i++){
-    if(REEL_ITEMS[i % totalItems].label.startsWith(prizePercent)){
-      landIdx = i;
-      break;
-    }
+  const prize=PRIZES[Math.floor(Math.random()*PRIZES.length)];
+  const prizePercent=prize.label.split('%')[0]+'%';
+  const total=REEL_ITEMS.length;
+  let landIdx=total*2;
+  for(let i=total*2;i<total*3;i++){
+    if(REEL_ITEMS[i%total].pct===prizePercent){landIdx=i;break;}
   }
 
-  // Spin each reel, stop on same symbol staggered
-  [0,1,2].forEach((r, idx) => {
-    const inner = document.getElementById('inner' + r);
-    const spinDur = 1000 + idx * 350;
-    const targetY = -(landIdx * h);
-
-    inner.style.transition = `transform ${spinDur}ms cubic-bezier(0.25,0.46,0.10,1.0)`;
-    inner.style.transform = `translateY(${targetY}px)`;
-
-    setTimeout(() => {
+  [0,1,2].forEach((r,idx)=>{
+    const inner=document.getElementById('inner'+r);
+    const dur=1000+idx*300;
+    inner.style.transition=`transform ${dur}ms cubic-bezier(0.25,0.46,0.10,1.0)`;
+    inner.style.transform=`translateY(-${landIdx*ITEM_H}px)`;
+    setTimeout(()=>{
       playStopSound();
       document.getElementById('reel'+r).classList.add('win');
-
-      if(idx === 2){
-        // All reels stopped
-        setTimeout(() => {
-          spinning = false;
-          done = true;
-          playWinSound();
-          confetti();
-          setTimeout(() => saveAndShowQR(prize), 900);
-        }, 300);
+      if(idx===2){
+        document.getElementById('winStat').textContent=prize.label;
+        setTimeout(()=>{
+          spinning=false;done=true;
+          playWinSound();doConfetti();
+          setTimeout(()=>saveAndShowQR(prize),900);
+        },300);
       }
-    }, spinDur);
+    },dur);
   });
 }
 
+// ── SOUND ──
+let _ac=null;
+function getAC(){if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();if(_ac.state==='suspended')_ac.resume();return _ac;}
+function makeNoise(ac,dur){const b=ac.createBuffer(1,Math.ceil(ac.sampleRate*dur),ac.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b;}
+function playSpinSound(){try{const ac=getAC(),now=ac.currentTime;for(let i=0;i<20;i++){const t=i*0.055,b=makeNoise(ac,0.04),s=ac.createBufferSource();s.buffer=b;const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=1200+Math.random()*500;f.Q.value=4;const g=ac.createGain();g.gain.setValueAtTime(0.35,now+t);g.gain.exponentialRampToValueAtTime(0.001,now+t+0.038);s.connect(f);f.connect(g);g.connect(ac.destination);s.start(now+t);s.stop(now+t+0.05);}}catch(e){}}
+function playStopSound(){try{const ac=getAC(),now=ac.currentTime,b=makeNoise(ac,0.08),s=ac.createBufferSource();s.buffer=b;const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=900;f.Q.value=3;const g=ac.createGain();g.gain.setValueAtTime(0.45,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.07);s.connect(f);f.connect(g);g.connect(ac.destination);s.start(now);s.stop(now+0.09);}catch(e){}}
+function playWinSound(){try{const ac=getAC(),now=ac.currentTime;[[0,523],[0.13,659],[0.26,784],[0.39,1047],[0.52,1319]].forEach(([t,f])=>{const o=ac.createOscillator();o.type='sine';const g=ac.createGain();o.frequency.value=f;g.gain.setValueAtTime(0,now+t);g.gain.linearRampToValueAtTime(0.28,now+t+0.02);g.gain.exponentialRampToValueAtTime(0.001,now+t+0.28);o.connect(g);g.connect(ac.destination);o.start(now+t);o.stop(now+t+0.3);});}catch(e){}}
+
 // ── CONFETTI ──
-function confetti(){
-  const canvas=document.createElement('canvas');
-  canvas.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
-  document.body.appendChild(canvas);
-  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
-  const ctx=canvas.getContext('2d');
-  const COLS=['#C9A84C','#FF2D9B','#00CFFF','#33DD33','#FFD700','#ffffff'];
-  const pieces=Array.from({length:120},()=>({
-    x:Math.random()*canvas.width,y:-20-Math.random()*100,
-    vx:(Math.random()-0.5)*3,vy:2+Math.random()*4,
-    color:COLS[Math.floor(Math.random()*COLS.length)],
-    angle:Math.random()*Math.PI*2,spin:(Math.random()-0.5)*0.15,
-    wave:Math.random()*Math.PI*2,waveSpd:0.05+Math.random()*0.07,
-    w:4+Math.random()*5,h:8+Math.random()*12,alpha:1,dead:false
-  }));
-  let frame=0;
-  function loop(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    let alive=false;
-    pieces.forEach(p=>{
-      if(p.dead)return;
-      p.wave+=p.waveSpd;p.x+=p.vx+Math.sin(p.wave)*1.2;p.y+=p.vy;p.angle+=p.spin;p.vy+=0.06;
-      if(p.y>canvas.height*0.82)p.alpha-=0.025;
-      if(p.alpha<=0){p.dead=true;return;}
-      alive=true;
-      ctx.save();ctx.globalAlpha=p.alpha;ctx.translate(p.x,p.y);ctx.rotate(p.angle);
-      ctx.fillStyle=p.color;ctx.shadowColor=p.color;ctx.shadowBlur=5;
-      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
-      ctx.restore();
-    });
-    frame++;
-    if(alive&&frame<300) requestAnimationFrame(loop);
-    else canvas.remove();
-  }
-  loop();
-}
+function doConfetti(){const cv=document.createElement('canvas');cv.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;';document.body.appendChild(cv);cv.width=window.innerWidth;cv.height=window.innerHeight;const ctx=cv.getContext('2d');const C=['#FFD700','#FF2D9B','#00CFFF','#fff','#FFA500'];const ps=Array.from({length:130},()=>({x:Math.random()*cv.width,y:-20,vx:(Math.random()-0.5)*4,vy:2+Math.random()*5,c:C[Math.floor(Math.random()*C.length)],a:Math.random()*Math.PI*2,sp:(Math.random()-0.5)*0.18,w:4+Math.random()*5,h:7+Math.random()*12,al:1,d:false}));let fr=0;(function loop(){ctx.clearRect(0,0,cv.width,cv.height);let alive=false;ps.forEach(p=>{if(p.d)return;p.x+=p.vx;p.y+=p.vy;p.a+=p.sp;p.vy+=0.07;if(p.y>cv.height*0.85)p.al-=0.03;if(p.al<=0){p.d=true;return;}alive=true;ctx.save();ctx.globalAlpha=p.al;ctx.translate(p.x,p.y);ctx.rotate(p.a);ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});fr++;if(alive&&fr<300)requestAnimationFrame(loop);else cv.remove();})();}
 </script>
 </body>
 </html>
