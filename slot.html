@@ -56,7 +56,7 @@ html,body{
   overflow:hidden;
   position:relative;
   border-radius:6px;
-  background:linear-gradient(180deg,#0a0018 0%,#120025 50%,#0a0018 100%);
+  background:rgba(10,0,30,0.85);
   border:1px solid rgba(180,130,255,0.15);
 }
 
@@ -275,19 +275,20 @@ function layout(){
   const W=r.width, H=r.height, L=r.left, T=r.top;
 
   const panel = document.getElementById('reelsPanel');
-  const panelL = L + W * CFG.left;
-  const panelT = T + H * CFG.top;
   const panelW = W * CFG.width;
   const panelH = H * CFG.height;
+  // Center horizontally over image center
+  const imgCenterX = L + W * 0.5;
+  const panelL = imgCenterX - panelW * 0.5;
+  const panelT = T + H * CFG.top;
 
   panel.style.left   = panelL + 'px';
   panel.style.top    = panelT + 'px';
   panel.style.width  = panelW + 'px';
   panel.style.height = panelH + 'px';
 
-  // Reel height = 70% of panel height, rest for stats+button
-  const reelH = Math.floor(panelH * 0.62);
-  document.querySelectorAll('.reel').forEach(r=> r.style.height = reelH+'px');
+  const reelH = Math.floor(panelH * 0.60);
+  document.querySelectorAll('.reel').forEach(el=> el.style.height = reelH+'px');
 
   buildReels(reelH);
 }
