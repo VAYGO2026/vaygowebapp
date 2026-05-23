@@ -265,10 +265,10 @@ function displayQRModal(code,prize,expiresISO){
 //   left: ~8%    width:  ~77%
 // These are tuned to the new image — adjust if needed:
 const CFG = {
-  top:    0.285,
+  top:    0.275,
   left:   0.145,
   width:  0.640,
-  height: 0.480,
+  height: 0.540,
 };
 
 function layout(){
@@ -303,6 +303,10 @@ if(img.complete) layout();
 // Fallback: retry layout after short delay in case image loads fast
 setTimeout(layout, 200);
 setTimeout(layout, 800);
+// Also call after fonts are ready
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(()=>{ layout(); });
+}
 
 // ── REELS ──
 const REEL_ITEMS=[
@@ -343,7 +347,7 @@ function buildReels(reelH){
 
       const p=document.createElement('div');
       p.textContent=item.pct;
-      p.style.fontFamily="Anton,sans-serif";
+      p.style.fontFamily="Impact,'Arial Black',sans-serif";
       p.style.fontSize=fs+'px';
       p.style.color=item.color;
       p.style.textShadow='0 0 20px '+item.color;
@@ -352,7 +356,7 @@ function buildReels(reelH){
 
       const o=document.createElement('div');
       o.textContent='OFF';
-      o.style.fontFamily="DM Sans,sans-serif";
+      o.style.fontFamily="Arial,sans-serif";
       o.style.fontSize=fsS+'px';
       o.style.color=item.color;
       o.style.fontWeight='800';
