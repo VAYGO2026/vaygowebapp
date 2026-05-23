@@ -265,7 +265,7 @@ function displayQRModal(code,prize,expiresISO){
 //   left: ~8%    width:  ~77%
 // These are tuned to the new image — adjust if needed:
 const CFG = {
-  top:    0.275,
+  top:    0.310,
   left:   0.145,
   width:  0.640,
   height: 0.540,
@@ -369,7 +369,7 @@ function buildReels(reelH){
       inner.appendChild(el);
     });
 
-    inner.style.transform='translateY(-'+(REEL_ITEMS.length*reelH)+'px)';
+    inner.style.transform='translateY(0px)'; // start at first item, visible immediately
     inner.style.transition='none';
     inner.style.willChange='transform';
   }
@@ -386,6 +386,7 @@ function spin(){
   const prize=PRIZES[Math.floor(Math.random()*PRIZES.length)];
   const prizePercent=prize.label.split('%')[0]+'%';
   const total=REEL_ITEMS.length;
+  // Land in 3rd batch so we spin forward visibly
   let landIdx=total*2;
   for(let i=total*2;i<total*3;i++){
     if(REEL_ITEMS[i%total].pct===prizePercent){landIdx=i;break;}
@@ -393,8 +394,8 @@ function spin(){
 
   [0,1,2].forEach((r,idx)=>{
     const inner=document.getElementById('inner'+r);
-    const dur=1000+idx*300;
-    inner.style.transition=`transform ${dur}ms cubic-bezier(0.25,0.46,0.10,1.0)`;
+    const dur=1200+idx*350;
+    inner.style.transition=`transform ${dur}ms cubic-bezier(0.17,0.67,0.12,1.0)`;
     inner.style.transform=`translateY(-${landIdx*ITEM_H}px)`;
     setTimeout(()=>{
       playStopSound();
