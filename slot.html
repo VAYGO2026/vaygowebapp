@@ -57,8 +57,8 @@ html,body{
   overflow:hidden;
   position:relative;
   border-radius:10px;
-  background:rgba(10,0,30,0.85);
-  border:1px solid rgba(180,130,255,0.15);
+  background:rgba(8,0,25,0.9);
+  border:1px solid rgba(255,215,0,0.2);
 }
 
 /* top/bottom fade inside reel */
@@ -113,7 +113,7 @@ html,body{
 
 /* SPIN BUTTON */
 #spinWrap{
-  margin-top:10px;
+  margin-top:18px;
   width:100%;
 }
 #spinBtn{
@@ -331,7 +331,7 @@ function buildReels(reelH){
   for(let r=0;r<3;r++){
     const inner=document.getElementById('inner'+r);
     inner.innerHTML='';
-    inner.style.display='block';
+    inner.style.cssText='display:flex;flex-direction:column;will-change:transform;';
 
     // 4 full loops
     const all=[...REEL_ITEMS,...REEL_ITEMS,...REEL_ITEMS,...REEL_ITEMS];
