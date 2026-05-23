@@ -320,50 +320,54 @@ let ITEM_H = 80;
 
 function buildReels(reelH){
   ITEM_H = reelH;
-  const fs  = Math.max(12, Math.round(reelH * 0.22));
-  const fsS = Math.max(7,  Math.round(reelH * 0.08));
+  // Font sizes relative to reel height
+  const fs  = Math.max(14, Math.round(reelH * 0.26));
+  const fsS = Math.max(8,  Math.round(reelH * 0.09));
 
   for(let r=0;r<3;r++){
     const inner=document.getElementById('inner'+r);
     inner.innerHTML='';
-    inner.style.display='flex';
-    inner.style.flexDirection='column';
-    // 4 loops of symbols for smooth scroll
+    inner.style.cssText='display:flex;flex-direction:column;will-change:transform;';
+
     const items=[...REEL_ITEMS,...REEL_ITEMS,...REEL_ITEMS,...REEL_ITEMS];
     items.forEach(item=>{
       const div=document.createElement('div');
-      div.style.height=reelH+'px';
-      div.style.minHeight=reelH+'px';
-      div.style.display='flex';
-      div.style.flexDirection='column';
-      div.style.alignItems='center';
-      div.style.justifyContent='center';
-      div.style.flexShrink='0';
-      // PCT
-      const pct=document.createElement('span');
-      pct.textContent=item.pct;
-      pct.style.fontFamily="'Anton',sans-serif";
-      pct.style.fontSize=fs+'px';
-      pct.style.color=item.color;
-      pct.style.textShadow=`0 0 16px ${item.color}, 0 0 4px ${item.color}`;
-      pct.style.lineHeight='1';
-      // OFF
-      const off=document.createElement('span');
-      off.textContent=item.off;
-      off.style.fontFamily="'DM Sans',sans-serif";
-      off.style.fontWeight='800';
-      off.style.fontSize=fsS+'px';
-      off.style.color=item.color;
-      off.style.opacity='0.8';
-      off.style.letterSpacing='2px';
-      off.style.marginTop='2px';
-
-      div.appendChild(pct);
-      div.appendChild(off);
+      div.style.cssText=`
+        height:${reelH}px;
+        min-height:${reelH}px;
+        flex-shrink:0;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:2px;
+      `;
+      div.innerHTML=`
+        <span style="
+          font-family:'Anton',sans-serif;
+          font-size:${fs}px;
+          color:${item.color};
+          text-shadow:0 0 18px ${item.color},0 0 6px ${item.color};
+          line-height:1;
+          display:block;
+        ">${item.pct}</span>
+        <span style="
+          font-family:'DM Sans',sans-serif;
+          font-weight:800;
+          font-size:${fsS}px;
+          color:${item.color};
+          opacity:0.85;
+          letter-spacing:2px;
+          display:block;
+        ">${item.off}</span>
+      `;
       inner.appendChild(div);
     });
+
+    // Position at start of 2nd batch so we have room to spin forward
+    const startPos = REEL_ITEMS.length * reelH;
+    inner.style.transform=`translateY(-${startPos}px)`;
     inner.style.transition='none';
-    inner.style.transform=`translateY(-${REEL_ITEMS.length*reelH}px)`;
   }
 }
 
