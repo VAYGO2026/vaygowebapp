@@ -75,6 +75,8 @@ function showQR(code,prize,expiresISO){
   const qrDiv=document.getElementById('qr-canvas');qrDiv.innerHTML='';
   new QRCode(qrDiv,{text:code,width:220,height:220,colorDark:'#000',colorLight:'#fff'});
   setTimeout(()=>{const img=qrDiv.querySelector('img');if(img){img.style.padding='10px';img.style.background='#fff';img.style.borderRadius='10px';img.style.display='block';}},100);
+  const minEl=document.getElementById('qr-min-val');
+  if(minEl) minEl.textContent=MIN_PURCHASE;
   document.getElementById('qrModal').classList.add('show');
 }
 </script>
@@ -107,7 +109,7 @@ function showQR(code,prize,expiresISO){
     <div class="qr-valid-txt" id="qr-valid"></div>
     <div id="qr-canvas"></div>
     <div class="qr-hint">Show this QR to the staff</div>
-    <div class="qr-min-box">⚠️ Min purchase: <strong>${MIN_PURCHASE}</strong></div>
+    <div class="qr-min-box">⚠️ Minimum purchase: <strong id="qr-min-val"></strong></div>
   </div>
 </div>
 
@@ -233,6 +235,27 @@ function playWin(){try{const a=getAC(),n=a.currentTime;[[0,523],[.13,659],[.26,7
 
 // Confetti
 function confetti(){const cv=document.createElement('canvas');cv.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;';document.body.appendChild(cv);cv.width=innerWidth;cv.height=innerHeight;const ctx=cv.getContext('2d');const C=['#FFD700','#FF2D9B','#00CFFF','#fff'];const ps=Array.from({length:100},()=>({x:Math.random()*cv.width,y:-20,vx:(Math.random()-.5)*4,vy:2+Math.random()*4,c:C[~~(Math.random()*C.length)],a:Math.random()*6,s:(Math.random()-.5)*.15,w:4+Math.random()*5,h:7+Math.random()*10,al:1}));(function loop(){ctx.clearRect(0,0,cv.width,cv.height);let alive=false;ps.forEach(p=>{if(p.al<=0)return;p.x+=p.vx;p.y+=p.vy;p.a+=p.s;p.vy+=.07;if(p.y>cv.height*.85)p.al-=.03;alive=true;ctx.save();ctx.globalAlpha=p.al;ctx.translate(p.x,p.y);ctx.rotate(p.a);ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});if(alive)requestAnimationFrame(loop);else cv.remove();})();}
+
+// Check if already played today — show existing coupon, block spin
+async function checkAlreadyPlayed(){
+  const today = new Date().toISOString().slice(0,10);
+  const gameKey = REST_ID + '_game_' + today;
+  try {
+    const snap = await db.collection('codes')
+      .where('gameKey','==', gameKey)
+      .limit(1)
+      .get();
+    if(!snap.empty){
+      const d = snap.docs[0].data();
+      // Already played — show coupon directly, disable spin
+      done = true;
+      document.getElementById('spinBtn').disabled = true;
+      document.getElementById('spinBtn').textContent = 'ALREADY PLAYED';
+      showQR(d.code, d.prize, d.expiresAt);
+    }
+  } catch(e){ console.log('check error:', e); }
+}
+checkAlreadyPlayed();
 
 // Init
 const img = document.getElementById('machineImg');
