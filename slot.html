@@ -50,7 +50,18 @@ html,body{width:100%;height:100%;background:#000;display:flex;align-items:center
 <script>
 firebase.initializeApp({apiKey:"AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",authDomain:"vaygo-app.firebaseapp.com",projectId:"vaygo-app",storageBucket:"vaygo-app.firebasestorage.app",appId:"vaygo-app"});
 const db=firebase.firestore();
-const REST_ID="lobster",REST_NAME="Lobster House",MIN_PURCHASE="$20 USD";
+// Dynamic venue config based on URL param
+const VENUE_CONFIGS = {
+  lobster:    { id:'lobster',    name:'The Original Lobster House' },
+  buccanos:   { id:'buccanos',  name:'Buccanos Beach Club' },
+  azulmadera: { id:'azulmadera',name:'Azul Madera' },
+  guidos:     { id:'guidos',    name:"Guido's Restaurant" },
+};
+const _vp = (new URLSearchParams(window.location.search)).get('venue') || 'lobster';
+const _vc = VENUE_CONFIGS[_vp] || VENUE_CONFIGS['lobster'];
+const REST_ID   = _vc.id;
+const REST_NAME = _vc.name;
+const MIN_PURCHASE = "$20 USD";
 const PRIZES=[{label:"10% OFF",color:"#00CFFF"},{label:"15% OFF",color:"#FF2D9B"},{label:"20% OFF",color:"#FFD700"}];
 function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const s=n=>Array.from({length:n},()=>c[Math.floor(Math.random()*c.length)]).join('');return'VYG-'+s(4)+'-'+s(4);}
 function getExpiry(){const n=new Date(),e=new Date(n);e.setHours(23,59,59,0);if(e<=n)e.setDate(e.getDate()+1);return e;}
@@ -134,12 +145,11 @@ function showQR(code,prize,expiresISO){
 </div>
 
 <script>
-const venueParam=(new URLSearchParams(window.location.search)).get('venue')||'lobster';
 const venueMap={lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html'};
-document.getElementById('backBtn').href=venueMap[venueParam]||'lobster.html';
+document.getElementById('backBtn').href=venueMap[_vp]||'lobster.html';
 
 function goBackToVenue(){
-  window.location.href=venueMap[venueParam]||'lobster.html';
+  window.location.href=venueMap[_vp]||'lobster.html';
 }
 
 // Check if already played today — show existing coupon and block spin
