@@ -242,38 +242,49 @@ const VENUE_ID = params.get('venue') || 'lobster';
 const today = new Date().toISOString().slice(0,10);
 
 async function checkPlayed(){
-  // Check if already played today in Firebase
+  const today = new Date().toISOString().slice(0,10);
+  const gameKey = VENUE_ID + '_game_' + today;
+  let playedGame = null;
+
+  // 1. Check unified localStorage key first (instant)
   try {
-    const snap = await db.collection('codes')
-      .where('restId','==',VENUE_ID)
-      .where('uid','>=','anonymous_')
-      .orderBy('uid','desc')
-      .limit(20)
-      .get();
-
-    // Check localStorage first (faster)
-    const lsDice = localStorage.getItem('vaygo_cubilete_'+VENUE_ID);
-    const lsSlot = localStorage.getItem('vaygo_slot_'+VENUE_ID);
-
-    let playedGame = null;
-    if(lsDice){ try{ const d=JSON.parse(lsDice); if(d.spinKey===VENUE_ID+'_'+today) playedGame='cubilete'; }catch(e){} }
-    if(lsSlot){ try{ const d=JSON.parse(lsSlot); if(d.spinKey===VENUE_ID+'_slot_'+today) playedGame='slot'; }catch(e){} }
-
-    if(playedGame){
-      // Show already played banner
-      document.getElementById('alreadyPlayed').style.display='block';
-      document.getElementById('playedGameName').textContent = playedGame==='cubilete' ? 'Cubilete (Dice)' : 'Slot Machine';
-
-      // Lock the other game
-      const otherCard = playedGame==='cubilete' ? document.getElementById('cardSlot') : document.getElementById('cardDice');
-      otherCard.classList.add('locked');
-      otherCard.onclick = e => e.preventDefault();
-
-      // The played game shows "View my prize"
-      const playedCard = playedGame==='cubilete' ? document.getElementById('cardDice') : document.getElementById('cardSlot');
-      playedCard.querySelector('.game-desc').textContent = 'Tap to view your prize coupon';
+    const ls = localStorage.getItem('vaygo_game_' + VENUE_ID);
+    if(ls){
+      const d = JSON.parse(ls);
+      if(d.gameKey === gameKey) playedGame = d.game;
     }
-  } catch(e){ console.log('Firebase check:', e); }
+  } catch(e){}
+
+  // 2. If not in localStorage, check Firebase
+  if(!playedGame){
+    try {
+      const snap = await db.collection('codes')
+        .where('gameKey','==', gameKey)
+        .limit(1)
+        .get();
+      if(!snap.empty){
+        playedGame = snap.docs[0].data().game;
+        // Save to localStorage for next time
+        try{ localStorage.setItem('vaygo_game_'+VENUE_ID, JSON.stringify({game:playedGame, gameKey})); }catch(e){}
+      }
+    } catch(e){ console.log('Firebase check:', e); }
+  }
+
+  if(playedGame){
+    // Show already played banner
+    document.getElementById('alreadyPlayed').style.display='block';
+    document.getElementById('playedGameName').textContent = playedGame==='cubilete' ? 'Dice Cup' : 'Slot Machine';
+
+    // Lock the OTHER game
+    const otherCard = playedGame==='cubilete' ? document.getElementById('cardSlot') : document.getElementById('cardDice');
+    otherCard.classList.add('locked');
+    otherCard.onclick = e => { e.preventDefault(); return false; };
+    otherCard.href = '#';
+
+    // Played game → view prize
+    const playedCard = playedGame==='cubilete' ? document.getElementById('cardDice') : document.getElementById('cardSlot');
+    playedCard.querySelector('.game-desc').textContent = 'Tap to view your prize coupon ›';
+  }
 }
 
 window.addEventListener('load', checkPlayed);
