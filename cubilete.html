@@ -166,6 +166,14 @@ firebase.initializeApp({
 });
 const db = firebase.firestore();
 
+// Dynamic back button based on venue
+(function(){
+  const vp = new URLSearchParams(window.location.search).get('venue') || 'lobster';
+  const vm = {lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html'};
+  const btn = document.getElementById('backBtn');
+  if(btn) btn.href = vm[vp] || 'lobster.html';
+})();
+
 // REST CONFIG
 const REST_ID      = "lobster";
 const REST_NAME    = "Lobster";
@@ -279,7 +287,7 @@ function displayQRModal(code, prize, expiresISO){
 <body>
 <div class="app">
   <div class="hdr">
-    <a href="app.html" class="back">&#8249;</a>
+    <a id="backBtn" href="lobster.html" class="back">&#8249;</a>
     <div><div class="logo-n">VAYGO</div><div class="logo-s">DICE CHALLENGE</div></div>
     <div class="rolls-box">
       <span class="rolls-lbl">ROLLS</span>
