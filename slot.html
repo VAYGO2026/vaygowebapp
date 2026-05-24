@@ -55,13 +55,37 @@ const PRIZES=[{label:"10% OFF",color:"#00CFFF"},{label:"15% OFF",color:"#FF2D9B"
 function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const s=n=>Array.from({length:n},()=>c[Math.floor(Math.random()*c.length)]).join('');return'VYG-'+s(4)+'-'+s(4);}
 function getExpiry(){const n=new Date(),e=new Date(n);e.setHours(23,59,59,0);if(e<=n)e.setDate(e.getDate()+1);return e;}
 async function saveAndShowQR(prize){
-  const today=new Date().toISOString().slice(0,10),spinKey=REST_ID+'_slot_'+today;
-  try{const ex=localStorage.getItem('vaygo_slot_'+REST_ID);if(ex){const d=JSON.parse(ex);if(d.spinKey===spinKey){showQR(d.code,prize.label,d.expires);return;}}}catch(e){}
-  const code=genCode(),expires=getExpiry();
-  const gameKey=REST_ID+'_game_'+today;
-  try{await db.collection('codes').doc(code).set({code,prize:prize.label,restId:REST_ID,restName:REST_NAME,spinKey,gameKey,game:'slot',spunAt:firebase.firestore.FieldValue.serverTimestamp(),expiresAt:expires.toISOString(),used:false,uid:'anon_'+Date.now()});}catch(e){}
-  try{localStorage.setItem('vaygo_slot_'+REST_ID,JSON.stringify({code,spinKey,expires:expires.toISOString()}));}catch(e){}
-  showQR(code,prize.label,expires.toISOString());
+  const prizeLabel = prize.label;
+  const today = new Date().toISOString().slice(0,10);
+  const spinKey = REST_ID+'_slot_'+today;
+  const gameKey = REST_ID+'_game_'+today;
+
+  // Check Firebase first — prevent duplicate codes
+  try{
+    const snap = await db.collection('codes').where('gameKey','==',gameKey).limit(1).get();
+    if(!snap.empty){
+      const d = snap.docs[0].data();
+      showQR(d.code, d.prize, d.expiresAt);
+      return;
+    }
+  }catch(e){ console.log('fb check err:',e); }
+
+  // Generate new code
+  const code = genCode();
+  const expires = getExpiry();
+
+  try{
+    await db.collection('codes').doc(code).set({
+      code, prize:prizeLabel, restId:REST_ID, restName:REST_NAME,
+      spinKey, gameKey, game:'slot',
+      spunAt:firebase.firestore.FieldValue.serverTimestamp(),
+      expiresAt:expires.toISOString(), used:false,
+      uid:'anon_'+Date.now()
+    });
+    console.log('Saved to Firebase:', code);
+  }catch(e){ console.error('Firebase save error:', e); }
+
+  showQR(code, prizeLabel, expires.toISOString());
 }
 function showQR(code,prize,expiresISO){
   const t=new Date(expiresISO).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
