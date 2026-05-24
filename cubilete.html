@@ -198,8 +198,22 @@ function getExpiry(){
 async function saveAndShowQR(prizeLabel){
   const today = new Date().toISOString().slice(0,10);
   const spinKey = REST_ID + '_' + today;
+  const gameKey = REST_ID + '_game_' + today;
 
-  // Check localStorage
+  // Check Firebase first — prevent duplicate codes
+  try {
+    const snap = await db.collection('codes')
+      .where('gameKey','==', gameKey)
+      .limit(1)
+      .get();
+    if(!snap.empty){
+      const d = snap.docs[0].data();
+      displayQRModal(d.code, d.prize, d.expiresAt);
+      return;
+    }
+  } catch(e){}
+
+  // Check localStorage as fallback
   try {
     const existing = localStorage.getItem('vaygo_spin_' + REST_ID);
     if(existing){
@@ -408,6 +422,7 @@ function handleTap(){
   if(tiro===0){
     shakeCup(()=>{
       tiro++; updDots();
+checkAlreadyPlayed();
       setStatus('😬 NOT YET!', 'Shake harder... the dice are waiting!');
       document.getElementById('hint').textContent='👆 TAP TO ROLL AGAIN';
       animating=false;
@@ -415,6 +430,7 @@ function handleTap(){
   } else if(tiro===1){
     shakeCup(()=>{
       tiro++; updDots();
+checkAlreadyPlayed();
       setStatus('🔥 SO CLOSE!', 'One last roll to reveal your prize!');
       document.getElementById('hint').textContent='👆 TAP FOR THE FINAL ROLL';
       flyNormalDice();
@@ -423,6 +439,7 @@ function handleTap(){
   } else {
     shakeCup(()=>{
       tiro++; updDots();
+checkAlreadyPlayed();
       document.getElementById('hint').style.display='none';
       setStatus('🎲 REVEALING YOUR PRIZE!','');
       resetDice(()=>{ flyAllWithPrize(); });
@@ -775,6 +792,7 @@ function confetti(){
 }
 
 updDots();
+checkAlreadyPlayed();
 </script>
 
 <div id="qrModal">
