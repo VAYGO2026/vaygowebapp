@@ -241,34 +241,37 @@ const params = new URLSearchParams(window.location.search);
 const VENUE_ID = params.get('venue') || 'lobster';
 const today = new Date().toISOString().slice(0,10);
 
-async function checkPlayed(){
+function checkPlayed(){
   const today = new Date().toISOString().slice(0,10);
   const gameKey = VENUE_ID + '_game_' + today;
   let playedGame = null;
 
-  // 1. Check unified localStorage key first (instant)
+  // Check cubilete localStorage key
   try {
-    const ls = localStorage.getItem('vaygo_game_' + VENUE_ID);
-    if(ls){
-      const d = JSON.parse(ls);
-      if(d.gameKey === gameKey) playedGame = d.game;
+    const ls1 = localStorage.getItem('vaygo_spin_' + VENUE_ID);
+    if(ls1){
+      const d = JSON.parse(ls1);
+      if(d.spinKey === VENUE_ID + '_' + today) playedGame = 'cubilete';
     }
   } catch(e){}
 
-  // 2. If not in localStorage, check Firebase
-  if(!playedGame){
-    try {
-      const snap = await db.collection('codes')
-        .where('gameKey','==', gameKey)
-        .limit(1)
-        .get();
-      if(!snap.empty){
-        playedGame = snap.docs[0].data().game;
-        // Save to localStorage for next time
-        try{ localStorage.setItem('vaygo_game_'+VENUE_ID, JSON.stringify({game:playedGame, gameKey})); }catch(e){}
-      }
-    } catch(e){ console.log('Firebase check:', e); }
-  }
+  // Check slot localStorage key
+  try {
+    const ls2 = localStorage.getItem('vaygo_slot_' + VENUE_ID);
+    if(ls2){
+      const d = JSON.parse(ls2);
+      if(d.spinKey === VENUE_ID + '_slot_' + today) playedGame = 'slot';
+    }
+  } catch(e){}
+
+  // Check unified key
+  try {
+    const ls3 = localStorage.getItem('vaygo_game_' + VENUE_ID);
+    if(ls3){
+      const d = JSON.parse(ls3);
+      if(d.gameKey === gameKey) playedGame = d.game;
+    }
+  } catch(e){}
 
   if(playedGame){
     // Show already played banner
@@ -278,8 +281,8 @@ async function checkPlayed(){
     // Lock the OTHER game
     const otherCard = playedGame==='cubilete' ? document.getElementById('cardSlot') : document.getElementById('cardDice');
     otherCard.classList.add('locked');
-    otherCard.onclick = e => { e.preventDefault(); return false; };
-    otherCard.href = '#';
+    otherCard.onclick = e => { e.preventDefault(); e.stopPropagation(); return false; };
+    otherCard.removeAttribute('href');
 
     // Played game → view prize
     const playedCard = playedGame==='cubilete' ? document.getElementById('cardDice') : document.getElementById('cardSlot');
@@ -287,7 +290,7 @@ async function checkPlayed(){
   }
 }
 
-window.addEventListener('load', checkPlayed);
+checkPlayed();
 </script>
 </head>
 <body>
