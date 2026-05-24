@@ -207,12 +207,15 @@ async function saveAndShowQR(prizeLabel){
   const code = genCode();
   const expires = getExpiry();
 
+  const gameKey = REST_ID + '_game_' + today;
   const codeData = {
     code: code,
     prize: prizeLabel,
     restId: REST_ID,
     restName: REST_NAME,
     spinKey: spinKey,
+    gameKey: gameKey,
+    game: 'cubilete',
     spunAt: firebase.firestore.FieldValue.serverTimestamp(),
     expiresAt: expires.toISOString(),
     expiresStr: 'Valid until: 11:59 pm today',
@@ -230,6 +233,12 @@ async function saveAndShowQR(prizeLabel){
       spinKey: spinKey,
       expires: expires.toISOString(),
       prize: prizeLabel
+    }));
+    // Unified game key for cross-game blocking
+    localStorage.setItem('vaygo_game_' + REST_ID, JSON.stringify({
+      game: 'cubilete',
+      gameKey: REST_ID + '_game_' + today,
+      code: code
     }));
   } catch(e){}
 
