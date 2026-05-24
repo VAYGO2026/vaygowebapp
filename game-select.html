@@ -11,12 +11,30 @@ html,body{
   width:100%;height:100%;
   font-family:'DM Sans',sans-serif;
   overflow:hidden;
+  background:#060E1C;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
+.app-wrap{
+  width:390px;
+  height:100dvh;
+  max-height:844px;
+  border-radius:32px;
+  overflow:hidden;
+  position:relative;
+  background:#060E1C;
+}
+
+@media(max-width:430px){ .app-wrap{ width:100%; border-radius:0; } }
+
 .bg{
-  position:fixed;inset:0;
+  position:absolute;inset:0;
   background:url('./fondo-game.webp') center center / cover no-repeat;
   z-index:0;
+  border-radius:32px;
+  overflow:hidden;
 }
 .bg::after{
   content:'';
@@ -31,15 +49,14 @@ html,body{
 }
 
 /* Stars */
-.stars{position:fixed;inset:0;z-index:1;pointer-events:none;}
+.stars{position:absolute;inset:0;z-index:1;pointer-events:none;}
 .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d) ease-in-out infinite;}
 @keyframes twinkle{0%,100%{opacity:0.1;}50%{opacity:var(--op);}}
 
 .screen{
   position:relative;z-index:10;
-  width:100%;max-width:430px;
-  height:100dvh;
-  margin:0 auto;
+  width:100%;
+  height:100%;
   display:flex;flex-direction:column;
   align-items:center;
   justify-content:center;
@@ -264,9 +281,9 @@ window.addEventListener('load', checkPlayed);
 </head>
 <body>
 
+<div class="app-wrap">
 <div class="bg"></div>
 <div class="stars" id="stars"></div>
-
 <div class="screen">
   <a href="lobster.html" class="back-btn" id="backBtn">‹</a>
 
@@ -310,6 +327,7 @@ window.addEventListener('load', checkPlayed);
     <strong>One game per day · Per venue</strong><br>
     Your coupon is valid until closing time today
   </div>
+</div>
 </div>
 
 <script>
