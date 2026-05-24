@@ -80,7 +80,7 @@ function showQR(code,prize,expiresISO){
 </script>
 </head>
 <body>
-<a href="lobster.html" class="back-btn">‹</a>
+<a id="backBtn" href="lobster.html" class="back-btn">‹</a>
 <div class="wrap">
   <img id="machineImg" src="./machine.webp" alt="VAYGO"/>
   <div id="ui">
@@ -112,6 +112,14 @@ function showQR(code,prize,expiresISO){
 </div>
 
 <script>
+// Set back button based on venue param
+const venueParam = new URLSearchParams(window.location.search).get('venue') || 'lobster';
+const venueMap = {lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html'};
+document.getElementById('backBtn').href = venueMap[venueParam] || 'lobster.html';
+
+// Also update REST_ID and REST_NAME based on venue
+const venueNames = {lobster:'Lobster House',buccanos:'Buccanos',azulmadera:'Azul Madera',guidos:"Guido's"};
+
 // Position UI over the black screen area of the machine image
 // Fractions of rendered image size:
 const isMobile = window.innerWidth <= 768;
