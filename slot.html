@@ -58,7 +58,7 @@ async function saveAndShowQR(prize){
   const prizeLabel = prize.label;
   const today = new Date().toISOString().slice(0,10);
   const spinKey = REST_ID+'_slot_'+today;
-  const gameKey = REST_ID+'_game_'+today;
+  const gameKey = REST_ID+'_game_'+today; // per venue per day
 
   // Check Firebase first — prevent duplicate codes
   try{
@@ -150,10 +150,16 @@ async function checkAlreadyPlayed(){
     const snap=await db.collection('codes').where('gameKey','==',gameKey).limit(1).get();
     if(!snap.empty){
       const d=snap.docs[0].data();
-      done=true;
-      document.getElementById('spinBtn').disabled=true;
-      document.getElementById('spinBtn').textContent='ALREADY PLAYED';
-      showQR(d.code,d.prize,d.expiresAt);
+      // Check if coupon is still within 24 hours
+      const spunAt = d.spunAt ? d.spunAt.toDate() : new Date(d.expiresAt);
+      const now = new Date();
+      const hoursSince = (now - spunAt) / (1000*60*60);
+      if(hoursSince < 24){
+        done=true;
+        document.getElementById('spinBtn').disabled=true;
+        document.getElementById('spinBtn').textContent='COME BACK TOMORROW';
+        showQR(d.code,d.prize,d.expiresAt);
+      }
     }
   }catch(e){ console.log('check err:',e); }
 }
