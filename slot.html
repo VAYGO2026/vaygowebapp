@@ -316,57 +316,39 @@ let ITEM_H = 80;
 
 function buildReels(reelH){
   ITEM_H = reelH;
-  const fs  = Math.max(16, Math.round(reelH * 0.26));
-  const fsS = Math.max(9,  Math.round(reelH * 0.09));
+  const fs  = Math.max(12, Math.round(reelH * 0.16));
+  const fsS = Math.max(7,  Math.round(reelH * 0.06));
+
+  // Items in order — each reel will start at a different one
+  const ITEMS = [
+    {pct:"10%", color:"#00CFFF"},
+    {pct:"15%", color:"#FF2D9B"},
+    {pct:"20%", color:"#FFD700"},
+  ];
 
   for(let r=0;r<3;r++){
-    const inner=document.getElementById('inner'+r);
-    inner.innerHTML='';
-    inner.style.cssText='display:flex;flex-direction:column;will-change:transform;flex-shrink:0;';
+    const inner = document.getElementById('inner'+r);
+    inner.innerHTML = '';
+    inner.style.cssText = 'display:flex;flex-direction:column;will-change:transform;';
 
-    // 4 full loops
-    const all=[...REEL_ITEMS,...REEL_ITEMS,...REEL_ITEMS,...REEL_ITEMS];
-    all.forEach(item=>{
-      const el=document.createElement('div');
-      el.style.height=reelH+'px';
-      el.style.display='flex';
-      el.style.flexDirection='column';
-      el.style.alignItems='center';
-      el.style.justifyContent='center';
-      el.style.flexShrink='0';
-      el.style.boxSizing='border-box';
-      el.style.position='relative';
-      el.style.zIndex='10';
-
-      const p=document.createElement('div');
-      p.textContent=item.pct;
-      p.style.fontFamily="Impact,'Arial Black',sans-serif";
-      p.style.fontSize=fs+'px';
-      p.style.color=item.color;
-      p.style.textShadow='0 0 20px '+item.color;
-      p.style.lineHeight='1';
-      p.style.fontWeight='400';
-
-      const o=document.createElement('div');
-      o.textContent='OFF';
-      o.style.fontFamily="Arial,sans-serif";
-      o.style.fontSize=fsS+'px';
-      o.style.color=item.color;
-      o.style.fontWeight='800';
-      o.style.letterSpacing='2px';
-      o.style.opacity='0.85';
-      o.style.marginTop='2px';
-
-      el.appendChild(p);
-      el.appendChild(o);
+    // Build 4 loops so there's plenty of room to spin
+    const all = [...ITEMS,...ITEMS,...ITEMS,...ITEMS,...ITEMS];
+    all.forEach(item => {
+      const el = document.createElement('div');
+      el.style.cssText = `height:${reelH}px;min-height:${reelH}px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;`;
+      el.innerHTML = `
+        <span style="font:700 ${fs}px/1 Impact,Arial,sans-serif;color:${item.color};text-shadow:0 0 20px ${item.color};">${item.pct}</span>
+        <span style="font:800 ${fsS}px/1 Arial,sans-serif;color:${item.color};letter-spacing:2px;margin-top:2px;opacity:0.85;">OFF</span>
+      `;
       inner.appendChild(el);
     });
 
-    inner.style.transform='translateY(-'+(r*rH)+'px)'; // reel 0→10%, 1→15%, 2→20%
-    inner.style.transition='none';
-    inner.style.willChange='transform';
+    // Reel 0 starts at item 0 (10%), reel 1 at item 1 (15%), reel 2 at item 2 (20%)
+    inner.style.transform = `translateY(-${r * reelH}px)`;
+    inner.style.transition = 'none';
   }
 }
+
 
 // ── SPIN ──
 let spinning=false,done=false;
@@ -378,18 +360,24 @@ function spin(){
 
   const prize=PRIZES[Math.floor(Math.random()*PRIZES.length)];
   const prizePercent=prize.label.split('%')[0]+'%';
-  const total=REEL_ITEMS.length;
-  // Land in 3rd batch so we spin forward visibly
-  let landIdx=total*2;
-  for(let i=total*2;i<total*3;i++){
-    if(REEL_ITEMS[i%total].pct===prizePercent){landIdx=i;break;}
+  const SPIN_ITEMS=[{pct:"10%"},{pct:"15%"},{pct:"20%"}];
+  const total=SPIN_ITEMS.length; // 3
+  // Each reel started at offset r, so land at same absolute position for all
+  // Target: item index in 3rd batch
+  let baseIdx=total*3; // start of 4th batch
+  for(let i=total*3;i<total*4;i++){
+    if(SPIN_ITEMS[i%total].pct===prizePercent){baseIdx=i;break;}
   }
+  // Each reel r started at -r*ITEM_H, so to show same item we add r offset
+  const landIdxes=[baseIdx, baseIdx+1, baseIdx+2].map((v,r)=>v); // adjusted per reel
 
   [0,1,2].forEach((r,idx)=>{
     const inner=document.getElementById('inner'+r);
     const dur=1200+idx*350;
+    // Each reel r started at -r*ITEM_H, to land on same item add r offset
+    const myLand = baseIdx + r;
     inner.style.transition=`transform ${dur}ms cubic-bezier(0.17,0.67,0.12,1.0)`;
-    inner.style.transform=`translateY(-${landIdx*ITEM_H}px)`;
+    inner.style.transform=`translateY(-${myLand*ITEM_H}px)`;
     setTimeout(()=>{
       playStopSound();
       document.getElementById('reel'+r).classList.add('win');
