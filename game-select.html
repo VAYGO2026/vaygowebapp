@@ -273,6 +273,9 @@ function checkPlayed(){
     }
   } catch(e){}
 
+  console.log('VENUE:', VENUE_ID, 'playedGame:', playedGame);
+  console.log('ls1:', localStorage.getItem('vaygo_spin_' + VENUE_ID));
+  console.log('ls2:', localStorage.getItem('vaygo_slot_' + VENUE_ID));
   if(playedGame){
     // Show already played banner
     document.getElementById('alreadyPlayed').style.display='block';
