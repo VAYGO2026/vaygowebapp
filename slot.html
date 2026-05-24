@@ -58,8 +58,12 @@ async function saveAndShowQR(prize){
   const today=new Date().toISOString().slice(0,10),spinKey=REST_ID+'_slot_'+today;
   try{const ex=localStorage.getItem('vaygo_slot_'+REST_ID);if(ex){const d=JSON.parse(ex);if(d.spinKey===spinKey){showQR(d.code,prize.label,d.expires);return;}}}catch(e){}
   const code=genCode(),expires=getExpiry();
-  try{await db.collection('codes').doc(code).set({code,prize:prize.label,restId:REST_ID,restName:REST_NAME,spinKey,spunAt:firebase.firestore.FieldValue.serverTimestamp(),expiresAt:expires.toISOString(),used:false,uid:'anon_'+Date.now(),game:'slot'});}catch(e){}
-  try{localStorage.setItem('vaygo_slot_'+REST_ID,JSON.stringify({code,spinKey,expires:expires.toISOString()}));}catch(e){}
+  const gameKey = REST_ID+'_game_'+today;
+  try{await db.collection('codes').doc(code).set({code,prize:prize.label,restId:REST_ID,restName:REST_NAME,spinKey,gameKey,game:'slot',spunAt:firebase.firestore.FieldValue.serverTimestamp(),expiresAt:expires.toISOString(),used:false,uid:'anon_'+Date.now()});}catch(e){}
+  try{
+    localStorage.setItem('vaygo_slot_'+REST_ID,JSON.stringify({code,spinKey,expires:expires.toISOString()}));
+    localStorage.setItem('vaygo_game_'+REST_ID,JSON.stringify({game:'slot',gameKey,code}));
+  }catch(e){}
   showQR(code,prize.label,expires.toISOString());
 }
 function showQR(code,prize,expiresISO){
