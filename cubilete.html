@@ -165,6 +165,13 @@ firebase.initializeApp({
   appId: "vaygo-app"
 });
 const db = firebase.firestore();
+
+function goBackToVenue(){
+  const vp = (new URLSearchParams(window.location.search)).get('venue') || 'lobster';
+  const vm = {lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html'};
+  window.location.href = vm[vp] || 'lobster.html';
+}
+
 (function(){
   const vp = new URLSearchParams(window.location.search).get('venue') || 'lobster';
   const vm = {lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html'};
@@ -777,6 +784,7 @@ updDots();
     <div id="qr-canvas"></div>
     <div class="qr-hint">Show this QR to the staff to redeem your prize</div>
     <div class="qr-min-box">⚠️ MINIMUM PURCHASE REQUIRED<br><span id="qr-min">Valid on orders of <strong>$20 USD</strong> or more</span></div>
+    <button onclick="goBackToVenue()" style="margin-top:16px;width:100%;padding:14px;background:linear-gradient(180deg,#C9A84C,#8B6914);border:none;border-radius:50px;color:#fff;font-family:'Anton',sans-serif;font-size:15px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 0 #5A4008;">← BACK TO VENUE</button>
   </div>
 </div>
 </body>
