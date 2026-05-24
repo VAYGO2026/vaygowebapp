@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!-- v5 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -255,12 +255,10 @@ function displayQRModal(code,prize,expiresISO){
 //   top:  ~23%   height: ~40%
 //   left: ~8%    width:  ~77%
 // These are tuned to the new image — adjust if needed:
-const CFG = {
-  top:    0.310,
-  left:   0.145,
-  width:  0.640,
-  height: 0.540,
-};
+const isMobile = window.innerWidth <= 768;
+const CFG = isMobile
+  ? { top:0.220, left:0.130, width:0.660, height:0.330 }
+  : { top:0.280, left:0.145, width:0.640, height:0.420 };
 
 function layout(){
   const img = document.getElementById('machineImg');
