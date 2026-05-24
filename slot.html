@@ -316,8 +316,8 @@ let ITEM_H = 80;
 
 function buildReels(reelH){
   ITEM_H = reelH;
-  const fs  = Math.max(12, Math.round(reelH * 0.16));
-  const fsS = Math.max(7,  Math.round(reelH * 0.06));
+  const fs  = Math.max(18, Math.round(reelH * 0.25));
+  const fsS = Math.max(9,  Math.round(reelH * 0.09));
 
   // Items in order — each reel will start at a different one
   const ITEMS = [
@@ -374,8 +374,8 @@ function spin(){
   [0,1,2].forEach((r,idx)=>{
     const inner=document.getElementById('inner'+r);
     const dur=1200+idx*350;
-    // Each reel r started at -r*ITEM_H, to land on same item add r offset
-    const myLand = baseIdx + r;
+    // All reels land on same absolute index — same prize shown in all 3
+    const myLand = baseIdx; // same target for all reels = same prize
     inner.style.transition=`transform ${dur}ms cubic-bezier(0.17,0.67,0.12,1.0)`;
     inner.style.transform=`translateY(-${myLand*ITEM_H}px)`;
     setTimeout(()=>{
