@@ -137,6 +137,27 @@ function showQR(code,prize,expiresISO){
 const venueParam=(new URLSearchParams(window.location.search)).get('venue')||'lobster';
 const venueMap={lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html'};
 document.getElementById('backBtn').href=venueMap[venueParam]||'lobster.html';
+
+function goBackToVenue(){
+  window.location.href=venueMap[venueParam]||'lobster.html';
+}
+
+// Check if already played today — show existing coupon and block spin
+async function checkAlreadyPlayed(){
+  const today=new Date().toISOString().slice(0,10);
+  const gameKey=REST_ID+'_game_'+today;
+  try{
+    const snap=await db.collection('codes').where('gameKey','==',gameKey).limit(1).get();
+    if(!snap.empty){
+      const d=snap.docs[0].data();
+      done=true;
+      document.getElementById('spinBtn').disabled=true;
+      document.getElementById('spinBtn').textContent='ALREADY PLAYED';
+      showQR(d.code,d.prize,d.expiresAt);
+    }
+  }catch(e){ console.log('check err:',e); }
+}
+checkAlreadyPlayed();
 // Position UI over the black screen area of the machine image
 // Fractions of rendered image size:
 const isMobile = window.innerWidth <= 768;
