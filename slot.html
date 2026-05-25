@@ -50,7 +50,18 @@ html,body{width:100%;height:100%;background:#000;display:flex;align-items:center
 <script>
 firebase.initializeApp({apiKey:"AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",authDomain:"vaygo-app.firebaseapp.com",projectId:"vaygo-app",storageBucket:"vaygo-app.firebasestorage.app",appId:"vaygo-app"});
 const db=firebase.firestore();
-const REST_ID="lobster",REST_NAME="Lobster House",MIN_PURCHASE="$20 USD";
+// Dynamic venue config based on URL param
+const VENUE_CONFIGS = {
+  lobster:    { id:'lobster',    name:'The Original Lobster House' },
+  buccanos:   { id:'buccanos',  name:'Buccanos Beach Club' },
+  azulmadera: { id:'azulmadera',name:'Azul Madera' },
+  guidos:     { id:'guidos',    name:"Guido's Restaurant" },
+};
+const _vp = (new URLSearchParams(window.location.search)).get('venue') || 'lobster';
+const _vc = VENUE_CONFIGS[_vp] || VENUE_CONFIGS['lobster'];
+const REST_ID   = _vc.id;
+const REST_NAME = _vc.name;
+const MIN_PURCHASE = "$20 USD";
 const PRIZES=[{label:"10% OFF",color:"#00CFFF"},{label:"15% OFF",color:"#FF2D9B"},{label:"20% OFF",color:"#FFD700"}];
 function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const s=n=>Array.from({length:n},()=>c[Math.floor(Math.random()*c.length)]).join('');return'VYG-'+s(4)+'-'+s(4);}
 function getExpiry(){const n=new Date(),e=new Date(n);e.setHours(23,59,59,0);if(e<=n)e.setDate(e.getDate()+1);return e;}
@@ -58,7 +69,7 @@ async function saveAndShowQR(prize){
   const prizeLabel = prize.label;
   const today = new Date().toISOString().slice(0,10);
   const spinKey = REST_ID+'_slot_'+today;
-  const gameKey = REST_ID+'_game_'+today;
+  const gameKey = REST_ID+'_game_'+today; // per venue per day
 
   // Check Firebase first — prevent duplicate codes
   try{
@@ -101,7 +112,7 @@ function showQR(code,prize,expiresISO){
 </script>
 </head>
 <body>
-<a id="backBtn" href="lobster.html" class="back-btn">‹</a>
+<a id="backBtn" href="lobster.html" class="back-btn" onclick="event.preventDefault();goBackToVenue()">‹</a>
 <div class="wrap">
   <img id="machineImg" src="./machine.webp" alt="VAYGO"/>
   <div id="ui">
@@ -134,9 +145,35 @@ function showQR(code,prize,expiresISO){
 </div>
 
 <script>
-const venueParam=(new URLSearchParams(window.location.search)).get('venue')||'lobster';
 const venueMap={lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html'};
-document.getElementById('backBtn').href=venueMap[venueParam]||'lobster.html';
+document.getElementById('backBtn').href=venueMap[_vp]||'lobster.html';
+
+function goBackToVenue(){
+  window.location.href=venueMap[_vp]||'lobster.html';
+}
+
+// Check if already played today — show existing coupon and block spin
+async function checkAlreadyPlayed(){
+  const today=new Date().toISOString().slice(0,10);
+  const gameKey=REST_ID+'_game_'+today;
+  try{
+    const snap=await db.collection('codes').where('gameKey','==',gameKey).limit(1).get();
+    if(!snap.empty){
+      const d=snap.docs[0].data();
+      // Check if coupon is still within 24 hours
+      const spunAt = d.spunAt ? d.spunAt.toDate() : new Date(d.expiresAt);
+      const now = new Date();
+      const hoursSince = (now - spunAt) / (1000*60*60);
+      if(hoursSince < 24){
+        done=true;
+        document.getElementById('spinBtn').disabled=true;
+        document.getElementById('spinBtn').textContent='COME BACK TOMORROW';
+        showQR(d.code,d.prize,d.expiresAt);
+      }
+    }
+  }catch(e){ console.log('check err:',e); }
+}
+checkAlreadyPlayed();
 // Position UI over the black screen area of the machine image
 // Fractions of rendered image size:
 const isMobile = window.innerWidth <= 768;
@@ -213,10 +250,49 @@ function buildReels(rH){
   }
 }
 
+function playSpinSound(){
+  try{
+    const ac = new(window.AudioContext||window.webkitAudioContext)();
+    if(ac.state==='suspended') ac.resume();
+    const now = ac.currentTime;
+    // Mechanical clicking sound while spinning
+    for(let i=0;i<24;i++){
+      const t = now + i*0.055;
+      const buf = ac.createBuffer(1,Math.ceil(ac.sampleRate*0.04),ac.sampleRate);
+      const d = buf.getChannelData(0);
+      for(let j=0;j<d.length;j++) d[j]=Math.random()*2-1;
+      const src = ac.createBufferSource(); src.buffer=buf;
+      const f = ac.createBiquadFilter(); f.type='bandpass'; f.frequency.value=1400+Math.random()*400; f.Q.value=5;
+      const g = ac.createGain();
+      g.gain.setValueAtTime(0.35,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.038);
+      src.connect(f);f.connect(g);g.connect(ac.destination);
+      src.start(t);src.stop(t+0.05);
+    }
+    // Win fanfare at end
+    setTimeout(()=>{
+      try{
+        const ac2=new(window.AudioContext||window.webkitAudioContext)();
+        const n=ac2.currentTime;
+        [[0,523],[0.13,659],[0.26,784],[0.39,1047],[0.52,1319]].forEach(([t,f])=>{
+          const o=ac2.createOscillator();o.type='sine';
+          const g=ac2.createGain();o.frequency.value=f;
+          g.gain.setValueAtTime(0,n+t);
+          g.gain.linearRampToValueAtTime(0.3,n+t+0.02);
+          g.gain.exponentialRampToValueAtTime(0.001,n+t+0.28);
+          o.connect(g);g.connect(ac2.destination);
+          o.start(n+t);o.stop(n+t+0.3);
+        });
+      }catch(e){}
+    }, 1600);
+  }catch(e){}
+}
+
 function spin(){
   if(spinning || done) return;
   spinning = true;
   document.getElementById('spinBtn').disabled = true;
+  playSpinSound();
 
   const prize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
   const target = ITEMS.findIndex(i => i.pct === prize.label.split('%')[0]+'%');
