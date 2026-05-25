@@ -1102,7 +1102,7 @@ function showSlide(idx){
 function nextSlide(){ showSlide(current + 1); }
 
 // Auto rotate every 2 seconds
-timer = setInterval(nextSlide, 3000);
+timer = setInterval(nextSlide, 3500);
 
 // Tap to open URL
 document.getElementById('adBanner').addEventListener('click', () => {
@@ -1115,7 +1115,7 @@ document.getElementById('adBanner').addEventListener('touchstart', () => {
   clearInterval(timer);
 }, {passive:true});
 document.getElementById('adBanner').addEventListener('touchend', () => {
-  timer = setInterval(nextSlide, 3000);
+  timer = setInterval(nextSlide, 3500);
 }, {passive:true});
 </script>
 
