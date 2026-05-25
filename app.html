@@ -239,7 +239,7 @@ html,body{
   font-family: 'DM Sans', sans-serif;
   font-size: 9px;
   font-weight: 800;
-  color: #FFD700;
+  color: #d4f56a;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   line-height: 1;
@@ -247,7 +247,7 @@ html,body{
 .user-counter-num {
   font-family: 'Anton', sans-serif;
   font-size: 15px;
-  color: #FFD700;
+  color: #d4f56a;
   line-height: 1;
 }
 
@@ -510,12 +510,27 @@ html,body{
 }
 
 /* ── AD BANNER ── */
+.ad-click-label {
+  position: absolute;
+  top: 2px;
+  left: 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  color: #d4f56a;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(212,245,106,0.5);
+  z-index: 25;
+}
+
 .ad-banner-wrap {
   position: absolute;
-  bottom: 78px; /* just above nav bar */
+  bottom: 78px;
   left: 0; right: 0;
   z-index: 20;
   padding: 0 18px;
+  padding-top: 20px;
 }
 
 .ad-banner {
@@ -842,6 +857,7 @@ window.addEventListener('load', loadUserCount);
 
   <!-- ── AD BANNER ── -->
   <div class="ad-banner-wrap">
+    <div class="ad-click-label">CLICK</div>
     <div class="ad-banner" id="adBanner">
 
       <!-- AD 1 — IMAGE EXAMPLE (replace div with: <img src="ad1.webp">) -->
