@@ -110,7 +110,7 @@ html,body{
 /* ── Grid de botones ── */
 .grid-wrap{
   position:absolute;
-  top:42%;
+  top:36%;
   left:0;right:0;
   z-index:10;
   padding:0 18px;
@@ -234,14 +234,19 @@ html,body{
 /* ── Bottom Nav Bar ── */
 .user-counter {
   position: absolute;
-  bottom: 78px;
-  right: 48px;
+  bottom: 310px;
+  right: 18px;
   z-index: 29;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 1px;
+  gap: 6px;
   pointer-events: none;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(8px);
+  border-radius: 50px;
+  padding: 4px 12px;
+  border: 1px solid rgba(255,215,0,0.2);
 }
 .user-counter-text {
   font-family: 'DM Sans', sans-serif;
@@ -254,7 +259,7 @@ html,body{
 }
 .user-counter-num {
   font-family: 'Anton', sans-serif;
-  font-size: 17px;
+  font-size: 15px;
   color: #FFD700;
   line-height: 1;
 }
@@ -516,6 +521,62 @@ html,body{
 @media(max-width:430px){
   .app{ width:100%; border-radius:0; }
 }
+
+/* ── AD BANNER ── */
+.ad-banner-wrap {
+  position: absolute;
+  bottom: 78px; /* just above nav bar */
+  left: 0; right: 0;
+  z-index: 20;
+  padding: 0 18px;
+}
+
+.ad-banner {
+  width: 100%;
+  height: 220px;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.ad-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.ad-slide.active { opacity: 1; }
+
+.ad-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+/* Dots */
+.ad-dots {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 6px;
+}
+.ad-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transition: background 0.3s;
+}
+.ad-dot.active { background: #FFD700; }
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -789,6 +850,87 @@ window.addEventListener('load', loadUserCount);
     </div>
   </div>
 
+
+  <!-- ── AD BANNER ── -->
+  <div class="ad-banner-wrap">
+    <div class="ad-banner" id="adBanner">
+
+      <!-- AD 1 — replace bg with img src="ad1.webp" when ready -->
+      <div class="ad-slide active" data-url="https://www.theoriginallobsterhouse.com">
+        <div style="width:100%;height:100%;background:linear-gradient(160deg,#1a0800,#7a3010,#3b1a0d);position:relative;overflow:hidden;">
+          <div style="position:absolute;inset:0;background:url('fondo-lobster.webp') center/cover no-repeat;opacity:0.7;"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:14px 16px;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);">
+            <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:#fff;letter-spacing:1px;">🦞 THE ORIGINAL LOBSTER HOUSE</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;">Fresh Caribbean lobster · Since 1983 · Tap to visit</div>
+          </div>
+          <div style="position:absolute;top:10px;right:12px;background:rgba(255,215,0,0.9);border-radius:50px;padding:3px 10px;font-size:10px;font-weight:800;color:#000;">AD</div>
+        </div>
+      </div>
+
+      <!-- AD 2 -->
+      <div class="ad-slide" data-url="https://www.buccanos.com">
+        <div style="width:100%;height:100%;background:linear-gradient(160deg,#001a0d,#003d1a);position:relative;overflow:hidden;">
+          <div style="position:absolute;inset:0;background:url('fondo-buccanos.webp') center/cover no-repeat;opacity:0.7;"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:14px 16px;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);">
+            <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:#fff;letter-spacing:1px;">🌅 BUCCANOS BEACH CLUB</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;">Beachfront dining · Sunset views · Tap to visit</div>
+          </div>
+          <div style="position:absolute;top:10px;right:12px;background:rgba(255,215,0,0.9);border-radius:50px;padding:3px 10px;font-size:10px;font-weight:800;color:#000;">AD</div>
+        </div>
+      </div>
+
+      <!-- AD 3 -->
+      <div class="ad-slide" data-url="https://www.azulmadera.mx">
+        <div style="width:100%;height:100%;background:linear-gradient(160deg,#001a2e,#003a5c);position:relative;overflow:hidden;">
+          <div style="position:absolute;inset:0;background:url('fondo-azulmadera.webp') center/cover no-repeat;opacity:0.7;"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:14px 16px;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);">
+            <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:#fff;letter-spacing:1px;">🌿 AZUL MADERA</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;">Mexican-Mediterranean fusion · Tap to visit</div>
+          </div>
+          <div style="position:absolute;top:10px;right:12px;background:rgba(255,215,0,0.9);border-radius:50px;padding:3px 10px;font-size:10px;font-weight:800;color:#000;">AD</div>
+        </div>
+      </div>
+
+      <!-- AD 4 -->
+      <div class="ad-slide" data-url="https://guidoscozumel.com">
+        <div style="width:100%;height:100%;background:linear-gradient(160deg,#1a0d00,#3d2000);position:relative;overflow:hidden;">
+          <div style="position:absolute;inset:0;background:url('fondo-guidos.webp') center/cover no-repeat;opacity:0.7;"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:14px 16px;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);">
+            <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:#fff;letter-spacing:1px;">🍕 GUIDO'S RESTAURANT</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;">Italian Mediterranean · Since 1978 · Tap to visit</div>
+          </div>
+          <div style="position:absolute;top:10px;right:12px;background:rgba(255,215,0,0.9);border-radius:50px;padding:3px 10px;font-size:10px;font-weight:800;color:#000;">AD</div>
+        </div>
+      </div>
+
+      <!-- AD 5 -->
+      <div class="ad-slide" data-url="https://vaygowebapp-ynao.vercel.app">
+        <div style="width:100%;height:100%;background:linear-gradient(160deg,#060E1C,#1a0533);position:relative;overflow:hidden;">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+            <div style="text-align:center;">
+              <div style="font-family:'Anton',sans-serif;font-size:48px;color:#d4f56a;text-shadow:0 0 30px rgba(212,245,106,0.6);">VAYGO</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.6);letter-spacing:3px;text-transform:uppercase;margin-top:4px;">Explore · Play · Win</div>
+            </div>
+          </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:14px 16px;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);">
+            <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:#d4f56a;letter-spacing:1px;">🎰 PLAY & WIN DISCOUNTS</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;">Spin the slot · Get your coupon · Tap to play</div>
+          </div>
+          <div style="position:absolute;top:10px;right:12px;background:rgba(255,215,0,0.9);border-radius:50px;padding:3px 10px;font-size:10px;font-weight:800;color:#000;">AD</div>
+        </div>
+      </div>
+
+    </div>
+    <!-- Dots -->
+    <div class="ad-dots" id="adDots">
+      <div class="ad-dot active"></div>
+      <div class="ad-dot"></div>
+      <div class="ad-dot"></div>
+      <div class="ad-dot"></div>
+      <div class="ad-dot"></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -937,5 +1079,41 @@ async function sendRating() {
   alert('Thanks for your rating! ⭐');
 }
 </script>
+
+<script>
+/* ── AD BANNER ROTATOR ── */
+const slides = document.querySelectorAll('.ad-slide');
+const dots   = document.querySelectorAll('.ad-dot');
+let current  = 0;
+let timer    = null;
+
+function showSlide(idx){
+  slides[current].classList.remove('active');
+  dots[current].classList.remove('active');
+  current = idx % slides.length;
+  slides[current].classList.add('active');
+  dots[current].classList.add('active');
+}
+
+function nextSlide(){ showSlide(current + 1); }
+
+// Auto rotate every 2 seconds
+timer = setInterval(nextSlide, 3000);
+
+// Tap to open URL
+document.getElementById('adBanner').addEventListener('click', () => {
+  const url = slides[current].dataset.url;
+  if(url && url !== '#') window.open(url, '_blank');
+});
+
+// Pause on touch, resume after
+document.getElementById('adBanner').addEventListener('touchstart', () => {
+  clearInterval(timer);
+}, {passive:true});
+document.getElementById('adBanner').addEventListener('touchend', () => {
+  timer = setInterval(nextSlide, 3000);
+}, {passive:true});
+</script>
+
 </body>
 </html>
