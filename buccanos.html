@@ -22,11 +22,36 @@
       border-radius:32px;
       overflow:hidden;
       position:relative;
-      background: url('./fondo-buccanos.webp') center center / cover no-repeat;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
     }
 
-    /* Vignette */
-    .app::before {
+    /* ── SCROLLABLE AREA ── */
+    .scroll-area {
+      flex:1;
+      overflow-y:auto;
+      overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    .scroll-area::-webkit-scrollbar { display:none; }
+
+    /* ── HERO — full screen height, same as before ── */
+    .hero {
+      width:100%;
+      /* Takes full visible height minus bottom bar */
+      height:calc(100dvh - 130px);
+      max-height:714px;
+      background: url('./fondo-buccanos.webp') center center / cover no-repeat;
+      position:relative;
+      flex-shrink:0;
+    }
+
+    .hero::before {
       content:'';
       position:absolute; inset:0;
       background: linear-gradient(
@@ -42,7 +67,7 @@
     /* ── BACK ── */
     .back-btn {
       position:absolute; top:40px; left:18px;
-      z-index:20;
+      z-index:30;
       padding:8px 16px; border-radius:50px;
       background:rgba(0,0,0,0.45);
       backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
@@ -51,33 +76,95 @@
       letter-spacing:0.12em; text-decoration:none; cursor:pointer;
     }
 
-    /* ── LEFT SIDE TABS ── */
-    .left-tabs {
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 20;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    /* Scroll hint arrow */
+    .scroll-hint {
+      position:absolute; bottom:16px; left:50%;
+      transform:translateX(-50%);
+      z-index:10;
+      display:flex; flex-direction:column; align-items:center; gap:3px;
+      animation:bounce 1.5s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%,100%{ transform:translateX(-50%) translateY(0); }
+      50%    { transform:translateX(-50%) translateY(6px); }
+    }
+    .scroll-hint span {
+      font-size:9px; font-weight:700; letter-spacing:2px;
+      color:rgba(255,255,255,0.5); text-transform:uppercase;
+    }
+    .scroll-hint svg { width:16px; height:16px; opacity:0.5; }
+
+    /* ── INFO SECTION ── */
+    .info-section {
+      background:linear-gradient(180deg, #0d0600 0%, #060300 100%);
+      padding:26px 22px 24px;
+      flex-shrink:0;
     }
 
-    .left-tab {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      text-decoration: none;
-      cursor: pointer;
-      width: 56px;
-      padding: 12px 6px;
-      border-radius: 0 14px 14px 0;
-      border: 2px solid transparent;
-      border-left: none;
-      backdrop-filter: blur(18px) saturate(1.2);
-      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    .info-name {
+      font-family:'Pacifico', cursive;
+      font-size:26px; color:#ffc864;
+      text-align:center; margin-bottom:2px;
+      text-shadow:0 2px 12px rgba(0,0,0,0.8);
+    }
+    .info-since {
+      font-family:'Righteous', sans-serif;
+      font-size:11px; color:rgba(255,200,120,0.65);
+      text-align:center; letter-spacing:3px;
+      text-transform:uppercase; margin-bottom:18px;
+    }
+    .info-ratings {
+      display:flex; gap:8px; justify-content:center; margin-bottom:16px;
+    }
+    .rating-card {
+      flex:1; background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,180,80,0.18);
+      border-radius:12px; padding:10px 8px; text-align:center;
+    }
+    .rating-source { font-size:11px; font-weight:500; color:rgba(255,255,255,0.65); margin-bottom:3px; }
+    .rating-stars  { font-size:20px; color:#ffd200; }
+    .rating-num    { font-size:18px; font-weight:800; color:#fff; }
+    .rating-reviews{ font-size:9px; color:rgba(255,255,255,0.40); margin-top:2px; }
+    .rating-badge  {
+      display:inline-block;
+      background:rgba(255,210,0,0.15); border:1px solid rgba(255,210,0,0.35);
+      border-radius:20px; padding:3px 10px;
+      font-size:9px; font-weight:800; color:#ffd200;
+      letter-spacing:0.08em; text-transform:uppercase; margin-top:4px;
+    }
+    .info-desc {
+      font-size:14px; line-height:1.7;
+      color:rgba(255,255,255,0.70);
+      margin-bottom:16px;
+      border-top:1px solid rgba(255,180,80,0.12);
+      padding-top:14px;
+    }
+    .info-row {
+      display:flex; align-items:flex-start; gap:10px; margin-bottom:8px;
+    }
+    .info-icon { font-size:16px; flex-shrink:0; }
+    .info-text { font-size:13px; color:rgba(255,255,255,0.60); line-height:1.4; }
+
+    /* ── FIXED BOTTOM BAR ── */
+    .bottom-bar {
+      flex-shrink:0;
+      background:rgba(10,5,0,0.92);
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      border-top:1px solid rgba(255,180,80,0.18);
+      padding:12px 20px 24px;
+      display:flex; flex-direction:column; gap:10px;
+      align-items:center;
+    }
+
+    /* 4 action buttons */
+    .action-row { display:flex; gap:8px; width:100%; }
+
+    .action-btn {
+      flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+      cursor:pointer; text-decoration:none;
+      padding:9px 4px; border-radius:12px;
+      border:2px solid transparent;
+      backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
       background-image:
         linear-gradient(rgba(10,5,0,0.82), rgba(10,5,0,0.82)),
         conic-gradient(
@@ -90,382 +177,156 @@
           rgba(255,180,40,0.12) 200deg,
           rgba(255,180,40,0.12) 360deg
         );
-      background-origin: border-box;
-      background-clip: padding-box, border-box;
-      box-shadow: 3px 0 18px rgba(0,0,0,0.45);
-      transition: transform 0.14s, box-shadow 0.14s;
+      background-origin:border-box;
+      background-clip:padding-box, border-box;
+      transition:transform 0.14s;
     }
+    .action-btn:nth-child(1){ animation:rotateBorder 3s linear infinite 0s; }
+    .action-btn:nth-child(2){ animation:rotateBorder 3s linear infinite 0.75s; }
+    .action-btn:nth-child(3){ animation:rotateBorder 3s linear infinite 1.5s; }
+    .action-btn:nth-child(4){ animation:rotateBorder 3s linear infinite 2.25s; }
+    .action-btn:active { transform:scale(0.93); }
 
-    .left-tab:nth-child(1) { animation: rotateBorder 3s linear infinite; animation-delay: 0s; }
-    .left-tab:nth-child(2) { animation: rotateBorder 3s linear infinite; animation-delay: 0.75s; }
-    .left-tab:nth-child(3) { animation: rotateBorder 3s linear infinite; animation-delay: 1.5s; }
-    .left-tab:nth-child(4) { animation: rotateBorder 3s linear infinite; animation-delay: 2.25s; }
-
-    .left-tab:active {
-      transform: translateX(-3px);
-      box-shadow: 1px 0 6px rgba(0,0,0,0.35);
-    }
-
-    .left-tab-icon { width:22px; height:22px; display:flex; align-items:center; justify-content:center; }
-    .left-tab-icon svg { width:20px; height:20px; }
-
-    .left-tab-label {
+    .action-icon { width:22px; height:22px; display:flex; align-items:center; justify-content:center; }
+    .action-icon svg { width:20px; height:20px; }
+    .action-label {
       font-size:8px; font-weight:800;
       letter-spacing:0.08em; text-transform:uppercase;
       color:rgba(255,255,255,0.75); text-align:center;
-      line-height:1.2;
     }
 
-    /* ── BOTTOM BANNER ── */
-    .banner {
-      position:absolute; bottom:0; left:0; right:0;
-      z-index:10;
-      background:transparent;
-      padding:14px 32px 32px;
-      display:flex; flex-direction:column; gap:10px;
-      align-items:center;
+    /* Discount button */
+    .discount-btn {
+      width:100%;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      text-decoration:none; cursor:pointer;
+      background:linear-gradient(180deg, rgba(255,220,60,1.0) 0%, rgba(220,130,0,1.0) 100%);
+      border:1.5px solid rgba(255,240,120,0.8);
+      border-radius:100px; padding:11px 26px;
+      box-shadow:0 6px 22px rgba(255,180,0,0.40), 0 3px 0 rgba(255,255,255,0.20) inset;
+      animation:discountPulse 2s ease-in-out infinite;
     }
-
-    /* ── INFO BUTTON (opens modal) ── */
-    .info-btn {
-      width:auto;
-      min-width:200px;
-      background: linear-gradient(
-        180deg,
-        rgba(180,90,10,0.90) 0%,
-        rgba(120,50,0,0.95) 50%,
-        rgba(80,30,0,0.98) 100%
-      );
-      border: 1px solid rgba(255,190,80,0.50);
-      border-bottom: 4px solid rgba(150,60,0,0.70);
-      border-radius: 100px;
-      padding: 13px 28px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      gap: 10px;
-      transition: transform 0.12s, box-shadow 0.12s, border-bottom 0.12s;
-      box-shadow:
-        0 8px 20px rgba(0,0,0,0.50),
-        0 3px 0 rgba(255,220,120,0.15) inset,
-        0 -2px 0 rgba(0,0,0,0.25) inset;
-      transform: perspective(500px) rotateX(2deg);
-    }
-    .info-btn:active {
-      transform: perspective(500px) rotateX(2deg) translateY(4px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.45), 0 1px 0 rgba(255,200,100,0.10) inset;
-      border-bottom: 1px solid rgba(150,60,0,0.70);
-    }
-
-    .info-btn-name {
-      font-family:'Righteous', sans-serif;
-      font-size:14px; font-weight:400;
-      color:rgba(255,210,120,0.95);
-      letter-spacing:1.5px; text-transform:uppercase;
-    }
-
-    /* ── DISCOUNT TAB (below main button) ── */
-    .discount-tab {
-      width:auto;
-      min-width:200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      text-decoration: none;
-      cursor: pointer;
-      background: linear-gradient(
-        180deg,
-        rgba(255,220,60,1.0) 0%,
-        rgba(220,130,0,1.0) 100%
-      );
-      border: 1.5px solid rgba(255,240,120,0.8);
-      border-radius: 100px;
-      padding: 10px 26px;
-      box-shadow:
-        0 6px 22px rgba(255,180,0,0.40),
-        0 3px 0 rgba(255,255,255,0.20) inset,
-        0 -2px 0 rgba(0,0,0,0.20) inset;
-      animation: discountPulse 2s ease-in-out infinite;
-      transition: transform 0.14s, box-shadow 0.14s;
-    }
-
     @keyframes discountPulse {
-      0%,100% { box-shadow: 0 6px 22px rgba(255,180,0,0.40), 0 3px 0 rgba(255,255,255,0.20) inset, 0 -2px 0 rgba(0,0,0,0.20) inset; }
-      50%      { box-shadow: 0 8px 32px rgba(255,200,0,0.70), 0 3px 0 rgba(255,255,255,0.20) inset, 0 -2px 0 rgba(0,0,0,0.20) inset; }
+      0%,100%{ box-shadow:0 6px 22px rgba(255,180,0,0.40), 0 3px 0 rgba(255,255,255,0.20) inset; }
+      50%    { box-shadow:0 8px 32px rgba(255,200,0,0.70), 0 3px 0 rgba(255,255,255,0.20) inset; }
     }
-
-    .discount-tab:active {
-      transform: translateY(2px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
-      animation-play-state: paused;
-    }
-
-    .discount-tab-icon { font-size:18px; line-height:1; }
-
-    .discount-tab-text-wrap {
-      display: flex; flex-direction: column; align-items: center; gap: 1px;
-    }
-
-    .discount-tab-title {
-      font-family:'DM Sans', sans-serif;
+    .discount-btn:active { transform:translateY(2px); animation-play-state:paused; }
+    .discount-title {
       font-size:11px; font-weight:800;
       letter-spacing:0.08em; text-transform:uppercase;
-      color:rgba(50,15,0,0.95);
-      text-shadow: 0 1px 0 rgba(255,255,255,0.30);
-      text-align: center;
+      color:rgba(50,15,0,0.95); text-align:center;
     }
+    .discount-arrow { font-size:20px; font-weight:800; color:rgba(50,15,0,0.70); }
 
-    .discount-tab-sub {
-      font-size:9px; font-weight:600;
-      color:rgba(60,20,0,0.70);
-      letter-spacing:0.06em;
-    }
-
-    .discount-tab-arrow {
-      font-size:20px; font-weight:800;
-      color:rgba(50,15,0,0.70);
-      margin-left:2px;
-    }
-
-    /* ── INFO MODAL ── */
-    .modal-overlay {
-      display:none; position:absolute; inset:0;
-      z-index:50;
-      background:rgba(0,0,0,0.70);
-      backdrop-filter:blur(10px);
-      align-items:flex-end; justify-content:center;
-    }
-    .modal-overlay.open { display:flex; }
-
-    .modal-sheet {
-      width:100%;
-      background:rgba(12,6,0,0.96);
-      border-top:1px solid rgba(255,180,80,0.25);
-      border-radius:24px 24px 0 0;
-      padding:20px 22px 40px;
-      max-height:80dvh;
-      overflow-y:auto;
-    }
-
-    .modal-handle {
-      width:40px; height:4px;
-      background:rgba(255,255,255,0.2);
-      border-radius:4px;
-      margin:0 auto 18px;
-    }
-
-    .modal-name {
-      font-family:'Pacifico', cursive;
-      font-size:28px; color:#ffc864;
-      text-align:center; margin-bottom:2px;
-      text-shadow:0 2px 12px rgba(0,0,0,0.8);
-    }
-
-    .modal-since {
-      font-family:'Righteous', sans-serif;
-      font-size:13px; color:rgba(255,200,120,0.65);
-      text-align:center; letter-spacing:3px;
-      text-transform:uppercase; margin-bottom:16px;
-    }
-
-    .modal-ratings {
-      display:flex; gap:8px; justify-content:center; margin-bottom:18px;
-    }
-
-    .modal-rating-card {
-      flex:1; background:rgba(255,255,255,0.06);
-      border:1px solid rgba(255,180,80,0.18);
-      border-radius:12px; padding:10px 8px;
-      text-align:center;
-    }
-
-    .modal-rating-source {
-      font-size:12px; font-weight:500;
-      letter-spacing:0.05em;
-      color:rgba(255,255,255,0.65); margin-bottom:4px;
-    }
-
-    .modal-rating-stars {
-      font-size:22px; color:#ffd200;
-      text-shadow:0 0 8px rgba(255,210,0,0.6);
-      margin-bottom:2px;
-    }
-
-    .modal-rating-num {
-      font-size:20px; font-weight:800; color:#fff;
-    }
-
-    .modal-rating-reviews {
-      font-size:11px; color:rgba(255,255,255,0.40);
-      margin-top:2px;
-    }
-
-    .modal-badge {
-      display:inline-block;
-      background:rgba(255,210,0,0.15);
-      border:1px solid rgba(255,210,0,0.35);
-      border-radius:20px;
-      padding:3px 10px;
-      font-size:11px; font-weight:800;
-      color:#ffd200; letter-spacing:0.08em;
-      text-transform:uppercase;
-      margin-top:4px;
-    }
-
-    .modal-desc {
-      font-size:15px; font-weight:400; line-height:1.7;
-      color:rgba(255,255,255,0.72);
-      margin-bottom:18px;
-      border-top:1px solid rgba(255,180,80,0.12);
-      padding-top:16px;
-    }
-
-    .modal-info-row {
-      display:flex; align-items:flex-start; gap:10px;
-      margin-bottom:10px;
-    }
-
-    .modal-info-icon { font-size:14px; margin-top:1px; flex-shrink:0; }
-
-    .modal-info-text {
-      font-size:14px; color:rgba(255,255,255,0.65);
-      line-height:1.4;
-    }
-
-    .modal-info-text a {
-      color:rgba(255,200,100,0.80);
-      text-decoration:none;
-    }
-
-    .modal-close {
-      display:block; text-align:center;
-      margin-top:18px;
-      font-size:11px; font-weight:700;
-      color:rgba(255,255,255,0.30);
-      letter-spacing:0.10em; cursor:pointer;
-      text-transform:uppercase;
-    }
-
-    @property --angle {
-      syntax: '<angle>';
-      initial-value: 0deg;
-      inherits: false;
-    }
-
-    @keyframes rotateBorder {
-      from { --angle: 0deg; }
-      to   { --angle: 360deg; }
-    }
-
+    @property --angle { syntax:'<angle>'; initial-value:0deg; inherits:false; }
+    @keyframes rotateBorder { from{--angle:0deg;} to{--angle:360deg;} }
     @media(max-width:430px){ .app{ width:100%; border-radius:0; } }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <a href="restaurant.html" class="back-btn">← BACK</a>
+  <!-- SCROLLABLE AREA — hero + info -->
+  <div class="scroll-area">
 
-  <!-- Left side action tabs -->
-  <div class="left-tabs">
-
-    <a class="left-tab" href="https://www.instagram.com/buccanos/" target="_blank">
-      <div class="left-tab-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ff8c69" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="2" width="20" height="20" rx="5"/>
-          <circle cx="12" cy="12" r="4"/>
-          <circle cx="17.5" cy="6.5" r="1" fill="#ff8c69" stroke="none"/>
-        </svg>
+    <div class="hero">
+      <a href="restaurant.html" class="back-btn">← BACK</a>
+      <div class="scroll-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        <span>Scroll for info</span>
       </div>
-      <span class="left-tab-label">Instagram</span>
-    </a>
+    </div>
 
-    <a class="left-tab" href="https://www.buccanos.com" target="_blank">
-      <div class="left-tab-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#60cfff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-        </svg>
-      </div>
-      <span class="left-tab-label">Website</span>
-    </a>
+    <div class="info-section">
+      <div class="info-name">Buccanos Beach Club</div>
+      <div class="info-since">Beach Luxury · Cozumel, México</div>
 
-    <a class="left-tab" href="https://www.buccanos.com/menus" target="_blank">
-      <div class="left-tab-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ffd200" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-          <rect x="9" y="3" width="6" height="4" rx="1"/>
-          <path d="M9 12h6M9 16h4"/>
-        </svg>
-      </div>
-      <span class="left-tab-label">Menu</span>
-    </a>
-
-    <a class="left-tab" href="https://www.google.com/maps/place/Buccanos/@20.546278,-86.930347,17z/data=!3m1!4b1!4m6!3m5!1s0x8f4e58f70e0086d3:0x4e3d9d6538e80c9!8m2!3d20.546278!4d-86.930347!16s%2Fg%2F1hcbh3qpn" target="_blank">
-      <div class="left-tab-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#50ffa0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-          <circle cx="12" cy="9" r="2.5"/>
-        </svg>
-      </div>
-      <span class="left-tab-label">Location</span>
-    </a>
-
-  </div>
-
-  <!-- Bottom banner -->
-  <div class="banner">
-
-    <!-- INFO button -->
-    <button class="info-btn" onclick="document.getElementById('infoModal').classList.add('open')">
-      <span class="info-btn-name" style="width:100%;text-align:center;">Buccanos Beach Club</span>
-    </button>
-
-    <!-- Discount tab below main button -->
-    <a href="slot.html?venue=buccanos" class="discount-tab">
-      <div class="discount-tab-text-wrap">
-        <span class="discount-tab-title">Play &amp; Get</span>
-        <span class="discount-tab-title">Your Discount Coupon</span>
-      </div>
-      <span class="discount-tab-arrow">›</span>
-    </a>
-
-  </div>
-
-  <!-- INFO MODAL -->
-  <div class="modal-overlay" id="infoModal">
-    <div class="modal-sheet">
-      <div class="modal-handle"></div>
-
-      <div class="modal-name">Buccanos Beach Club</div>
-      <div class="modal-since">Beach Luxury · Cozumel, México</div>
-
-      <div class="modal-ratings">
-        <div class="modal-rating-card">
-          <div class="modal-rating-source">Google</div>
-          <div class="modal-rating-stars">⭐</div>
-          <div class="modal-rating-num">4.6</div>
-          <div class="modal-rating-reviews">~800 reseñas</div>
+      <div class="info-ratings">
+        <div class="rating-card">
+          <div class="rating-source">Google</div>
+          <div class="rating-stars">⭐</div>
+          <div class="rating-num">4.6</div>
+          <div class="rating-reviews">~800 reviews</div>
         </div>
-        <div class="modal-rating-card">
-          <div class="modal-rating-source">TripAdvisor</div>
-          <div class="modal-rating-stars">⭐</div>
-          <div class="modal-rating-num">4.5</div>
-          <div class="modal-rating-reviews">+1,200 reviews</div>
-          <div><span class="modal-badge">✈ Travellers' Choice</span></div>
+        <div class="rating-card">
+          <div class="rating-source">TripAdvisor</div>
+          <div class="rating-stars">⭐</div>
+          <div class="rating-num">4.5</div>
+          <div class="rating-reviews">+1,200 reviews</div>
+          <div><span class="rating-badge">✈ Travellers' Choice</span></div>
         </div>
       </div>
 
-      <div class="modal-desc">
+      <div class="info-desc">
         Buccanos is Cozumel's premier beachfront dining and sunset club experience. Perched on the Caribbean coast, it combines upscale Mexican and international cuisine with a luxury beach club atmosphere, live DJ sets, and breathtaking ocean views — making it the ultimate spot to dine, lounge, and celebrate on the island.
       </div>
 
-      <div class="modal-info-row">
-        <span class="modal-info-icon">📍</span>
-        <span class="modal-info-text">Carretera San Juan Km 4.5, Col. Zona Hotelera Nte., 77600 Cozumel, Q.R., México</span>
+      <div class="info-row">
+        <span class="info-icon">📍</span>
+        <span class="info-text">Carretera San Juan Km 4.5, Col. Zona Hotelera Nte., 77600 Cozumel, Q.R., México</span>
       </div>
-      <span class="modal-close" onclick="document.getElementById('infoModal').classList.remove('open')">✕ &nbsp; Cerrar</span>
     </div>
+
   </div>
+
+
+  <!-- FIXED BOTTOM BAR — stays put -->
+  <div class="bottom-bar">
+    <div class="action-row">
+
+      <a class="action-btn" href="https://www.instagram.com/buccanos/" target="_blank">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ff8c69" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="#ff8c69" stroke="none"/>
+          </svg>
+        </div>
+        <span class="action-label">Instagram</span>
+      </a>
+
+      <a class="action-btn" href="https://www.buccanos.com" target="_blank">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#60cfff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+        </div>
+        <span class="action-label">Website</span>
+      </a>
+
+      <a class="action-btn" href="https://www.buccanos.com/menus" target="_blank">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ffd200" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+            <rect x="9" y="3" width="6" height="4" rx="1"/>
+            <path d="M9 12h6M9 16h4"/>
+          </svg>
+        </div>
+        <span class="action-label">Menu</span>
+      </a>
+
+      <a class="action-btn" href="https://www.google.com/maps/place/Buccanos/@20.546278,-86.930347,17z/data=!3m1!4b1!4m6!3m5!1s0x8f4e58f70e0086d3:0x4e3d9d6538e80c9" target="_blank">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#50ffa0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            <circle cx="12" cy="9" r="2.5"/>
+          </svg>
+        </div>
+        <span class="action-label">Location</span>
+      </a>
+
+    </div>
+
+    <a href="slot.html?venue=buccanos" class="discount-btn">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+        <span class="discount-title">Play &amp; Get</span>
+        <span class="discount-title">Your Discount Coupon</span>
+      </div>
+      <span class="discount-arrow">›</span>
+    </a>
+  </div>
+
 
 </div>
 </body>
