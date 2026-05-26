@@ -41,11 +41,12 @@ html,body{
 /* BACK */
 .back-btn{
   position:absolute;top:14px;left:14px;z-index:30;
-  width:34px;height:34px;border-radius:50%;
+  padding:8px 14px;border-radius:50px;
   background:rgba(212,245,106,0.08);
   border:1px solid rgba(212,245,106,0.2);
   display:flex;align-items:center;justify-content:center;
-  color:#d4f56a;font-size:18px;text-decoration:none;
+  color:#d4f56a;font-size:11px;font-weight:700;letter-spacing:1px;
+  text-decoration:none;
 }
 
 /* TOP LABEL */
@@ -64,7 +65,7 @@ html,body{
 .sub-label{
   font-family:'Righteous',sans-serif;
   font-size:11px;letter-spacing:4px;
-  color:rgba(212,245,106,0.4);
+  color:rgba(255,255,255,0.5);
   text-transform:uppercase;
   margin-top:4px;
 }
@@ -117,17 +118,7 @@ html,body{
 .reel::before{top:0;background:linear-gradient(to bottom,rgba(0,0,0,0.8),transparent);}
 .reel::after{bottom:0;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);}
 
-/* Payline */
-.reels-row::after{
-  content:'';
-  position:absolute;
-  left:20px;right:20px;
-  top:50%;transform:translateY(-50%);
-  height:1px;
-  background:linear-gradient(90deg,transparent,rgba(212,245,106,0.3),transparent);
-  pointer-events:none;
-  z-index:6;
-}
+
 
 .reel-inner{
   display:flex;flex-direction:column;
@@ -272,7 +263,7 @@ function goBackToVenue(){
 </head>
 <body>
 
-<a id="backBtn" href="lobster.html" class="back-btn" onclick="event.preventDefault();goBackToVenue()">‹</a>
+<a id="backBtn" href="lobster.html" class="back-btn" onclick="event.preventDefault();goBackToVenue()">← BACK</a>
 
 <div class="screen">
   <div class="top-section">
@@ -337,7 +328,7 @@ function buildReels(){
       `;
       inner.appendChild(div);
     });
-    inner.style.transform=`translateY(-${r*ITEM_H}px)`;
+    inner.style.transform='translateY(0px)';
     inner.style.transition='none';
   }
 }
@@ -375,7 +366,7 @@ function spin(){
   [0,1,2].forEach((r,idx)=>{
     const inner=document.getElementById('ri'+r);
     const dur=1200+idx*350;
-    const myLand=baseIdx+r;
+    const myLand=baseIdx;
     inner.style.transition=`transform ${dur}ms cubic-bezier(0.17,0.67,0.12,1.0)`;
     inner.style.transform=`translateY(-${myLand*ITEM_H}px)`;
     setTimeout(()=>{
