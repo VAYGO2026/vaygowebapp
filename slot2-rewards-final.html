@@ -333,9 +333,19 @@ function goBackToVenue(){
     <div class="auth-step" id="authStep2">
       <div class="auth-title">CHECK YOUR EMAIL</div>
       <div class="auth-sent-icon">📩</div>
-      <div class="auth-sub">We sent you a magic link. Open it from this same phone to activate your VAYGO Rewards account.</div>
+      <div class="auth-sub">We sent a magic link to:</div>
       <div class="auth-sent-email" id="authSentTo"></div>
-      <button class="auth-btn" onclick="closeAuthModal()">GOT IT</button>
+      <div style="background:rgba(212,245,106,0.06);border:1px solid rgba(212,245,106,0.15);border-radius:12px;padding:14px;margin-bottom:20px;text-align:left;">
+        <div style="font-size:12px;color:#d4f56a;font-weight:800;margin-bottom:8px;letter-spacing:1px;">HOW TO ACTIVATE:</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.8;">
+          1. Open the email on <strong style="color:#fff;">this same phone</strong><br/>
+          2. Tap the magic link<br/>
+          3. You'll be logged in automatically<br/>
+          4. Come back here and spin! 🎰
+        </div>
+      </div>
+      <button class="auth-btn" onclick="closeAuthModal()">← BACK TO SPIN</button>
+      <div style="font-size:11px;color:rgba(255,255,255,0.25);text-align:center;margin-top:8px;">Didn't get the email? Check your spam folder</div>
     </div>
   </div>
 </div>
@@ -444,6 +454,8 @@ const CITY_MAP={lobster:'Cozumel',buccanos:'Cozumel',azulmadera:'Cozumel',guidos
 const venueCity=CITY_MAP[_vp]||'Cozumel';
 let currentUser=null,userData=null,cdInterval=null;
 
+localStorage.setItem('vaygoVenue', _vp);
+
 /* Countdown — reads from Firestore rifa/activa */
 function startCountdown(targetDate){
   if(cdInterval)clearInterval(cdInterval);
@@ -534,7 +546,11 @@ auth.onAuthStateChanged(async user=>{
 if(auth.isSignInWithEmailLink(window.location.href)){
   let email=localStorage.getItem('vaygoRewardsEmail');
   if(!email)email=window.prompt('Confirm your email:');
-  if(email){auth.signInWithEmailLink(email,window.location.href).then(()=>{localStorage.removeItem('vaygoRewardsEmail');window.history.replaceState(null,'',window.location.pathname+window.location.search);}).catch(e=>console.error(e));}
+  if(email){auth.signInWithEmailLink(email,window.location.href).then(()=>{
+    localStorage.removeItem('vaygoRewardsEmail');
+    const venue=localStorage.getItem('vaygoVenue')||_vp||'lobster';
+    window.location.href='slot2.html?venue='+venue;
+  }).catch(e=>console.error(e));}
 }
 
 function openPrizesModal(){document.getElementById('prizesModal').style.display='flex';}
