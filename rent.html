@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Rent — VAYGO</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Righteous&family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Righteous&family=Pacifico&family=Inter:wght@400;500;600;700&family=Anton&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -238,12 +238,27 @@
       letter-spacing: 0.1px;
     }
 
-    /* ── Botón BACK ── */
-    .back-btn {
+
+
+    /* ── Responsive: pantallas menores a 390px — igual que app.html ── */
+    @media (max-width: 430px) {
+      .app {
+        width: 100%;
+        border-radius: 0;
+      }
+    }
+  
+    /* BOTTOM BUTTONS */
+    .bottom-btns {
       position: absolute;
       bottom: 24px;
-      left: 24px;
+      left: 24px; right: 24px;
       z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .back-btn {
       padding: 10px 18px;
       border-radius: 50px;
       background: rgba(0,0,0,0.45);
@@ -262,15 +277,54 @@
       cursor: pointer;
       box-shadow: 0 2px 12px rgba(0,0,0,0.4);
     }
-
-    /* ── Responsive: pantallas menores a 390px — igual que app.html ── */
-    @media (max-width: 430px) {
-      .app {
-        width: 100%;
-        border-radius: 0;
-      }
+    .winner-btn {
+      display: none;
+      padding: 10px 18px;
+      border-radius: 50px;
+      background: rgba(255,215,0,0.15);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,215,0,0.5);
+      color: #FFD700;
+      font-family: 'Anton', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      animation: winnerPulse 2s ease-in-out infinite;
     }
-  </style>
+    @keyframes winnerPulse {
+      0%,100%{ box-shadow: 0 0 10px rgba(255,215,0,0.2); }
+      50%{ box-shadow: 0 0 24px rgba(255,215,0,0.5); }
+    }
+    #winnerSheet {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(0,0,0,0.88);
+    }
+    #winnerSheet.show { display: flex; }
+    .ws-box {
+      background: #050e04;
+      border: 2px solid #FFD700;
+      border-radius: 24px 24px 0 0;
+      padding: 28px 22px 44px;
+      width: 100%;
+      max-width: 390px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(255,215,0,0.2);
+    }
+    .ws-handle { width: 36px; height: 4px; background: rgba(255,215,0,0.2); border-radius: 2px; margin: 0 auto 20px; }
+    .ws-label { font-size: 10px; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,215,0,0.6); margin-bottom: 12px; }
+    .ws-ticket { font-family: 'Anton', sans-serif; font-size: 48px; color: #FFD700; line-height: 1; text-shadow: 0 0 20px rgba(255,215,0,0.4); }
+    .ws-name { font-family: 'Anton', sans-serif; font-size: 22px; color: #fff; margin-top: 8px; letter-spacing: 2px; }
+    .ws-prize { font-size: 13px; font-weight: 700; color: #d4f56a; margin-top: 6px; }
+    .ws-divider { width: 50px; height: 1px; background: rgba(255,215,0,0.2); margin: 16px auto; }
+    .ws-msg { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.6; margin-bottom: 20px; }
+    .ws-claim { display: none; width: 100%; padding: 14px; background: linear-gradient(180deg,#FFD700 0%,#f0a500 50%,#c47f00 100%); border: none; border-radius: 12px; color: #1a0a00; font-family: 'Anton', sans-serif; font-size: 16px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 4px 0 #7a4f00; text-decoration: none; margin-bottom: 10px; }
+    .ws-close { width: 100%; padding: 13px; background: linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%); border: none; border-radius: 12px; color: #0a1a00; font-family: 'Anton', sans-serif; font-size: 16px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 4px 0 #2d4000; }
+</style>
 </head>
 <body>
   <div class="app">
@@ -319,9 +373,27 @@
       </div>
     </div>
 
-    <!-- Botón BACK -->
-    <a href="app.html" class="back-btn">BACK</a>
+    <!-- BOTTOM BUTTONS -->
+    <div class="bottom-btns">
+      <a href="app.html" class="back-btn">BACK</a>
+      <button class="winner-btn" id="winnerBtn" onclick="openWinnerSheet()">🏆 WINNER</button>
+    </div>
 
+  </div>
+
+  <!-- WINNER SHEET -->
+  <div id="winnerSheet">
+    <div class="ws-box">
+      <div class="ws-handle"></div>
+      <div class="ws-label">🏆 Raffle Winner</div>
+      <div class="ws-ticket" id="wsTicket">#001</div>
+      <div class="ws-name" id="wsName">—</div>
+      <div class="ws-prize" id="wsPrize">—</div>
+      <div class="ws-divider"></div>
+      <div class="ws-msg" id="wsMsg"></div>
+      <a id="wsClaimBtn" href="https://instagram.com/vaygo.mx" target="_blank" class="ws-claim">CLAIM ON INSTAGRAM</a>
+      <button class="ws-close" onclick="closeWinnerSheet()">CLOSE</button>
+    </div>
   </div>
 
 <script>
@@ -422,6 +494,68 @@ function startAmbient(){
 document.addEventListener('click',     startAmbient, {once:true});
 document.addEventListener('touchstart', startAmbient, {once:true});
 window.addEventListener('load', ()=>{ try{ startAmbient(); }catch(e){} });
+</script>
+
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain:"vaygo-app.firebaseapp.com",
+  projectId:"vaygo-app",
+  storageBucket:"vaygo-app.firebasestorage.app",
+  messagingSenderId:"499741267414",
+  appId:"1:499741267414:web:e69cd43156adaea11bc077"
+});
+const db = firebase.firestore();
+const auth = firebase.auth();
+let currentUser = null;
+let winnerData = null;
+auth.onAuthStateChanged(user => { currentUser = user; });
+db.collection('rifa').doc('activa').onSnapshot(snap => {
+  if(!snap.exists) return;
+  const data = snap.data();
+  if(data && data.status === 'winner' && data.ganadorTicket){
+    const target = new Date(data.sorteoFecha);
+    if(new Date() >= target){
+      winnerData = data;
+      document.getElementById('winnerBtn').style.display = 'block';
+    }
+  }
+});
+function openWinnerSheet(){
+  if(!winnerData) return;
+  const data = winnerData;
+  document.getElementById('wsTicket').textContent = '#' + String(data.ganadorTicket).padStart(3,'0');
+  document.getElementById('wsName').textContent = data.ganadorNombre || '—';
+  document.getElementById('wsPrize').textContent = data.ganadorPremio || 'Surprise Prize';
+  const claimBtn = document.getElementById('wsClaimBtn');
+  const msg = document.getElementById('wsMsg');
+  const isWinner = currentUser && (
+    currentUser.displayName === data.ganadorNombre ||
+    (currentUser.email && currentUser.email.split('@')[0] === data.ganadorNombre) ||
+    currentUser.email === data.ganadorNombre
+  );
+  if(isWinner){
+    msg.textContent = '🎉 Congratulations! You won! Contact us on Instagram to claim your prize.';
+    msg.style.color = '#FFD700';
+    claimBtn.style.display = 'block';
+  } else if(currentUser){
+    msg.textContent = 'Better luck next time 🌴 Keep collecting tickets for the next raffle!';
+    msg.style.color = 'rgba(255,255,255,0.4)';
+    claimBtn.style.display = 'none';
+  } else {
+    msg.textContent = 'Login in the slot to participate in the next raffle!';
+    msg.style.color = 'rgba(255,255,255,0.4)';
+    claimBtn.style.display = 'none';
+  }
+  document.getElementById('winnerSheet').classList.add('show');
+}
+function closeWinnerSheet(){
+  document.getElementById('winnerSheet').classList.remove('show');
+}
 </script>
 
 </body>
