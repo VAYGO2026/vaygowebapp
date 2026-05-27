@@ -322,6 +322,7 @@ html,body{width:100%;min-height:100%;background:#060E1C;font-family:'DM Sans',sa
   <div class="section">
     <div class="section-title">👥 Participantes</div>
     <div class="month-tabs" id="monthTabs"></div>
+    <div class="city-tabs" id="cityTabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"></div>
     <div class="participants-list" id="participantsList">
       <div style="text-align:center;color:rgba(255,255,255,0.25);padding:20px;font-size:13px;">Cargando...</div>
     </div>
@@ -372,6 +373,7 @@ document.getElementById('adminPass').addEventListener('keydown', e => {
 /* ── DATA ── */
 let allTickets = [];
 let currentMonth = new Date().toISOString().slice(0,7);
+let currentCity = 'ALL';
 
 async function loadData(){
   try {
@@ -395,36 +397,86 @@ async function loadData(){
       const btn = document.createElement('button');
       btn.className = 'month-tab' + (m === currentMonth ? ' active' : '');
       btn.textContent = m;
-      btn.onclick = () => { currentMonth = m; document.querySelectorAll('.month-tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderParticipants(); };
+      btn.onclick = () => {
+        currentMonth = m;
+        currentCity = 'ALL';
+        document.querySelectorAll('.month-tab').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        updateCityTabs();
+        renderParticipants();
+      };
       tabsEl.appendChild(btn);
     });
 
+    updateCityTabs();
     renderParticipants();
   } catch(e) { console.error(e); }
 }
 
-function renderParticipants(){
+function updateCityTabs(){
   const filtered = allTickets.filter(t => t.month === currentMonth);
+  const cities = [...new Set(filtered.map(t => t.city).filter(Boolean))].sort();
+  const tabsEl = document.getElementById('cityTabs');
+  tabsEl.innerHTML = '';
+
+  /* ALL tab */
+  const allBtn = document.createElement('button');
+  allBtn.className = 'month-tab' + (currentCity === 'ALL' ? ' active' : '');
+  allBtn.style.cssText = 'background:rgba(212,245,106,0.08);border-color:rgba(212,245,106,0.3);color:#d4f56a;';
+  allBtn.textContent = `🌎 Todas (${filtered.length})`;
+  allBtn.onclick = () => { currentCity = 'ALL'; updateCityTabs(); renderParticipants(); };
+  tabsEl.appendChild(allBtn);
+
+  cities.forEach(city => {
+    const count = filtered.filter(t => t.city === city).length;
+    const btn = document.createElement('button');
+    btn.className = 'month-tab' + (currentCity === city ? ' active' : '');
+    btn.textContent = `📍 ${city} (${count})`;
+    btn.onclick = () => { currentCity = city; updateCityTabs(); renderParticipants(); };
+    tabsEl.appendChild(btn);
+  });
+}
+
+function renderParticipants(){
+  let filtered = allTickets.filter(t => t.month === currentMonth);
+  if(currentCity !== 'ALL') filtered = filtered.filter(t => t.city === currentCity);
+
   const byUser = {};
   filtered.forEach(t => {
-    if(!byUser[t.uid]) byUser[t.uid] = {name: t.displayName||t.email, email: t.email, tickets:[], city: t.city};
+    if(!byUser[t.uid]){
+      byUser[t.uid] = {
+        name: t.displayName||t.email,
+        email: t.email,
+        tickets: [],
+        cities: {}
+      };
+    }
     byUser[t.uid].tickets.push(t.ticketNumber);
+    const c = t.city || 'Cozumel';
+    byUser[t.uid].cities[c] = (byUser[t.uid].cities[c] || 0) + 1;
   });
+
   const list = document.getElementById('participantsList');
   if(!Object.keys(byUser).length){
-    list.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.25);padding:20px;font-size:13px;">Sin participantes este mes</div>';
+    list.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.25);padding:20px;font-size:13px;">Sin participantes</div>';
     return;
   }
-  list.innerHTML = Object.values(byUser).map((u,i) => `
+
+  list.innerHTML = Object.values(byUser).map((u,i) => {
+    const cityTags = Object.entries(u.cities).map(([city, count]) =>
+      `<span style="background:rgba(212,245,106,0.08);border:1px solid rgba(212,245,106,0.2);border-radius:50px;padding:2px 8px;font-size:9px;color:rgba(212,245,106,0.7);margin-right:4px;">📍 ${city} ×${count}</span>`
+    ).join('');
+    return `
     <div class="participant-row">
       <div class="p-num">#${String(i+1).padStart(3,'0')}</div>
       <div style="flex:1;">
         <div class="p-name">${u.name||'Usuario'}</div>
-        <div class="p-email">${u.email||''} · ${u.city||'Cozumel'}</div>
+        <div class="p-email" style="margin-bottom:4px;">${u.email||''}</div>
+        <div>${cityTags}</div>
       </div>
       <div class="p-tickets">${u.tickets.length} boleto${u.tickets.length>1?'s':''}</div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 /* ── TOMBOLA ── */
