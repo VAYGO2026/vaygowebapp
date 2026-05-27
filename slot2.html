@@ -199,7 +199,7 @@ async function saveAndShowQR(prize){
   }catch(e){}
   const code=genCode(),expires=getExpiry();
   try{
-    await db.collection('codes').doc(code).set({code,prize:prizeLabel,restId:REST_ID,restName:REST_NAME,spinKey,gameKey,game:'slot2',spunAt:firebase.firestore.FieldValue.serverTimestamp(),expiresAt:expires.toISOString(),used:false,uid:'anon_'+Date.now()});
+    await db.collection('codes').doc(code).set({code,prize:prizeLabel,restId:REST_ID,restName:REST_NAME,spinKey,gameKey,game:'slot2',spunAt:firebase.firestore.FieldValue.serverTimestamp(),expiresAt:expires.toISOString(),used:false,uid:'anon_'+Date.now(),vendorId:localStorage.getItem('vaygo_ref')||null,vendorDirect:localStorage.getItem('vaygo_ref_direct')||'0',vendorFirstPaid:localStorage.getItem('vaygo_ref_first_coupon')||'0'});
   }catch(e){console.error(e);}
   showQR(code,prizeLabel,expires.toISOString());
 }

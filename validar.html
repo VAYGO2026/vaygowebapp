@@ -311,23 +311,25 @@ window.confirmUsed = async function() {
 
     /* ── VENDOR COMMISSION ── */
     try {
-      const ref = localStorage.getItem('vaygo_ref');
-      const isDirect = localStorage.getItem('vaygo_ref_direct') === '1';
-      const firstCouponPaid = localStorage.getItem('vaygo_ref_first_coupon') === '1';
+      /* Read vendorId from the code document — not from localStorage */
+      const codeSnap = await getDoc(doc(db, 'codes', pendingCode));
+      const codeData = codeSnap.exists() ? codeSnap.data() : null;
+      const ref = codeData && codeData.vendorId ? codeData.vendorId : null;
+      const isDirect = codeData && codeData.vendorDirect === '1';
+      const firstCouponPaid = codeData && codeData.vendorFirstPaid === '1';
 
       if(ref){
         /* Check vendor is active */
         const vendorSnap = await getDoc(doc(db, 'vendors', ref));
         if(vendorSnap.exists() && vendorSnap.data().status === 'active'){
           const month = new Date().toISOString().slice(0,7);
-          /* $15 for every coupon used */
           let amount = 15;
           let type = 'indirect';
-          /* $2 extra only for first coupon of direct client */
           if(isDirect && !firstCouponPaid){
             amount = 17;
             type = 'direct';
-            localStorage.setItem('vaygo_ref_first_coupon', '1');
+            /* Mark first coupon as paid in the code document */
+            await updateDoc(doc(db, 'codes', pendingCode), { vendorFirstPaid: '1' });
           }
           await addDoc(collection(db, 'vendor_earnings'), {
             vendorId: ref,
