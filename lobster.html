@@ -66,15 +66,19 @@
 
     /* ── BACK ── */
     .back-btn {
-      position:absolute; top:40px; left:18px;
-      z-index:30;
-      padding:8px 16px; border-radius:50px;
+      flex-shrink:0;
+      padding:11px 16px; border-radius:50px;
       background:rgba(0,0,0,0.45);
       backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-      border:1px solid rgba(255,255,255,0.22);
-      color:#fff; font-size:12px; font-weight:700;
+      border:1px solid rgba(212,245,106,0.5);
+      color:#d4f56a; font-size:12px; font-weight:800;
       letter-spacing:0.12em; text-decoration:none; cursor:pointer;
+      box-shadow:0 0 12px rgba(212,245,106,0.15);
+      transition:transform 0.1s;
+      position:relative;overflow:hidden;
+      white-space:nowrap;
     }
+    .back-btn:active{transform:translateY(2px);}
 
     /* Scroll hint arrow */
     .scroll-hint {
@@ -236,7 +240,6 @@
   <div class="scroll-area">
 
     <div class="hero">
-      <a href="restaurant.html" class="back-btn">← BACK</a>
       <div class="scroll-hint">
         <span>More info ↓</span>
       </div>
@@ -275,9 +278,8 @@
   </div>
 
 
-  <!-- FIXED BOTTOM BAR — stays put -->
-  <div class="bottom-bar">
-    <div class="action-row">
+    <div class="bottom-bar">
+      <div class="action-row">
 
       <a class="action-btn" href="https://www.instagram.com/theoriginallobsterhouse" target="_blank">
         <div class="action-icon">
@@ -323,13 +325,16 @@
 
     </div>
 
-    <a href="slot2.html?venue=lobster" class="discount-btn">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
-        <span class="discount-title">Play &amp; Get</span>
-        <span class="discount-title">Your Discount Coupon</span>
-      </div>
-      <span class="discount-arrow">›</span>
-    </a>
+    <div class="discount-row" style="display:flex;gap:10px;align-items:center;width:100%;">
+      <a href="restaurant.html" class="back-btn">← BACK</a>
+      <a href="slot2.html?venue=lobster" class="discount-btn" style="flex:1;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+          <span class="discount-title">Play &amp; Get</span>
+          <span class="discount-title">Your Discount Coupon</span>
+        </div>
+        <span class="discount-arrow">›</span>
+      </a>
+    </div>
   </div>
 
 
