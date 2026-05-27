@@ -88,20 +88,32 @@ html,body{
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   font-size: 15px;
-  font-weight: 700;
-  color: #fff;
+  font-weight: 800;
+  color: #0a1a00;
   text-align: center;
-  letter-spacing: 0.03em;
-  transition: transform 0.13s;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.6);
-  background: rgba(0,0,0,0.38);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  letter-spacing: 0.08em;
+  transition: transform 0.13s, box-shadow 0.13s;
+  text-shadow: none;
+  background: linear-gradient(180deg, #d4f56a 0%, #8fc20a 50%, #5a8000 100%);
+  box-shadow: 0 4px 0 #2d4000, 0 6px 20px rgba(212,245,106,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
   isolation: isolate;
+  overflow: hidden;
 }
 
-/* Neon ring — sits behind button, only the 2px gap shows */
+/* Shimmer */
+.city-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: skewX(-20deg);
+  animation: shimmer 3s infinite;
+  z-index: 2;
+}
+@keyframes shimmer { 0%{left:-100%} 100%{left:200%} }
+
+/* Neon ring — sits behind button */
 .city-btn::before {
   content: '';
   position: absolute;
@@ -134,36 +146,26 @@ html,body{
 .city-btn:nth-child(5)::before { animation-delay: 2.25s; }
 .city-btn:nth-child(6)::before { animation-delay: 3s; }
 
-.city-btn:active { transform: scale(0.97); background: rgba(255,255,255,0.15); }
+.city-btn:active { transform: translateY(3px); box-shadow: 0 0 0 #2d4000, 0 2px 8px rgba(212,245,106,0.15); }
 
-/* Coming soon — dimmer neon */
+/* Coming soon — dimmer */
 .city-btn.coming {
   cursor: default;
-  background: rgba(0,0,0,0.28);
-  color: rgba(255,255,255,0.45);
+  background: linear-gradient(180deg, rgba(212,245,106,0.3) 0%, rgba(143,194,10,0.22) 50%, rgba(90,128,0,0.18) 100%);
+  color: rgba(10,26,0,0.5);
+  box-shadow: 0 4px 0 rgba(45,64,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
 }
-.city-btn.coming::before {
-  background: conic-gradient(
-    from var(--angle),
-    transparent 0deg,
-    transparent 60deg,
-    rgba(180,220,80,0.25) 90deg,
-    rgba(220,255,100,0.45) 120deg,
-    rgba(180,220,80,0.25) 150deg,
-    transparent 180deg,
-    transparent 360deg
-  );
-}
+.city-btn.coming::after { display: none; }
 .city-btn.coming:active { transform: none; }
 
 .next-tag{
   font-size:10px;
   font-weight:800;
-  color:#FFD700;
+  color:rgba(10,26,0,0.6);
   letter-spacing:0.14em;
   margin-left:6px;
   vertical-align:middle;
-  text-shadow: 0 0 8px rgba(255,215,0,0.8);
+  text-shadow: none;
 }
 
 /* Responsive */
