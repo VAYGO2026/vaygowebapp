@@ -136,6 +136,14 @@ nav{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px
 
     <div class="stats-grid">
       <div class="stat-card">
+        <div class="stat-num" id="statScans">0</div>
+        <div class="stat-lbl">Escaneos QR</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statCoupons">0</div>
+        <div class="stat-lbl">Cupones usados</div>
+      </div>
+      <div class="stat-card">
         <div class="stat-num" id="statDirect">0</div>
         <div class="stat-lbl">Directos</div>
       </div>
@@ -143,6 +151,13 @@ nav{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px
         <div class="stat-num" id="statIndirect">0</div>
         <div class="stat-lbl">Indirectos</div>
       </div>
+    </div>
+
+    <!-- CONVERSION -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-bottom:8px;">Tasa de conversión</div>
+      <div style="font-family:'Anton',sans-serif;font-size:40px;color:var(--lime);" id="convRate">0%</div>
+      <div style="font-size:11px;color:var(--gray);margin-top:4px;" id="convDesc">De tus escaneos han usado cupón</div>
     </div>
 
     <div class="breakdown">
@@ -278,8 +293,18 @@ function renderMonth(){
   const indirectAmt = indirects.reduce((s,e) => s + (e.amount||0), 0);
   const total = directAmt + indirectAmt;
 
+  /* Scans from vendor data */
+  const scans = (currentVendor.scans && currentVendor.scans[currentMonth])
+    ? (currentVendor.scans[currentMonth].total || 0) : 0;
+  const coupons = filtered.length;
+  const convRate = scans > 0 ? Math.round((coupons/scans)*100) : 0;
+
+  document.getElementById('statScans').textContent = scans;
+  document.getElementById('statCoupons').textContent = coupons;
   document.getElementById('statDirect').textContent = directs.length;
   document.getElementById('statIndirect').textContent = indirects.length;
+  document.getElementById('convRate').textContent = convRate + '%';
+  document.getElementById('convDesc').textContent = `${coupons} de ${scans} escaneos han usado cupón`;
   document.getElementById('bdDirect').textContent = directs.length;
   document.getElementById('bdDirectAmt').textContent = '$' + directAmt;
   document.getElementById('bdIndirect').textContent = indirects.length;
