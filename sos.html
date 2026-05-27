@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>VAYGO — Emergency SOS</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;600;700;800&family=Righteous&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;min-height:100%;background:#060E1C;font-family:'DM Sans',sans-serif;color:#fff;}
+
+.app{width:390px;min-height:100dvh;margin:0 auto;position:relative;background:#060E1C;overflow-x:hidden;}
+
+/* HEADER */
+.header{
+  position:relative;
+  background:linear-gradient(180deg,#1a0000 0%,#060E1C 100%);
+  padding:48px 20px 24px;
+  text-align:center;
+  border-bottom:1px solid rgba(255,50,50,0.2);
+}
+.back-btn{
+  position:absolute;top:28px;left:16px;
+  padding:8px 16px;border-radius:50px;
+  background:rgba(0,0,0,0.45);
+  border:1px solid rgba(212,245,106,0.5);
+  color:#d4f56a;font-size:12px;font-weight:800;
+  letter-spacing:0.12em;text-decoration:none;
+  box-shadow:0 0 12px rgba(212,245,106,0.15);
+}
+.header-icon{font-size:36px;margin-bottom:8px;animation:pulse 1.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+.header-title{font-family:'Anton',sans-serif;font-size:28px;letter-spacing:4px;color:#ff4444;text-shadow:0 0 20px rgba(255,50,50,0.5);}
+.header-sub{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-top:4px;}
+.header-city{font-family:'Righteous',sans-serif;font-size:13px;letter-spacing:5px;color:rgba(255,100,100,0.7);text-transform:uppercase;margin-top:8px;}
+
+/* 911 BUTTON */
+.sos-wrap{padding:20px;display:flex;justify-content:center;}
+.sos-911{
+  width:100%;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:20px;border-radius:20px;
+  background:linear-gradient(180deg,#ff4444 0%,#cc0000 50%,#990000 100%);
+  border:none;text-decoration:none;
+  box-shadow:0 6px 0 #660000,0 0 40px rgba(255,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.2);
+  animation:sosPulse 2s ease-in-out infinite;
+  cursor:pointer;
+}
+@keyframes sosPulse{
+  0%,100%{box-shadow:0 6px 0 #660000,0 0 30px rgba(255,0,0,0.3);}
+  50%{box-shadow:0 6px 0 #660000,0 0 50px rgba(255,0,0,0.6);}
+}
+.sos-911:active{transform:translateY(4px);box-shadow:0 0 0 #660000;}
+.sos-911-num{font-family:'Anton',sans-serif;font-size:52px;color:#fff;letter-spacing:4px;line-height:1;}
+.sos-911-txt{text-align:left;}
+.sos-911-label{font-family:'Anton',sans-serif;font-size:13px;color:#fff;letter-spacing:2px;}
+.sos-911-sub{font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px;}
+
+/* SECTION */
+.section{padding:0 16px 16px;}
+.section-title{
+  font-family:'Righteous',sans-serif;
+  font-size:10px;letter-spacing:4px;text-transform:uppercase;
+  color:rgba(255,255,255,0.35);
+  padding:12px 4px 8px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  margin-bottom:8px;
+}
+
+/* CALL CARD */
+.call-card{
+  display:flex;align-items:center;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+  padding:14px 16px;
+  margin-bottom:8px;
+  text-decoration:none;
+  transition:background 0.15s;
+  gap:14px;
+}
+.call-card:active{background:rgba(255,255,255,0.08);}
+.call-card.red{border-color:rgba(255,80,80,0.25);background:rgba(255,50,50,0.05);}
+.call-card.hospital{border-color:rgba(212,245,106,0.2);background:rgba(212,245,106,0.03);}
+.call-card.green{border-color:rgba(0,200,100,0.2);background:rgba(0,200,100,0.03);}
+.call-icon{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.call-icon.red{background:rgba(255,50,50,0.15);}
+.call-icon.hospital{background:rgba(212,245,106,0.12);}
+.call-icon.green{background:rgba(0,200,100,0.1);}
+.call-info{flex:1;}
+.call-name{font-size:14px;font-weight:700;color:#fff;line-height:1.2;}
+.call-num{font-size:12px;color:rgba(255,255,255,0.45);margin-top:2px;font-family:'DM Sans',sans-serif;letter-spacing:0.5px;}
+.call-arrow{
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,0.06);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.call-arrow svg{width:16px;height:16px;}
+
+/* GPS BUTTON */
+.gps-btn{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:16px;border-radius:16px;
+  background:rgba(212,245,106,0.08);
+  border:1px solid rgba(212,245,106,0.3);
+  color:#d4f56a;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:3px;
+  cursor:pointer;margin-bottom:8px;
+  transition:background 0.15s;
+}
+.gps-btn:active{background:rgba(212,245,106,0.15);}
+
+/* CONSULATE */
+.consulate-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.consulate-card{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;padding:12px;text-align:center;
+  text-decoration:none;transition:background 0.15s;
+}
+.consulate-card:active{background:rgba(255,255,255,0.08);}
+.consulate-flag{font-size:28px;margin-bottom:6px;}
+.consulate-country{font-size:11px;font-weight:700;color:#fff;letter-spacing:1px;}
+.consulate-phone{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;}
+
+/* BOTTOM SPACE */
+.bottom-space{height:32px;}
+
+@media(max-width:430px){.app{width:100%;}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <a href="app.html" class="back-btn">← BACK</a>
+    <div class="header-icon">🚨</div>
+    <div class="header-title">EMERGENCY</div>
+    <div class="header-sub">Cozumel · Mexico</div>
+    <div class="header-city">Tap any number to call instantly</div>
+  </div>
+
+  <!-- 911 -->
+  <div class="sos-wrap">
+    <a href="tel:911" class="sos-911">
+      <div class="sos-911-num">911</div>
+      <div class="sos-911-txt">
+        <div class="sos-911-label">GENERAL EMERGENCY</div>
+        <div class="sos-911-sub">Police · Ambulance · Fire</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- EMERGENCY SERVICES -->
+  <div class="section">
+    <div class="section-title">🚑 Emergency Services</div>
+
+    <a href="tel:+529878720103" class="call-card red">
+      <div class="call-icon red">🚑</div>
+      <div class="call-info">
+        <div class="call-name">Cozumel Red Cross</div>
+        <div class="call-num">+52 987 872 0103</div>
+      </div>
+      <div class="call-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.59 1.23h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.98a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+    </a>
+
+    <a href="tel:+529878720405" class="call-card red">
+      <div class="call-icon red">🔥</div>
+      <div class="call-info">
+        <div class="call-name">Fire Department</div>
+        <div class="call-num">+52 987 872 0405</div>
+      </div>
+      <div class="call-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.59 1.23h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.98a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+    </a>
+
+    <a href="tel:+529878729800" class="call-card red">
+      <div class="call-icon red">🚓</div>
+      <div class="call-info">
+        <div class="call-name">Municipal Police</div>
+        <div class="call-num">+52 987 872 9800</div>
+      </div>
+      <div class="call-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.59 1.23h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.98a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+    </a>
+
+    <a href="tel:+529878720127" class="call-card red">
+      <div class="call-icon red">⚓</div>
+      <div class="call-info">
+        <div class="call-name">Harbor Master / Port Authority</div>
+        <div class="call-num">+52 987 872 0127</div>
+      </div>
+      <div class="call-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.59 1.23h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.98a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+    </a>
+
+    <a href="tel:+529878725792" class="call-card red">
+      <div class="call-icon red">🛡️</div>
+      <div class="call-info">
+        <div class="call-name">Civil Protection</div>
+        <div class="call-num">+52 987 872 5792</div>
+      </div>
+      <div class="call-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.59 1.23h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.98a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+    </a>
+  </div>
+
+  <!-- HOSPITALS -->
+  <div class="section">
+    <div class="section-title">🏥 Hospitals</div>
+
+    <a href="tel:+529878721430" class="call-card hospital">
+      <div class="call-icon hospital">🏥</div>
+      <div class="call-info">
+        <div class="call-name">Cozumel International Hospital</div>
+        <div class="call-num">+52 987 872 1430</div>
+      </div>
+      <div class="call-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.59 1.23h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.98a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+    </a>
+
+    <a href="tel:+529878729400" class="call-card hospital">
+      <div class="call-icon hospital">🏥</div>
+      <div class="call-info">
+        <div class="call-name">Costamed Cozumel</div>
+        <div class="call-num">+52 987 872 9400</div>
+      </div>
+      <div class="call-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.59 1.23h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.98a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+    </a>
+  </div>
+
+  <!-- ROADSIDE -->
+  <div class="section">
+    <div class="section-title">🚗 Roadside Assistance</div>
+    <a href="tel:078" class="call-card green">
+      <div class="call-icon green">🚗</div>
+      <div class="call-info">
+        <div class="call-name">Green Angels</div>
+        <div class="call-num">078 · Free roadside assistance</div>
+      </div>
+      <div class="call-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.59 1.23h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.98a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+    </a>
+  </div>
+
+  <!-- GPS -->
+  <div class="section">
+    <div class="section-title">📍 My Location</div>
+    <button class="gps-btn" onclick="openMyLocation()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4f56a" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
+      SHARE MY LOCATION
+    </button>
+  </div>
+
+  <!-- CONSULATES -->
+  <div class="section">
+    <div class="section-title">🏛️ Consulates — Cancún</div>
+    <div class="consulate-grid">
+      <a href="tel:+19983840411" class="consulate-card">
+        <div class="consulate-flag">🇺🇸</div>
+        <div class="consulate-country">USA</div>
+        <div class="consulate-phone">+1 998 384 0411</div>
+      </a>
+      <a href="tel:+529988834360" class="consulate-card">
+        <div class="consulate-flag">🇨🇦</div>
+        <div class="consulate-country">Canada</div>
+        <div class="consulate-phone">+52 998 883 4360</div>
+      </a>
+      <a href="tel:+529988800461" class="consulate-card">
+        <div class="consulate-flag">🇬🇧</div>
+        <div class="consulate-country">UK</div>
+        <div class="consulate-phone">+52 998 880 0461</div>
+      </a>
+      <a href="tel:+529988843166" class="consulate-card">
+        <div class="consulate-flag">🇩🇪</div>
+        <div class="consulate-country">Germany</div>
+        <div class="consulate-phone">+52 998 884 3166</div>
+      </a>
+      <a href="tel:+529988830800" class="consulate-card">
+        <div class="consulate-flag">🇫🇷</div>
+        <div class="consulate-country">France</div>
+        <div class="consulate-phone">+52 998 883 0800</div>
+      </a>
+      <a href="tel:+529988813055" class="consulate-card">
+        <div class="consulate-flag">🇪🇸</div>
+        <div class="consulate-country">Spain</div>
+        <div class="consulate-phone">+52 998 881 3055</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="bottom-space"></div>
+
+</div>
+
+<script>
+function openMyLocation(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      const url = `https://www.google.com/maps?q=${lat},${lng}`;
+      if(navigator.share){
+        navigator.share({
+          title: 'My Location — VAYGO',
+          text: `My current location in Cozumel: ${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+          url
+        });
+      } else {
+        window.open(url, '_blank');
+      }
+    }, () => {
+      alert('Could not get your location. Please enable GPS.');
+    });
+  } else {
+    alert('GPS not supported on this device.');
+  }
+}
+</script>
+</body>
+</html>
