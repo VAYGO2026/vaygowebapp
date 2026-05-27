@@ -276,6 +276,7 @@ function renderVendors(){
           ? `<button class="btn-deactivate" onclick="toggleVendor('${v.id}','inactive')">Dar de baja</button>`
           : `<button class="btn-activate" onclick="toggleVendor('${v.id}','active')">Reactivar</button>`
         }
+        <button class="btn-view" style="background:rgba(212,245,106,0.05);color:rgba(212,245,106,0.5);border-color:rgba(212,245,106,0.2);" onclick="limpiarEscaneos('${v.id}')">Limpiar escaneos</button>
       </div>
     </div>`;
   }).join('');
@@ -315,6 +316,24 @@ async function toggleVendor(id, newStatus){
     await db.collection('vendors').doc(id).update({ status: newStatus });
     loadData();
   } catch(e){ console.error(e); }
+}
+
+async function limpiarEscaneos(id){
+  if(!confirm(`¿Limpiar los escaneos de ${id} del mes ${currentMonth}?\n\nEsto borra el contador de escaneos pero NO afecta las comisiones.`)) return;
+  try {
+    await db.collection('vendors').doc(id).set({
+      scans: { [currentMonth]: { total: 0, direct: 0 } }
+    }, { merge: true });
+    /* Also delete scan documents for this vendor/month */
+    const snap = await db.collection('vendor_scans')
+      .where('vendorId','==',id)
+      .where('month','==',currentMonth)
+      .get();
+    const batch = db.batch();
+    snap.docs.forEach(d => batch.delete(d.ref));
+    await batch.commit();
+    loadData();
+  } catch(e){ console.error(e); alert('Error: ' + e.message); }
 }
 
 async function cerrarCorte(){
