@@ -256,6 +256,7 @@ function goBackToVenue(){
         <div class="rb-sub">Prize revealed on draw day</div>
       </div>
       <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+        <button class="rb-prizes-btn" id="btnWinner" onclick="openWinnerSheet()" style="display:none;background:linear-gradient(180deg,#FFD700 0%,#f0a500 50%,#c47f00 100%);box-shadow:0 3px 0 #7a4f00,0 4px 14px rgba(255,215,0,0.25);">WINNER</button>
         <button class="rb-prizes-btn" onclick="openPrizesModal()">PRIZES</button>
         <div class="rb-tickets-box">
           <div class="rb-tickets-num" id="userTickets">0</div>
@@ -265,6 +266,21 @@ function goBackToVenue(){
     </div>
     <div class="rb-footer">
       <div class="rb-days">🟢 Raffle active · Collect tickets</div>
+    </div>
+  </div>
+
+  <!-- WINNER SHEET (bottom sheet, non-blocking) -->
+  <div id="winnerSheet" style="display:none;position:fixed;inset:0;z-index:500;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0.88);">
+    <div style="background:#050e04;border:2px solid #FFD700;border-radius:24px 24px 0 0;padding:28px 22px 44px;width:100%;max-width:390px;text-align:center;box-shadow:0 0 40px rgba(255,215,0,0.2);">
+      <div style="width:36px;height:4px;background:rgba(255,215,0,0.2);border-radius:2px;margin:0 auto 20px;"></div>
+      <div style="font-size:10px;font-weight:800;letter-spacing:4px;color:rgba(255,215,0,0.6);margin-bottom:12px;">🏆 RAFFLE WINNER</div>
+      <div style="font-family:'Anton',sans-serif;font-size:48px;color:#FFD700;line-height:1;text-shadow:0 0 20px rgba(255,215,0,0.4);" id="wsTicket">#001</div>
+      <div style="font-family:'Anton',sans-serif;font-size:22px;color:#fff;margin-top:8px;letter-spacing:2px;" id="wsName">—</div>
+      <div style="font-size:13px;font-weight:700;color:#d4f56a;margin-top:6px;" id="wsPrize">—</div>
+      <div style="width:50px;height:1px;background:rgba(255,215,0,0.2);margin:16px auto;"></div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.4);line-height:1.6;margin-bottom:20px;" id="wsMsg">—</div>
+      <a id="wsClaimBtn" href="https://instagram.com/vaygo.mx" target="_blank" style="display:none;width:100%;padding:14px;background:linear-gradient(180deg,#FFD700 0%,#f0a500 50%,#c47f00 100%);border:none;border-radius:12px;color:#1a0a00;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 0 #7a4f00;text-decoration:none;margin-bottom:10px;display:none;">CLAIM ON INSTAGRAM</a>
+      <button onclick="closeWinnerSheet()" style="width:100%;padding:13px;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);border:none;border-radius:12px;color:#0a1a00;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 0 #2d4000;">CLOSE</button>
     </div>
   </div>
 
@@ -298,8 +314,7 @@ function goBackToVenue(){
         </div>
       </div>
       <div class="pb-btns">
-        <button class="pb-btn-login" onclick="openAuthModal()">Login / Sign up</button>
-        <button class="pb-btn-skip" onclick="hideBanner()">Just the coupon</button>
+        <button class="pb-btn-login" onclick="openAuthModal()" style="grid-column:1/-1;">Login / Sign up</button>
       </div>
     </div>
     <div id="pbLogged" style="display:none;">
@@ -330,21 +345,6 @@ function goBackToVenue(){
     <button class="spin-btn" id="spinBtn" onclick="spin()">SPIN NOW</button>
   </div>
 
-</div>
-
-<!-- WINNER MODAL -->
-<div id="winnerModal">
-  <div class="winner-box">
-    <div class="wm-label">🏆 Raffle Winner</div>
-    <div class="wm-trophy">🎁</div>
-    <div class="wm-ticket" id="wmTicket">#001</div>
-    <div class="wm-name" id="wmName">—</div>
-    <div class="wm-prize" id="wmPrize">—</div>
-    <div class="wm-divider"></div>
-    <div class="wm-congrats" id="wmCongrats"></div>
-    <a id="wmClaimBtn" href="https://instagram.com/vaygo.mx" target="_blank" class="wm-btn" style="display:none;">CLAIM ON INSTAGRAM</a>
-    <button id="wmBackBtn" class="wm-btn" style="display:none;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);color:#0a1a00;box-shadow:0 4px 0 #2d4000;" onclick="closeWinnerModal()">BACK TO VAYGO</button>
-  </div>
 </div>
 
 <!-- AUTH MODAL -->
@@ -513,48 +513,52 @@ function startCountdown(targetDate, rifaData){
   tick();cdInterval=setInterval(tick,1000);
 }
 
+let winnerData = null;
+
 function showWinnerModal(data){
-  document.getElementById('wmTicket').textContent='#'+String(data.ganadorTicket).padStart(3,'0');
-  document.getElementById('wmName').textContent=data.ganadorNombre||'—';
-  document.getElementById('wmPrize').textContent=data.ganadorPremio||'Surprise Prize';
+  winnerData = data;
+  /* Show WINNER button in raffle banner */
+  document.getElementById('btnWinner').style.display = 'block';
+}
 
-  const claimBtn=document.getElementById('wmClaimBtn');
-  const backBtn=document.getElementById('wmBackBtn');
-  const congrats=document.getElementById('wmCongrats');
+function openWinnerSheet(){
+  if(!winnerData) return;
+  const data = winnerData;
+  document.getElementById('wsTicket').textContent = '#'+String(data.ganadorTicket).padStart(3,'0');
+  document.getElementById('wsName').textContent = data.ganadorNombre||'—';
+  document.getElementById('wsPrize').textContent = data.ganadorPremio||'Surprise Prize';
 
-  /* Check if logged in user is the winner */
+  const claimBtn = document.getElementById('wsClaimBtn');
+  const msg = document.getElementById('wsMsg');
+
   const isWinner = currentUser && userData &&
     (userData.displayName===data.ganadorNombre ||
-     currentUser.email===data.ganadorNombre ||
-     (userData.email && userData.email.split('@')[0]===data.ganadorNombre));
+     (userData.email && userData.email.split('@')[0]===data.ganadorNombre) ||
+     currentUser.email===data.ganadorNombre);
 
   if(isWinner){
-    /* WINNER */
-    congrats.textContent='🎉 Congratulations! You won! Contact us on Instagram to claim your prize.';
-    congrats.style.color='#FFD700';
-    claimBtn.style.display='block';
-    backBtn.style.display='none';
+    msg.textContent = '🎉 Congratulations! You won! Contact us on Instagram to claim your prize.';
+    msg.style.color = '#FFD700';
+    claimBtn.style.display = 'block';
     doConfetti();
   } else if(currentUser){
-    /* Logged in but not winner */
-    congrats.textContent='Better luck next time 🌴 Keep collecting tickets for the next raffle!';
-    congrats.style.color='rgba(255,255,255,0.5)';
-    claimBtn.style.display='none';
-    backBtn.style.display='block';
+    msg.textContent = 'Better luck next time 🌴 Keep collecting tickets for the next raffle!';
+    msg.style.color = 'rgba(255,255,255,0.4)';
+    claimBtn.style.display = 'none';
   } else {
-    /* Not logged in */
-    congrats.textContent='Login to participate in the next raffle and win amazing prizes!';
-    congrats.style.color='rgba(255,255,255,0.5)';
-    claimBtn.style.display='none';
-    backBtn.style.display='block';
+    msg.textContent = 'Login to participate in the next raffle and win amazing prizes!';
+    msg.style.color = 'rgba(255,255,255,0.4)';
+    claimBtn.style.display = 'none';
   }
 
-  document.getElementById('winnerModal').classList.add('show');
+  document.getElementById('winnerSheet').style.display = 'flex';
 }
 
-function closeWinnerModal(){
-  document.getElementById('winnerModal').classList.remove('show');
+function closeWinnerSheet(){
+  document.getElementById('winnerSheet').style.display = 'none';
 }
+
+function closeWinnerModal(){ closeWinnerSheet(); }
 
 db.collection('rifa').doc('activa').onSnapshot(snap=>{
   if(!snap.exists)return;
