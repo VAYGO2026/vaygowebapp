@@ -1100,10 +1100,15 @@ const slides = document.querySelectorAll('.ad-slide');
         userAgent: navigator.userAgent.slice(0,100)
       });
       /* Update vendor scan counter */
-      firebase.firestore().collection('vendors').doc(ref).update({
-        [`scans.${new Date().toISOString().slice(0,7)}.total`]: firebase.firestore.FieldValue.increment(1),
-        [`scans.${new Date().toISOString().slice(0,7)}.direct`]: isDirect ? firebase.firestore.FieldValue.increment(1) : firebase.firestore.FieldValue.increment(0),
-      });
+      const month = new Date().toISOString().slice(0,7);
+      firebase.firestore().collection('vendors').doc(ref).set({
+        scans: {
+          [month]: {
+            total: firebase.firestore.FieldValue.increment(1),
+            direct: isDirect ? firebase.firestore.FieldValue.increment(1) : firebase.firestore.FieldValue.increment(0),
+          }
+        }
+      }, { merge: true });
     } catch(e){ console.log('scan tracking error', e); }
   }
 })();
