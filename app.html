@@ -1101,14 +1101,16 @@ const slides = document.querySelectorAll('.ad-slide');
       });
       /* Update vendor scan counter */
       const month = new Date().toISOString().slice(0,7);
-      firebase.firestore().collection('vendors').doc(ref).set({
-        scans: {
-          [month]: {
-            total: firebase.firestore.FieldValue.increment(1),
-            direct: isDirect ? firebase.firestore.FieldValue.increment(1) : firebase.firestore.FieldValue.increment(0),
-          }
-        }
-      }, { merge: true });
+      const vendorRef = firebase.firestore().collection('vendors').doc(ref);
+      vendorRef.update({
+        [`scans.${month}.total`]: firebase.firestore.FieldValue.increment(1),
+        [`scans.${month}.direct`]: isDirect ? firebase.firestore.FieldValue.increment(1) : firebase.firestore.FieldValue.increment(0),
+      }).catch(() => {
+        /* Field doesn't exist yet — create it */
+        vendorRef.set({
+          scans: { [month]: { total: 1, direct: isDirect ? 1 : 0 } }
+        }, { merge: true });
+      });
     } catch(e){ console.log('scan tracking error', e); }
   }
 })();
