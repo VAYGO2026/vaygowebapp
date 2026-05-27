@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>VAYGO — Admin Vendedores</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;600;700;800&family=Righteous&display=swap" rel="stylesheet"/>
 <style>
@@ -249,6 +249,9 @@ function renderVendors(){
     const indirect = vEarnings.filter(e => e.type === 'indirect');
     const total = vEarnings.reduce((s,e) => s + (e.amount||0), 0);
     const isActive = v.status !== 'inactive';
+    const scans = (v.scans && v.scans[currentMonth]) ? (v.scans[currentMonth].total || 0) : 0;
+    const coupons = vEarnings.length;
+    const convRate = scans > 0 ? Math.round((coupons/scans)*100) : 0;
 
     return `
     <div class="vendor-card">
@@ -260,9 +263,12 @@ function renderVendors(){
         <span class="${isActive ? 'vc-status-active' : 'vc-status-inactive'}">${isActive ? '● Activo' : '● Inactivo'}</span>
       </div>
       <div class="vc-stats">
+        <div class="vc-stat"><div class="vc-stat-num">${scans}</div><div class="vc-stat-lbl">Escaneos QR</div></div>
+        <div class="vc-stat"><div class="vc-stat-num">${coupons}</div><div class="vc-stat-lbl">Cupones usados</div></div>
         <div class="vc-stat"><div class="vc-stat-num">${direct.length}</div><div class="vc-stat-lbl">Directos</div></div>
         <div class="vc-stat"><div class="vc-stat-num">${indirect.length}</div><div class="vc-stat-lbl">Indirectos</div></div>
         <div class="vc-stat"><div class="vc-stat-num gold">$${total}</div><div class="vc-stat-lbl">A pagar</div></div>
+        <div class="vc-stat"><div class="vc-stat-num" style="font-size:16px;color:rgba(212,245,106,0.6);">${convRate}%</div><div class="vc-stat-lbl">Conversión</div></div>
       </div>
       <div class="vc-actions">
         <a class="btn-view" href="vendor-panel.html?id=${v.id}" target="_blank">Ver panel</a>
