@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VAYGO — Admin Tómbola</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;600;700;800&family=Righteous&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;min-height:100%;background:#060E1C;font-family:'DM Sans',sans-serif;color:#fff;}
+
+/* LOGIN SCREEN */
+#loginScreen{
+  position:fixed;inset:0;z-index:999;
+  background:#060E1C;
+  display:flex;align-items:center;justify-content:center;
+}
+.login-box{
+  background:rgba(212,245,106,0.04);
+  border:1px solid rgba(212,245,106,0.2);
+  border-radius:24px;padding:40px 32px;
+  width:90%;max-width:360px;text-align:center;
+}
+.login-logo{font-family:'Anton',sans-serif;font-size:36px;letter-spacing:6px;color:#d4f56a;text-shadow:0 0 30px rgba(212,245,106,0.4);margin-bottom:4px;}
+.login-sub{font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:28px;}
+.login-input{
+  width:100%;background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);border-radius:12px;
+  padding:14px 16px;color:#fff;font-family:'DM Sans',sans-serif;
+  font-size:16px;outline:none;margin-bottom:12px;
+  -webkit-appearance:none;text-align:center;letter-spacing:4px;
+}
+.login-input:focus{border-color:rgba(212,245,106,0.4);}
+.login-input::placeholder{color:rgba(255,255,255,0.2);letter-spacing:1px;}
+.login-btn{
+  width:100%;padding:14px;
+  background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);
+  border:none;border-radius:12px;color:#0a1a00;
+  font-family:'Anton',sans-serif;font-size:18px;letter-spacing:3px;
+  cursor:pointer;box-shadow:0 4px 0 #2d4000;
+}
+.login-btn:active{transform:translateY(3px);box-shadow:0 0 0 #2d4000;}
+.login-err{font-size:12px;color:#ff6b6b;margin-top:10px;display:none;}
+
+/* MAIN ADMIN */
+#adminScreen{display:none;padding:24px;max-width:600px;margin:0 auto;}
+
+.admin-header{text-align:center;margin-bottom:32px;padding-top:16px;}
+.admin-logo{font-family:'Anton',sans-serif;font-size:28px;letter-spacing:5px;color:#d4f56a;}
+.admin-title{font-family:'Righteous',sans-serif;font-size:12px;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:4px;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px;}
+.stat-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:16px;text-align:center;}
+.stat-card.gold{border-color:rgba(255,215,0,0.25);background:rgba(255,215,0,0.05);}
+.stat-num{font-family:'Anton',sans-serif;font-size:32px;color:#d4f56a;line-height:1;}
+.stat-num.gold{color:#FFD700;}
+.stat-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:4px;}
+
+/* SECTION CARDS */
+.section{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:20px;margin-bottom:16px;}
+.section-title{font-family:'Righteous',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(212,245,106,0.6);margin-bottom:16px;}
+
+/* COUNTDOWN SECTION */
+.cd-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.cd-input{
+  width:100%;background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);border-radius:10px;
+  padding:12px 14px;color:#fff;font-family:'DM Sans',sans-serif;
+  font-size:14px;outline:none;
+}
+.cd-input:focus{border-color:rgba(212,245,106,0.4);}
+.cd-input-label{font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;}
+
+/* WINNER SECTION */
+.winner-inputs{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+
+/* TOMBOLA */
+.tombola-wrap{text-align:center;padding:20px 0;}
+.tombola-drum{
+  width:160px;height:160px;border-radius:50%;
+  border:3px solid rgba(212,245,106,0.3);
+  background:rgba(212,245,106,0.05);
+  margin:0 auto 20px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  transition:border-color 0.3s;
+}
+.tombola-drum.spinning{
+  border-color:#d4f56a;
+  animation:drumSpin 0.15s linear infinite;
+}
+@keyframes drumSpin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+.tombola-inner{position:relative;z-index:2;text-align:center;}
+.tombola-num{font-family:'Anton',sans-serif;font-size:48px;color:#d4f56a;line-height:1;}
+.tombola-name{font-size:13px;font-weight:700;color:#fff;margin-top:4px;max-width:120px;word-break:break-word;}
+.tombola-idle{font-family:'Righteous',sans-serif;font-size:12px;color:rgba(255,255,255,0.2);letter-spacing:2px;}
+
+/* BUTTONS */
+.btn-main{
+  width:100%;padding:15px;
+  background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);
+  border:none;border-radius:12px;color:#0a1a00;
+  font-family:'Anton',sans-serif;font-size:18px;letter-spacing:3px;
+  cursor:pointer;box-shadow:0 4px 0 #2d4000,inset 0 1px 0 rgba(255,255,255,0.3);
+  transition:transform 0.1s,box-shadow 0.1s;
+  position:relative;overflow:hidden;
+}
+.btn-main::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:shimmer 3s infinite;}
+@keyframes shimmer{0%{left:-100%;}100%{left:200%;}}
+.btn-main:active{transform:translateY(3px);box-shadow:0 0 0 #2d4000;}
+.btn-main:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-secondary{
+  width:100%;padding:12px;margin-top:10px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.12);border-radius:12px;color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;transition:background 0.2s;
+}
+.btn-secondary:hover{background:rgba(255,255,255,0.1);}
+.btn-gold{
+  width:100%;padding:15px;
+  background:linear-gradient(180deg,#FFD700 0%,#f0a500 50%,#c47f00 100%);
+  border:none;border-radius:12px;color:#1a0a00;
+  font-family:'Anton',sans-serif;font-size:18px;letter-spacing:3px;
+  cursor:pointer;box-shadow:0 4px 0 #7a4f00,inset 0 1px 0 rgba(255,255,255,0.3);
+  transition:transform 0.1s,box-shadow 0.1s;margin-top:10px;
+}
+.btn-gold:active{transform:translateY(3px);box-shadow:0 0 0 #7a4f00;}
+
+/* PARTICIPANTS LIST */
+.participants-list{max-height:320px;overflow-y:auto;}
+.participant-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.participant-row:last-child{border-bottom:none;}
+.p-num{
+  font-family:'Anton',sans-serif;font-size:13px;
+  color:rgba(212,245,106,0.6);min-width:32px;
+}
+.p-name{font-size:13px;font-weight:700;color:#fff;flex:1;}
+.p-email{font-size:11px;color:rgba(255,255,255,0.35);}
+.p-tickets{
+  background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.2);
+  border-radius:50px;padding:3px 10px;
+  font-size:11px;font-weight:800;color:#FFD700;
+  white-space:nowrap;
+}
+
+/* WINNER REVEAL */
+.winner-reveal{
+  display:none;
+  background:rgba(255,215,0,0.06);
+  border:2px solid rgba(255,215,0,0.3);
+  border-radius:16px;padding:24px;
+  text-align:center;margin-top:16px;
+}
+.winner-reveal.show{display:block;}
+.wr-label{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(255,215,0,0.6);margin-bottom:8px;}
+.wr-ticket{font-family:'Anton',sans-serif;font-size:48px;color:#FFD700;line-height:1;}
+.wr-name{font-size:18px;font-weight:800;color:#fff;margin-top:8px;}
+.wr-email{font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px;}
+.wr-prize{font-size:13px;color:#d4f56a;margin-top:8px;font-weight:700;}
+
+/* STATUS MSG */
+.status-msg{font-size:12px;text-align:center;margin-top:8px;min-height:18px;color:rgba(212,245,106,0.7);}
+
+/* MONTH SELECTOR */
+.month-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.month-tab{
+  padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;
+  border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.4);
+  cursor:pointer;background:transparent;transition:all 0.2s;
+}
+.month-tab.active{border-color:rgba(212,245,106,0.5);color:#d4f56a;background:rgba(212,245,106,0.08);}
+
+@keyframes winnerPop{0%{transform:scale(0.8);opacity:0;}60%{transform:scale(1.05);}100%{transform:scale(1);opacity:1;}}
+.winner-reveal.show{animation:winnerPop 0.5s ease both;}
+
+/* PRIZE PILLS */
+.prize-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;}
+.prize-pill{
+  padding:8px 14px;border-radius:50px;
+  font-size:12px;font-weight:700;cursor:pointer;
+  border:1px solid rgba(255,255,255,0.12);
+  color:rgba(255,255,255,0.5);background:rgba(255,255,255,0.04);
+  transition:all 0.15s;
+}
+.prize-pill:hover{border-color:rgba(255,255,255,0.3);color:#fff;}
+.prize-pill.selected{border-color:rgba(212,245,106,0.6);color:#d4f56a;background:rgba(212,245,106,0.1);}
+.prize-pill.gold{border-color:rgba(255,215,0,0.3);color:rgba(255,215,0,0.7);}
+.prize-pill.gold.selected{border-color:#FFD700;color:#FFD700;background:rgba(255,215,0,0.1);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">VAYGO</div>
+    <div class="login-sub">Admin · Tómbola</div>
+    <input class="login-input" type="password" id="adminPass" placeholder="contraseña" onkeydown="if(event.key==='Enter')checkLogin()"/>
+    <button class="login-btn" onclick="checkLogin()">ENTRAR</button>
+    <div class="login-err" id="loginErr">Contraseña incorrecta</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminScreen">
+
+  <div class="admin-header">
+    <div class="admin-logo">VAYGO</div>
+    <div class="admin-title">Panel · Tómbola</div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="statParticipants">—</div>
+      <div class="stat-lbl">Participantes</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-num gold" id="statTickets">—</div>
+      <div class="stat-lbl">Boletos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statCities">—</div>
+      <div class="stat-lbl">Ciudades</div>
+    </div>
+  </div>
+
+  <!-- TOMBOLA -->
+  <div class="section">
+    <div class="section-title">🎰 Tómbola — Boleto Ganador</div>
+    <div class="tombola-wrap">
+      <div class="tombola-drum" id="tombolaDrum">
+        <div class="tombola-inner">
+          <div class="tombola-idle" id="tombolaIdle">GIRAR</div>
+          <div class="tombola-num" id="tombolaNum" style="display:none;"></div>
+          <div class="tombola-name" id="tombolaName" style="display:none;"></div>
+        </div>
+      </div>
+      <button class="btn-main" id="btnGirar" onclick="girarTombola()">GIRAR TÓMBOLA</button>
+      <button class="btn-secondary" id="btnRegirar" onclick="girarTombola()" style="display:none;">GIRAR DE NUEVO</button>
+      <div class="status-msg" id="tombolaStatus"></div>
+    </div>
+    <div class="winner-reveal" id="winnerReveal">
+      <div class="wr-label">🏆 Ganador</div>
+      <div class="wr-ticket" id="wrTicket">#001</div>
+      <div class="wr-name" id="wrName">—</div>
+      <div class="wr-email" id="wrEmail">—</div>
+      <div class="wr-prize" id="wrPrize">—</div>
+    </div>
+  </div>
+
+  <!-- ACTIVAR COUNTDOWN -->
+  <div class="section">
+    <div class="section-title">⏰ Activar Countdown en la App</div>
+    <div class="cd-inputs">
+      <div>
+        <div class="cd-input-label">Fecha del sorteo</div>
+        <input class="cd-input" type="date" id="sorteoFecha"/>
+      </div>
+      <div>
+        <div class="cd-input-label">Hora</div>
+        <input class="cd-input" type="time" id="sorteoHora" value="19:00"/>
+      </div>
+    </div>
+    <div>
+      <div class="cd-input-label" style="margin-bottom:8px;">Premio este mes</div>
+      <div class="prize-pills" id="prizePills">
+        <div class="prize-pill" onclick="selectPrize(this,'VAYGO Cap')">VAYGO Cap</div>
+        <div class="prize-pill" onclick="selectPrize(this,'VAYGO T-Shirt')">VAYGO T-Shirt</div>
+        <div class="prize-pill" onclick="selectPrize(this,'VAYGO Yeti')">VAYGO Yeti</div>
+        <div class="prize-pill" onclick="selectPrize(this,'Mystery Box')">Mystery Box</div>
+        <div class="prize-pill" onclick="selectPrize(this,'Dinner for 2')">Dinner for 2</div>
+        <div class="prize-pill" onclick="selectPrize(this,'Ocean Tour')">Ocean Tour</div>
+        <div class="prize-pill gold" onclick="selectPrize(this,'Hotel Night')">Hotel Night ⭐</div>
+      </div>
+      <input class="cd-input" type="hidden" id="sorteoPremio"/>
+      <div style="font-size:11px;color:rgba(212,245,106,0.5);margin-top:6px;margin-bottom:12px;" id="premioSelected">No prize selected</div>
+    </div>
+    <button class="btn-main" onclick="activarCountdown()">ACTIVAR COUNTDOWN</button>
+    <div class="status-msg" id="countdownStatus"></div>
+  </div>
+
+  <!-- PUBLICAR GANADOR -->
+  <div class="section">
+    <div class="section-title">📢 Publicar Ganador en la App</div>
+    <div class="winner-inputs">
+      <div>
+        <div class="cd-input-label" style="margin-bottom:4px;">Número de boleto</div>
+        <input class="cd-input" type="text" id="pubTicket" placeholder="Ej: 42" style="width:100%;"/>
+      </div>
+      <div>
+        <div class="cd-input-label" style="margin-bottom:4px;">Nombre del ganador</div>
+        <input class="cd-input" type="text" id="pubName" placeholder="Ej: Juan García" style="width:100%;"/>
+      </div>
+      <div>
+        <div class="cd-input-label" style="margin-bottom:4px;">Premio ganado</div>
+        <input class="cd-input" type="text" id="pubPrize" placeholder="Ej: Noche en Hotel Exclusivo" style="width:100%;"/>
+      </div>
+    </div>
+    <button class="btn-gold" onclick="publicarGanador()">PUBLICAR GANADOR</button>
+    <div class="status-msg" id="publishStatus"></div>
+  </div>
+
+  <!-- PARTICIPANTES -->
+  <div class="section">
+    <div class="section-title">👥 Participantes</div>
+    <div class="month-tabs" id="monthTabs"></div>
+    <div class="participants-list" id="participantsList">
+      <div style="text-align:center;color:rgba(255,255,255,0.25);padding:20px;font-size:13px;">Cargando...</div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain:"vaygo-app.firebaseapp.com",
+  projectId:"vaygo-app",
+  storageBucket:"vaygo-app.firebasestorage.app",
+  messagingSenderId:"499741267414",
+  appId:"1:499741267414:web:e69cd43156adaea11bc077"
+});
+const db = firebase.firestore();
+
+/* ── PRIZE SELECTOR ── */
+function selectPrize(el, prize){
+  document.querySelectorAll('.prize-pill').forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('sorteoPremio').value = prize;
+  document.getElementById('premioSelected').textContent = '✅ Selected: ' + prize;
+}
+
+/* ── LOGIN ── */
+const ADMIN_PASS = 'vaygo2026';
+function checkLogin(){
+  const p = document.getElementById('adminPass').value;
+  if(p === ADMIN_PASS){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminScreen').style.display = 'block';
+    loadData();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('adminPass').value = '';
+  }
+}
+document.getElementById('adminPass').addEventListener('keydown', e => {
+  if(e.key === 'Enter') checkLogin();
+});
+
+/* ── DATA ── */
+let allTickets = [];
+let currentMonth = new Date().toISOString().slice(0,7);
+
+async function loadData(){
+  try {
+    const snap = await db.collection('raffle_tickets').get();
+    allTickets = snap.docs.map((d,i) => ({...d.data(), ticketNumber: i+1, id: d.id}));
+
+    /* Stats */
+    const months = [...new Set(allTickets.map(t => t.month))].sort().reverse();
+    const thisMonthTickets = allTickets.filter(t => t.month === currentMonth);
+    const uniqueUsers = [...new Set(thisMonthTickets.map(t => t.uid))];
+    const uniqueCities = [...new Set(thisMonthTickets.map(t => t.city).filter(Boolean))];
+
+    document.getElementById('statParticipants').textContent = uniqueUsers.length;
+    document.getElementById('statTickets').textContent = thisMonthTickets.length;
+    document.getElementById('statCities').textContent = uniqueCities.length || 1;
+
+    /* Month tabs */
+    const tabsEl = document.getElementById('monthTabs');
+    tabsEl.innerHTML = '';
+    months.forEach(m => {
+      const btn = document.createElement('button');
+      btn.className = 'month-tab' + (m === currentMonth ? ' active' : '');
+      btn.textContent = m;
+      btn.onclick = () => { currentMonth = m; document.querySelectorAll('.month-tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderParticipants(); };
+      tabsEl.appendChild(btn);
+    });
+
+    renderParticipants();
+  } catch(e) { console.error(e); }
+}
+
+function renderParticipants(){
+  const filtered = allTickets.filter(t => t.month === currentMonth);
+  const byUser = {};
+  filtered.forEach(t => {
+    if(!byUser[t.uid]) byUser[t.uid] = {name: t.displayName||t.email, email: t.email, tickets:[], city: t.city};
+    byUser[t.uid].tickets.push(t.ticketNumber);
+  });
+  const list = document.getElementById('participantsList');
+  if(!Object.keys(byUser).length){
+    list.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.25);padding:20px;font-size:13px;">Sin participantes este mes</div>';
+    return;
+  }
+  list.innerHTML = Object.values(byUser).map((u,i) => `
+    <div class="participant-row">
+      <div class="p-num">#${String(i+1).padStart(3,'0')}</div>
+      <div style="flex:1;">
+        <div class="p-name">${u.name||'Usuario'}</div>
+        <div class="p-email">${u.email||''} · ${u.city||'Cozumel'}</div>
+      </div>
+      <div class="p-tickets">${u.tickets.length} boleto${u.tickets.length>1?'s':''}</div>
+    </div>
+  `).join('');
+}
+
+/* ── TOMBOLA ── */
+function girarTombola(){
+  const filtered = allTickets.filter(t => t.month === currentMonth);
+  if(!filtered.length){ document.getElementById('tombolaStatus').textContent = 'No hay boletos este mes'; return; }
+
+  const drum = document.getElementById('tombolaDrum');
+  const numEl = document.getElementById('tombolaNum');
+  const nameEl = document.getElementById('tombolaName');
+  const idleEl = document.getElementById('tombolaIdle');
+  const reveal = document.getElementById('winnerReveal');
+
+  reveal.classList.remove('show');
+  document.getElementById('btnRegirar').style.display = 'none';
+  document.getElementById('tombolaStatus').textContent = 'Girando...';
+
+  idleEl.style.display = 'none';
+  numEl.style.display = 'block';
+  nameEl.style.display = 'block';
+  drum.classList.add('spinning');
+
+  let count = 0;
+  const total = 30;
+  const interval = setInterval(() => {
+    const rnd = filtered[Math.floor(Math.random()*filtered.length)];
+    numEl.textContent = '#' + String(rnd.ticketNumber).padStart(3,'0');
+    nameEl.textContent = rnd.displayName || rnd.email || '—';
+    count++;
+    if(count >= total){
+      clearInterval(interval);
+      drum.classList.remove('spinning');
+      /* Pick final winner */
+      const winner = filtered[Math.floor(Math.random()*filtered.length)];
+      numEl.textContent = '#' + String(winner.ticketNumber).padStart(3,'0');
+      nameEl.textContent = winner.displayName || winner.email || '—';
+      document.getElementById('tombolaStatus').textContent = '¡Boleto ganador seleccionado!';
+      document.getElementById('btnRegirar').style.display = 'block';
+
+      /* Fill winner reveal */
+      document.getElementById('wrTicket').textContent = '#' + String(winner.ticketNumber).padStart(3,'0');
+      document.getElementById('wrName').textContent = winner.displayName || 'Usuario';
+      document.getElementById('wrEmail').textContent = winner.email || '—';
+      document.getElementById('wrPrize').textContent = document.getElementById('sorteoPremio').value || 'Surprise Prize';
+      reveal.classList.add('show');
+
+      /* Pre-fill publish fields */
+      document.getElementById('pubTicket').value = String(winner.ticketNumber).padStart(3,'0');
+      document.getElementById('pubName').value = winner.displayName || winner.email || '';
+    }
+  }, 80);
+}
+
+/* ── ACTIVAR COUNTDOWN ── */
+async function activarCountdown(){
+  const fecha = document.getElementById('sorteoFecha').value;
+  const hora = document.getElementById('sorteoHora').value;
+  const premio = document.getElementById('sorteoPremio').value.trim();
+  if(!fecha || !hora){ document.getElementById('countdownStatus').textContent = 'Pon fecha y hora'; return; }
+  const dt = new Date(fecha + 'T' + hora + ':00');
+  try {
+    await db.collection('rifa').doc('activa').set({
+      sorteoFecha: dt.toISOString(),
+      premio: premio || 'Surprise Prize',
+      activatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'active'
+    });
+    document.getElementById('countdownStatus').textContent = '✅ Countdown activado — todos los usuarios lo ven ahora';
+  } catch(e){ console.error(e); document.getElementById('countdownStatus').textContent = 'Error: ' + e.message; }
+}
+
+/* ── PUBLICAR GANADOR ── */
+async function publicarGanador(){
+  const ticket = document.getElementById('pubTicket').value.trim();
+  const name = document.getElementById('pubName').value.trim();
+  const prize = document.getElementById('pubPrize').value.trim();
+  if(!ticket || !name){ document.getElementById('publishStatus').textContent = 'Llena boleto y nombre'; return; }
+  try {
+    await db.collection('rifa').doc('activa').update({
+      ganadorTicket: ticket,
+      ganadorNombre: name,
+      ganadorPremio: prize || 'Surprise Prize',
+      status: 'winner',
+      announcedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('publishStatus').textContent = '✅ Ganador publicado — aparece en la app cuando el reloj llegue a cero';
+  } catch(e){ console.error(e); document.getElementById('publishStatus').textContent = 'Error: ' + e.message; }
+}
+</script>
+</body>
+</html>
