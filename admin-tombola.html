@@ -306,6 +306,18 @@ html,body{width:100%;min-height:100%;background:#060E1C;font-family:'DM Sans',sa
     <div class="status-msg" id="publishStatus"></div>
   </div>
 
+  <!-- CERRAR RIFA -->
+  <div class="section" style="border-color:rgba(255,100,100,0.2);background:rgba(255,50,50,0.03);">
+    <div class="section-title" style="color:rgba(255,100,100,0.7);">🔒 Cerrar Rifa</div>
+    <p style="font-size:12px;color:rgba(255,255,255,0.4);line-height:1.7;margin-bottom:16px;">
+      Usa esto cuando ya entregaste el premio. El ganador pierde sus boletos. 
+      Todos los demás <strong style="color:#fff;">conservan sus boletos</strong> para la próxima rifa. 
+      El reloj y el winner se apagan en todos los teléfonos.
+    </p>
+    <button class="btn-main" style="background:linear-gradient(180deg,#ff6b6b 0%,#cc3333 50%,#991111 100%);box-shadow:0 4px 0 #660000;" onclick="confirmarCerrarRifa()">CERRAR RIFA Y REINICIAR GANADOR</button>
+    <div class="status-msg" id="closeRifaStatus"></div>
+  </div>
+
   <!-- PARTICIPANTES -->
   <div class="section">
     <div class="section-title">👥 Participantes</div>
@@ -336,6 +348,8 @@ function selectPrize(el, prize){
   el.classList.add('selected');
   document.getElementById('sorteoPremio').value = prize;
   document.getElementById('premioSelected').textContent = '✅ Selected: ' + prize;
+  /* Auto-fill in Publicar Ganador section */
+  document.getElementById('pubPrize').value = prize;
 }
 
 /* ── LOGIN ── */
@@ -498,6 +512,64 @@ async function publicarGanador(){
     });
     document.getElementById('publishStatus').textContent = '✅ Ganador publicado — aparece en la app cuando el reloj llegue a cero';
   } catch(e){ console.error(e); document.getElementById('publishStatus').textContent = 'Error: ' + e.message; }
+}
+
+/* ── CERRAR RIFA ── */
+function confirmarCerrarRifa(){
+  const name = document.getElementById('pubName').value.trim();
+  if(!name){ document.getElementById('closeRifaStatus').textContent = 'Primero publica al ganador antes de cerrar'; return; }
+  if(!confirm(`¿Cerrar la rifa?\n\nEl ganador "${name}" perderá sus boletos.\nTodos los demás conservan los suyos.\n\nEsta acción no se puede deshacer.`)) return;
+  cerrarRifa(name);
+}
+
+async function cerrarRifa(winnerName){
+  const statusEl = document.getElementById('closeRifaStatus');
+  statusEl.textContent = 'Cerrando rifa...';
+  try {
+    /* 1 — Apagar countdown y winner en Firestore */
+    await db.collection('rifa').doc('activa').set({
+      status: 'closed',
+      closedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    /* 2 — Buscar al ganador por displayName o email */
+    const usersSnap = await db.collection('users').get();
+    let winnerRef = null;
+    usersSnap.forEach(doc => {
+      const d = doc.data();
+      if(d.displayName === winnerName || d.email === winnerName || (d.email && d.email.split('@')[0] === winnerName)){
+        winnerRef = doc.ref;
+      }
+    });
+
+    /* 3 — Resetear boletos del ganador */
+    if(winnerRef){
+      await winnerRef.update({
+        totalPoints: 0,
+        monthlyTickets: {}
+      });
+      statusEl.textContent = '✅ Rifa cerrada · Boletos del ganador reiniciados · Los demás conservan los suyos';
+    } else {
+      statusEl.textContent = '✅ Rifa cerrada · (Ganador no encontrado en users — puede que no estuviera registrado)';
+    }
+
+    /* 4 — Limpiar campos del admin */
+    document.getElementById('pubTicket').value = '';
+    document.getElementById('pubName').value = '';
+    document.getElementById('pubPrize').value = '';
+    document.getElementById('sorteoFecha').value = '';
+    document.querySelectorAll('.prize-pill').forEach(p => p.classList.remove('selected'));
+    document.getElementById('sorteoPremio').value = '';
+    document.getElementById('premioSelected').textContent = 'No prize selected';
+    document.getElementById('winnerReveal').classList.remove('show');
+
+    /* 5 — Recargar participantes */
+    loadData();
+
+  } catch(e){
+    console.error(e);
+    statusEl.textContent = 'Error: ' + e.message;
+  }
 }
 </script>
 </body>
