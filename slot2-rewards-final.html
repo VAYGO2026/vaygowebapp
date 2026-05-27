@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>VAYGO — Spin & Win</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;600;700;800&family=Righteous&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;overflow:hidden;}
+.screen{width:100%;max-width:390px;height:100dvh;position:relative;display:flex;flex-direction:column;align-items:center;padding:60px 24px 24px;background:linear-gradient(160deg,#060E1C 0%,#0a1a08 50%,#060E1C 100%);overflow-y:auto;}
+.screen::before{content:'';position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(212,245,106,0.08) 0%,transparent 70%);top:30%;left:50%;transform:translate(-50%,-50%);animation:pulse 4s ease-in-out infinite;pointer-events:none;}
+@keyframes pulse{0%,100%{opacity:0.5;transform:translate(-50%,-50%) scale(1);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.2);}}
+@keyframes shimmer{0%{left:-100%;}100%{left:200%;}}
+@keyframes winFlash{0%,100%{box-shadow:inset 0 0 20px rgba(0,0,0,0.5);}50%{box-shadow:inset 0 0 20px rgba(212,245,106,0.2),0 0 20px rgba(212,245,106,0.3);}}
+@keyframes blinkDot{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+.back-btn{position:absolute;top:14px;left:14px;z-index:30;padding:8px 14px;border-radius:50px;background:rgba(212,245,106,0.08);border:1px solid rgba(212,245,106,0.2);display:flex;align-items:center;justify-content:center;color:#d4f56a;font-size:11px;font-weight:700;letter-spacing:1px;text-decoration:none;}
+
+.top-section{text-align:center;margin-bottom:16px;position:relative;z-index:1;width:100%;}
+.vaygo-label{font-family:'Anton',sans-serif;font-size:36px;letter-spacing:6px;color:#d4f56a;text-shadow:0 0 30px rgba(212,245,106,0.5),0 0 60px rgba(212,245,106,0.2);line-height:1;}
+.sub-label{font-family:'Righteous',sans-serif;font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-top:4px;}
+
+/* COUNTDOWN */
+.countdown-wrap{width:100%;margin-bottom:12px;background:rgba(212,245,106,0.04);border:1px solid rgba(212,245,106,0.12);border-radius:16px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:1;}
+.cd-label{font-family:'Righteous',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(212,245,106,0.4);white-space:nowrap;}
+.cd-label.active{color:rgba(212,245,106,0.8);}
+.cd-units{display:flex;align-items:center;gap:6px;}
+.cd-unit{text-align:center;}
+.cd-num{font-family:'Anton',sans-serif;font-size:26px;color:#d4f56a;line-height:1;letter-spacing:1px;opacity:0.3;transition:opacity 0.3s;}
+.cd-num.active{opacity:1;text-shadow:0 0 20px rgba(212,245,106,0.4);}
+.cd-unit-lbl{font-size:7px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-top:1px;}
+.cd-sep{font-family:'Anton',sans-serif;font-size:22px;color:rgba(212,245,106,0.2);line-height:1;margin-bottom:8px;}
+.cd-sep.active{color:rgba(212,245,106,0.5);}
+.cd-dot{width:6px;height:6px;border-radius:50%;background:rgba(212,245,106,0.2);flex-shrink:0;}
+.cd-dot.active{background:#d4f56a;box-shadow:0 0 8px rgba(212,245,106,0.6);animation:blinkDot 1s ease-in-out infinite;}
+
+/* RAFFLE BANNER */
+.raffle-banner{width:100%;margin-bottom:12px;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:16px;padding:12px 14px;position:relative;z-index:1;overflow:hidden;}
+.raffle-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(255,215,0,0.06),transparent 70%);pointer-events:none;}
+.rb-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.rb-title{font-family:'Anton',sans-serif;font-size:18px;color:#FFD700;letter-spacing:2px;line-height:1;}
+.rb-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px;}
+.rb-footer{display:flex;align-items:center;justify-content:space-between;}
+.rb-days{font-size:10px;color:rgba(255,255,255,0.3);}
+.rb-tickets-box{background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.25);border-radius:8px;padding:4px 10px;display:flex;flex-direction:column;align-items:center;}
+.rb-tickets-num{font-family:'Anton',sans-serif;font-size:18px;color:#FFD700;line-height:1;}
+.rb-tickets-lbl{font-size:9px;color:rgba(255,215,0,0.5);font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.rb-prizes-btn{background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);color:#0a1a00;border:none;border-radius:10px;padding:8px 14px;font-family:'Anton',sans-serif;font-size:12px;letter-spacing:2px;cursor:pointer;box-shadow:0 3px 0 #2d4000,0 4px 14px rgba(212,245,106,0.25),inset 0 1px 0 rgba(255,255,255,0.3);transition:transform 0.1s,box-shadow 0.1s;position:relative;overflow:hidden;}
+.rb-prizes-btn::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:shimmer 3s infinite;}
+.rb-prizes-btn:active{transform:translateY(3px);box-shadow:0 0 0 #2d4000,0 2px 6px rgba(212,245,106,0.15);}
+
+/* PRIZE ROWS */
+.prize-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.prize-row:last-child{border-bottom:none;}
+.prize-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,215,0,0.3);flex-shrink:0;}
+.prize-dot.top{background:#FFD700;box-shadow:0 0 8px rgba(255,215,0,0.6);}
+.prize-name{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;color:rgba(255,255,255,0.7);flex:1;}
+.prize-name.top{color:#FFD700;font-weight:800;font-size:16px;}
+.prize-top-badge{background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.3);border-radius:50px;padding:3px 10px;font-size:9px;font-weight:800;color:#FFD700;letter-spacing:2px;text-transform:uppercase;}
+
+/* POINTS BANNER */
+.points-banner{width:100%;margin-bottom:14px;background:rgba(212,245,106,0.05);border:1px solid rgba(212,245,106,0.15);border-radius:16px;padding:12px 14px;position:relative;z-index:1;}
+.pb-guest-top{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.pb-icon{font-size:20px;line-height:1;}
+.pb-text{flex:1;}
+.pb-title{font-size:12px;font-weight:800;color:#d4f56a;margin-bottom:1px;}
+.pb-sub{font-size:11px;color:#ffffff;line-height:1.4;}
+.pb-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.pb-btn-login{background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);color:#0a1a00;border:none;border-radius:10px;padding:11px 8px;font-family:'Anton',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 4px 0 #2d4000,0 6px 20px rgba(212,245,106,0.25),inset 0 1px 0 rgba(255,255,255,0.3);transition:transform 0.1s,box-shadow 0.1s;}
+.pb-btn-login::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:shimmer 3s infinite;}
+.pb-btn-login:active{transform:translateY(3px);box-shadow:0 0 0 #2d4000,0 2px 8px rgba(212,245,106,0.15);}
+.pb-btn-skip{background:rgba(255,255,255,0.05);color:#ffffff;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background 0.15s;}
+.pb-logged{display:flex;align-items:center;gap:10px;}
+.pb-avatar{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:rgba(212,245,106,0.15);border:1px solid rgba(212,245,106,0.3);display:flex;align-items:center;justify-content:center;font-size:15px;}
+.pb-user-name{font-size:13px;font-weight:700;color:#fff;}
+.pb-user-pts{font-size:10px;color:rgba(212,245,106,0.7);margin-top:1px;}
+.pb-user-city{font-size:9px;color:rgba(255,255,255,0.25);margin-top:1px;}
+.pb-logout{margin-left:auto;font-size:10px;color:rgba(255,255,255,0.25);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* MACHINE */
+.machine{width:100%;background:rgba(212,245,106,0.04);border:1px solid rgba(212,245,106,0.15);border-radius:24px;padding:20px;position:relative;z-index:1;box-shadow:0 0 0 1px rgba(212,245,106,0.05),0 20px 60px rgba(0,0,0,0.5),inset 0 1px 0 rgba(212,245,106,0.08);}
+.machine::before,.machine::after{content:'';position:absolute;width:12px;height:12px;border-color:rgba(212,245,106,0.4);border-style:solid;}
+.machine::before{top:10px;left:10px;border-width:2px 0 0 2px;border-radius:4px 0 0 0;}
+.machine::after{bottom:10px;right:10px;border-width:0 2px 2px 0;border-radius:0 0 4px 0;}
+.reels-row{display:flex;gap:10px;margin-bottom:14px;}
+.reel{flex:1;height:110px;overflow:hidden;border-radius:12px;background:rgba(0,0,0,0.4);border:1px solid rgba(212,245,106,0.12);position:relative;box-shadow:inset 0 0 20px rgba(0,0,0,0.5);}
+.reel::before,.reel::after{content:'';position:absolute;left:0;right:0;height:30%;z-index:5;pointer-events:none;}
+.reel::before{top:0;background:linear-gradient(to bottom,rgba(0,0,0,0.8),transparent);}
+.reel::after{bottom:0;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);}
+.reel-inner{display:flex;flex-direction:column;will-change:transform;}
+.reel-item{height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;font-family:'Anton',sans-serif;text-align:center;line-height:1;}
+.reel.win{animation:winFlash 0.3s ease 4;}
+.stats-bar{display:flex;gap:6px;margin-bottom:14px;}
+.stat-box{flex:1;text-align:center;background:rgba(212,245,106,0.04);border:1px solid rgba(212,245,106,0.1);border-radius:8px;padding:5px 6px;}
+.stat-lbl{font-size:7px;font-weight:800;letter-spacing:1.5px;color:rgba(212,245,106,0.35);text-transform:uppercase;display:block;}
+.stat-val{font-family:'Righteous',sans-serif;font-size:13px;color:rgba(212,245,106,0.7);display:block;margin-top:1px;}
+.spin-btn{width:100%;height:52px;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);border:none;border-radius:14px;color:#0a1a00;font-family:'Anton',sans-serif;font-size:20px;letter-spacing:4px;cursor:pointer;box-shadow:0 4px 0 #2d4000,0 8px 30px rgba(212,245,106,0.3),inset 0 1px 0 rgba(255,255,255,0.3);transition:transform 0.1s,box-shadow 0.1s;position:relative;overflow:hidden;}
+.spin-btn::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:shimmer 3s infinite;}
+.spin-btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 0 0 #2d4000,0 4px 10px rgba(212,245,106,0.2);}
+.spin-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* QR MODAL */
+#qrModal{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.97);padding:16px;overflow-y:auto;}
+#qrModal.show{display:flex;}
+.qr-box{background:#050e04;border-radius:24px;padding:24px 20px;text-align:center;width:100%;max-width:320px;border:2px solid #d4f56a;box-shadow:0 0 60px rgba(212,245,106,0.2);}
+.qr-your-prize{font-size:10px;color:#d4f56a;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px;font-family:'DM Sans',sans-serif;}
+.qr-prize-val{font-family:'Anton',sans-serif;font-size:64px;line-height:1;color:#fff;margin-bottom:4px;}
+.qr-rest-name{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:14px;font-family:'DM Sans',sans-serif;}
+.qr-code-pill{background:#0a1a08;border-radius:10px;padding:8px 18px;font-family:monospace;font-size:17px;font-weight:700;color:#d4f56a;letter-spacing:2px;margin-bottom:6px;display:inline-block;border:1px solid rgba(212,245,106,0.2);}
+.qr-valid-txt{font-size:12px;color:#d4f56a;font-weight:700;margin-bottom:14px;font-family:'DM Sans',sans-serif;}
+#qr-canvas{display:flex;justify-content:center;margin:0 auto 10px;}
+.qr-hint{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:14px;font-family:'DM Sans',sans-serif;}
+.qr-min-box{background:rgba(212,245,106,0.05);border:1px solid rgba(212,245,106,0.2);border-radius:10px;padding:10px;font-size:11px;color:rgba(255,255,255,0.6);font-family:'DM Sans',sans-serif;}
+.qr-min-box strong{color:#d4f56a;}
+.qr-back-btn{margin-top:16px;width:100%;padding:14px;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);border:none;border-radius:50px;color:#0a1a00;font-family:'Anton',sans-serif;font-size:15px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 0 #2d4000,0 8px 30px rgba(212,245,106,0.3),inset 0 1px 0 rgba(255,255,255,0.3);transition:transform 0.1s,box-shadow 0.1s;position:relative;overflow:hidden;}
+.qr-back-btn::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:shimmer 3s infinite;}
+.qr-back-btn:active{transform:translateY(4px);box-shadow:0 0 0 #2d4000,0 4px 10px rgba(212,245,106,0.2);}
+
+/* AUTH MODAL */
+#authModal{position:fixed;inset:0;z-index:400;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0.88);}
+#authModal.show{display:flex;}
+.auth-sheet{background:#050f04;border:1px solid rgba(212,245,106,0.2);border-radius:24px 24px 0 0;padding:28px 22px 44px;width:100%;max-width:390px;}
+.auth-handle{width:36px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin:0 auto 20px;}
+.auth-title{font-family:'Anton',sans-serif;font-size:22px;color:#d4f56a;letter-spacing:2px;text-align:center;margin-bottom:4px;}
+.auth-sub{font-size:13px;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:20px;line-height:1.5;}
+.auth-perks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+.auth-perk{background:rgba(212,245,106,0.05);border:1px solid rgba(212,245,106,0.1);border-radius:10px;padding:10px;text-align:center;}
+.auth-perk-text{font-size:11px;color:#ffffff;line-height:1.4;font-weight:600;}
+.auth-btn{width:100%;padding:15px;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);border:none;border-radius:12px;color:#0a1a00;font-family:'Anton',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 0 #2d4000,0 8px 30px rgba(212,245,106,0.3),inset 0 1px 0 rgba(255,255,255,0.3);transition:transform 0.1s,box-shadow 0.1s;margin-bottom:14px;position:relative;overflow:hidden;}
+.auth-btn::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:shimmer 3s infinite;}
+.auth-btn:active{transform:translateY(4px);box-shadow:0 0 0 #2d4000,0 4px 10px rgba(212,245,106,0.2);}
+.auth-btn-google{width:100%;padding:14px;background:#fff;border:none;border-radius:12px;color:#1a1a1a;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;transition:transform 0.1s,opacity 0.1s;box-shadow:0 4px 0 rgba(0,0,0,0.3);}
+.auth-btn-google:active{transform:translateY(3px);opacity:0.9;}
+.auth-divider{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.08);}
+.auth-divider-txt{font-size:11px;color:rgba(255,255,255,0.25);white-space:nowrap;}
+.auth-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;color:#fff;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;margin-bottom:10px;-webkit-appearance:none;}
+.auth-input:focus{border-color:rgba(212,245,106,0.4);}
+.auth-input::placeholder{color:rgba(255,255,255,0.2);}
+.auth-skip-link{display:block;text-align:center;font-size:12px;color:rgba(255,255,255,0.25);cursor:pointer;font-family:'DM Sans',sans-serif;}
+.auth-step{display:none;}
+.auth-step.active{display:block;}
+.auth-sent-icon{text-align:center;font-size:52px;margin:16px 0;}
+.auth-sent-email{font-size:12px;color:rgba(212,245,106,0.6);text-align:center;margin-bottom:20px;word-break:break-all;}
+.auth-toggle{font-size:12px;color:rgba(212,245,106,0.6);text-align:center;cursor:pointer;margin-bottom:14px;font-family:'DM Sans',sans-serif;}
+
+/* WINNER MODAL */
+#winnerModal{position:fixed;inset:0;z-index:600;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.97);padding:24px;}
+#winnerModal.show{display:flex;}
+@keyframes winnerEntrance{0%{transform:scale(0.7);opacity:0;}60%{transform:scale(1.05);}100%{transform:scale(1);opacity:1;}}
+.winner-box{background:#050e04;border:2px solid #FFD700;border-radius:28px;padding:32px 24px;text-align:center;width:100%;max-width:340px;box-shadow:0 0 60px rgba(255,215,0,0.25);animation:winnerEntrance 0.6s ease both;}
+.wm-label{font-size:10px;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:rgba(255,215,0,0.6);margin-bottom:12px;}
+.wm-trophy{font-size:56px;margin-bottom:8px;}
+.wm-ticket{font-family:'Anton',sans-serif;font-size:52px;color:#FFD700;line-height:1;text-shadow:0 0 30px rgba(255,215,0,0.5);}
+.wm-name{font-family:'Anton',sans-serif;font-size:24px;color:#fff;margin-top:8px;letter-spacing:2px;}
+.wm-prize{font-size:14px;font-weight:700;color:#d4f56a;margin-top:8px;}
+.wm-divider{width:60px;height:2px;background:rgba(255,215,0,0.3);margin:16px auto;}
+.wm-congrats{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:24px;}
+.wm-btn{width:100%;padding:14px;background:linear-gradient(180deg,#FFD700 0%,#f0a500 50%,#c47f00 100%);border:none;border-radius:12px;color:#1a0a00;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 0 #7a4f00;}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain:"vaygo-app.firebaseapp.com",
+  projectId:"vaygo-app",
+  storageBucket:"vaygo-app.firebasestorage.app",
+  messagingSenderId:"499741267414",
+  appId:"1:499741267414:web:e69cd43156adaea11bc077"
+});
+const db=firebase.firestore();
+const VENUE_CONFIGS={
+  lobster:{id:'lobster',name:'The Original Lobster House'},
+  buccanos:{id:'buccanos',name:'Buccanos Beach Club'},
+  azulmadera:{id:'azulmadera',name:'Azul Madera'},
+  guidos:{id:'guidos',name:"Guido's Restaurant"},
+};
+const _vp=(new URLSearchParams(window.location.search)).get('venue')||'lobster';
+const _vc=VENUE_CONFIGS[_vp]||VENUE_CONFIGS['lobster'];
+const REST_ID=_vc.id,REST_NAME=_vc.name,MIN_PURCHASE="$20 USD";
+const PRIZES=[{label:"10% OFF",color:"#d4f56a"},{label:"15% OFF",color:"#a8d400"},{label:"20% OFF",color:"#78b000"}];
+
+function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const s=n=>Array.from({length:n},()=>c[Math.floor(Math.random()*c.length)]).join('');return'VYG-'+s(4)+'-'+s(4);}
+function getExpiry(){const n=new Date(),e=new Date(n);e.setHours(23,59,59,0);if(e<=n)e.setDate(e.getDate()+1);return e;}
+
+async function saveAndShowQR(prize){
+  const prizeLabel=prize.label;
+  const today=new Date().toISOString().slice(0,10);
+  const spinKey=REST_ID+'_slot2_'+today;
+  const gameKey=REST_ID+'_game_'+today;
+  try{
+    const snap=await db.collection('codes').where('gameKey','==',gameKey).limit(1).get();
+    if(!snap.empty){const d=snap.docs[0].data();showQR(d.code,d.prize,d.expiresAt);return;}
+  }catch(e){}
+  const code=genCode(),expires=getExpiry();
+  try{
+    await db.collection('codes').doc(code).set({code,prize:prizeLabel,restId:REST_ID,restName:REST_NAME,spinKey,gameKey,game:'slot2',spunAt:firebase.firestore.FieldValue.serverTimestamp(),expiresAt:expires.toISOString(),used:false,uid:'anon_'+Date.now()});
+  }catch(e){console.error(e);}
+  showQR(code,prizeLabel,expires.toISOString());
+}
+
+function showQR(code,prize,expiresISO){
+  const t=new Date(expiresISO).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('qr-prize').textContent=prize;
+  document.getElementById('qr-rest').textContent=REST_NAME;
+  document.getElementById('qr-code-txt').textContent=code;
+  document.getElementById('qr-valid').textContent='Valid until: '+t+' today';
+  const qrDiv=document.getElementById('qr-canvas');qrDiv.innerHTML='';
+  new QRCode(qrDiv,{text:code,width:220,height:220,colorDark:'#000',colorLight:'#fff'});
+  setTimeout(()=>{const img=qrDiv.querySelector('img');if(img){img.style.padding='10px';img.style.background='#fff';img.style.borderRadius='10px';img.style.display='block';}},100);
+  document.getElementById('qrModal').classList.add('show');
+}
+
+function goBackToVenue(){
+  const vm={lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html'};
+  window.location.href=vm[_vp]||'lobster.html';
+}
+</script>
+</head>
+<body>
+
+<a id="backBtn" href="lobster.html" class="back-btn" onclick="event.preventDefault();goBackToVenue()">← BACK</a>
+
+<div class="screen">
+
+  <div class="top-section">
+    <div class="vaygo-label">VAYGO</div>
+    <div class="sub-label">Spin · Win · Redeem</div>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div class="countdown-wrap">
+    <div class="cd-label" id="cdLabel">Next Raffle</div>
+    <div class="cd-units">
+      <div class="cd-unit"><div class="cd-num" id="cdDays">00</div><div class="cd-unit-lbl">days</div></div>
+      <div class="cd-sep" id="cdSep1">:</div>
+      <div class="cd-unit"><div class="cd-num" id="cdHours">00</div><div class="cd-unit-lbl">hrs</div></div>
+      <div class="cd-sep" id="cdSep2">:</div>
+      <div class="cd-unit"><div class="cd-num" id="cdMins">00</div><div class="cd-unit-lbl">min</div></div>
+      <div class="cd-sep" id="cdSep3">:</div>
+      <div class="cd-unit"><div class="cd-num" id="cdSecs">00</div><div class="cd-unit-lbl">sec</div></div>
+    </div>
+    <div class="cd-dot" id="cdDot"></div>
+  </div>
+
+  <!-- SURPRISE RAFFLE -->
+  <div class="raffle-banner">
+    <div class="rb-top">
+      <div>
+        <div class="rb-title">SURPRISE RAFFLE</div>
+        <div class="rb-sub">Prize revealed on draw day</div>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+        <button class="rb-prizes-btn" onclick="openPrizesModal()">PRIZES</button>
+        <div class="rb-tickets-box">
+          <div class="rb-tickets-num" id="userTickets">0</div>
+          <div class="rb-tickets-lbl">tickets</div>
+        </div>
+      </div>
+    </div>
+    <div class="rb-footer">
+      <div class="rb-days">🟢 Raffle active · Collect tickets</div>
+    </div>
+  </div>
+
+  <!-- PRIZES MODAL -->
+  <div id="prizesModal" style="display:none;position:fixed;inset:0;z-index:500;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0.88);">
+    <div style="background:#050f04;border:1px solid rgba(212,245,106,0.2);border-radius:24px 24px 0 0;padding:28px 22px 44px;width:100%;max-width:390px;">
+      <div style="width:36px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin:0 auto 20px;"></div>
+      <div style="font-family:'Anton',sans-serif;font-size:22px;color:#FFD700;letter-spacing:3px;text-align:center;margin-bottom:4px;">PRIZES</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.35);text-align:center;margin-bottom:24px;letter-spacing:1px;">One lucky winner takes it all</div>
+      <div id="prizesList">
+        <div class="prize-row"><div class="prize-dot"></div><div class="prize-name">VAYGO Cap</div></div>
+        <div class="prize-row"><div class="prize-dot"></div><div class="prize-name">VAYGO T-Shirt</div></div>
+        <div class="prize-row"><div class="prize-dot"></div><div class="prize-name">VAYGO Yeti</div></div>
+        <div class="prize-row"><div class="prize-dot"></div><div class="prize-name">Mystery Box</div></div>
+        <div class="prize-row"><div class="prize-dot"></div><div class="prize-name">Dinner for 2</div></div>
+        <div class="prize-row"><div class="prize-dot"></div><div class="prize-name">Ocean Tour</div></div>
+        <div class="prize-row top"><div class="prize-dot top"></div><div class="prize-name top">Hotel Night</div><div class="prize-top-badge">TOP PRIZE</div></div>
+      </div>
+      <button class="auth-btn" style="margin-top:24px;" onclick="closePrizesModal()">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- POINTS / AUTH -->
+  <div class="points-banner" id="pointsBanner">
+    <div id="pbGuest">
+      <div class="pb-guest-top">
+        <div class="pb-icon">⭐</div>
+        <div class="pb-text">
+          <div class="pb-title">Collect raffle tickets</div>
+          <div class="pb-sub">Every validated coupon = 1 ticket · Valid across all VAYGO cities</div>
+        </div>
+      </div>
+      <div class="pb-btns">
+        <button class="pb-btn-login" onclick="openAuthModal()">Login / Sign up</button>
+        <button class="pb-btn-skip" onclick="hideBanner()">Just the coupon</button>
+      </div>
+    </div>
+    <div id="pbLogged" style="display:none;">
+      <div class="pb-logged">
+        <div class="pb-avatar">⭐</div>
+        <div>
+          <div class="pb-user-name" id="pbUserName">—</div>
+          <div class="pb-user-pts"><span id="pbUserPts">0</span> pts · <span id="pbUserTickets">0</span> tickets this month</div>
+          <div class="pb-user-city" id="pbUserCity">Cozumel · Riviera Maya</div>
+        </div>
+        <button class="pb-logout" onclick="doLogOut()">Sign out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLOT MACHINE -->
+  <div class="machine">
+    <div class="reels-row" style="position:relative;">
+      <div class="reel" id="r0"><div class="reel-inner" id="ri0"></div></div>
+      <div class="reel" id="r1"><div class="reel-inner" id="ri1"></div></div>
+      <div class="reel" id="r2"><div class="reel-inner" id="ri2"></div></div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-box"><span class="stat-lbl">Credits</span><span class="stat-val">1</span></div>
+      <div class="stat-box"><span class="stat-lbl">Bet</span><span class="stat-val">MAX</span></div>
+      <div class="stat-box"><span class="stat-lbl">Win</span><span class="stat-val" id="winVal">—</span></div>
+    </div>
+    <button class="spin-btn" id="spinBtn" onclick="spin()">SPIN NOW</button>
+  </div>
+
+</div>
+
+<!-- WINNER MODAL -->
+<div id="winnerModal">
+  <div class="winner-box">
+    <div class="wm-label">🏆 Raffle Winner</div>
+    <div class="wm-trophy">🎁</div>
+    <div class="wm-ticket" id="wmTicket">#001</div>
+    <div class="wm-name" id="wmName">—</div>
+    <div class="wm-prize" id="wmPrize">—</div>
+    <div class="wm-divider"></div>
+    <div class="wm-congrats" id="wmCongrats"></div>
+    <a id="wmClaimBtn" href="https://instagram.com/vaygo.mx" target="_blank" class="wm-btn" style="display:none;">CLAIM ON INSTAGRAM</a>
+    <button id="wmBackBtn" class="wm-btn" style="display:none;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);color:#0a1a00;box-shadow:0 4px 0 #2d4000;" onclick="closeWinnerModal()">BACK TO VAYGO</button>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div id="authModal">
+  <div class="auth-sheet">
+    <div class="auth-handle"></div>
+    <div class="auth-step active" id="authStep1">
+      <div class="auth-title">VAYGO REWARDS</div>
+      <div class="auth-sub">Sign up free and collect tickets in every city you visit</div>
+      <div class="auth-perks">
+        <div class="auth-perk"><div class="auth-perk-text">Monthly surprise raffle</div></div>
+        <div class="auth-perk"><div class="auth-perk-text">From a cap to a hotel night</div></div>
+        <div class="auth-perk"><div class="auth-perk-text">Valid across Riviera Maya</div></div>
+        <div class="auth-perk"><div class="auth-perk-text">1 validated coupon = 1 ticket</div></div>
+      </div>
+      <button class="auth-btn-google" onclick="signInWithGoogle()">
+        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Continue with Google
+      </button>
+      <div class="auth-divider"><div class="auth-divider-txt">or use email</div></div>
+      <input class="auth-input" type="email" id="authEmail" placeholder="your@email.com" inputmode="email" autocomplete="email"/>
+      <input class="auth-input" type="password" id="authPassword" placeholder="password (min 6 characters)" autocomplete="new-password"/>
+      <button class="auth-btn" onclick="signInWithEmail()">CONTINUE →</button>
+      <div class="auth-toggle" id="authToggleTxt">Already have an account? <span onclick="toggleAuthMode()" style="color:#d4f56a;text-decoration:underline;">Sign in</span></div>
+      <span class="auth-skip-link" onclick="closeAuthModal()">Just the coupon, no points</span>
+    </div>
+    <div class="auth-step" id="authStep2">
+      <div class="auth-title">YOU'RE IN! 🎉</div>
+      <div style="text-align:center;font-size:52px;margin:16px 0;">⭐</div>
+      <div class="auth-sub">Your account is active. Every coupon you validate earns you a raffle ticket!</div>
+      <button class="auth-btn" onclick="closeAuthModal()">← BACK TO SPIN</button>
+    </div>
+  </div>
+</div>
+
+<!-- QR MODAL -->
+<div id="qrModal">
+  <div class="qr-box">
+    <div class="qr-your-prize">🎉 YOUR PRIZE</div>
+    <div class="qr-prize-val" id="qr-prize"></div>
+    <div class="qr-rest-name" id="qr-rest"></div>
+    <div class="qr-code-pill" id="qr-code-txt"></div>
+    <div class="qr-valid-txt" id="qr-valid"></div>
+    <div id="qr-canvas"></div>
+    <div class="qr-hint">Show this QR to the staff to redeem</div>
+    <div class="qr-min-box">⚠️ Min purchase: <strong>$20 USD</strong></div>
+    <button class="qr-back-btn" onclick="goBackToVenue()">← BACK TO VENUE</button>
+  </div>
+</div>
+
+<script>
+const ITEMS=[{pct:"10%",color:"#d4f56a"},{pct:"15%",color:"#a8d400"},{pct:"20%",color:"#5a8000"}];
+const ITEM_H=110;
+let spinning=false,done=false;
+
+function buildReels(){
+  const fs=Math.max(22,Math.round(ITEM_H*0.28));
+  const fo=Math.max(10,Math.round(ITEM_H*0.10));
+  for(let r=0;r<3;r++){
+    const inner=document.getElementById('ri'+r);
+    inner.innerHTML='';
+    inner.style.cssText='display:flex;flex-direction:column;will-change:transform;';
+    const all=[...ITEMS,...ITEMS,...ITEMS,...ITEMS,...ITEMS];
+    all.forEach(item=>{
+      const div=document.createElement('div');
+      div.style.cssText=`height:${ITEM_H}px;min-height:${ITEM_H}px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;`;
+      div.innerHTML=`<span style="font-family:'Anton',sans-serif;font-size:${fs}px;color:${item.color};text-shadow:0 0 20px ${item.color},0 0 40px ${item.color}50;line-height:1;">${item.pct}</span><span style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:${fo}px;color:${item.color};opacity:0.7;letter-spacing:3px;">OFF</span>`;
+      inner.appendChild(div);
+    });
+    inner.style.transform='translateY(0px)';
+    inner.style.transition='none';
+  }
+}
+buildReels();
+
+async function checkAlreadyPlayed(){
+  const today=new Date().toISOString().slice(0,10);
+  const gameKey=REST_ID+'_game_'+today;
+  try{
+    const snap=await db.collection('codes').where('gameKey','==',gameKey).limit(1).get();
+    if(!snap.empty){
+      const d=snap.docs[0].data();
+      done=true;
+      document.getElementById('spinBtn').disabled=true;
+      document.getElementById('spinBtn').textContent='COME BACK TOMORROW';
+      showQR(d.code,d.prize,d.expiresAt);
+    }
+  }catch(e){}
+}
+checkAlreadyPlayed();
+
+function spin(){
+  if(spinning||done)return;
+  spinning=true;
+  document.getElementById('spinBtn').disabled=true;
+  playSpinSound();
+  const prize=PRIZES[Math.floor(Math.random()*PRIZES.length)];
+  const prizePercent=prize.label.split('%')[0]+'%';
+  const total=ITEMS.length;
+  let baseIdx=total*3;
+  for(let i=total*3;i<total*4;i++){if(ITEMS[i%total].pct===prizePercent){baseIdx=i;break;}}
+  [0,1,2].forEach((r,idx)=>{
+    const inner=document.getElementById('ri'+r);
+    const dur=1200+idx*350;
+    inner.style.transition=`transform ${dur}ms cubic-bezier(0.17,0.67,0.12,1.0)`;
+    inner.style.transform=`translateY(-${baseIdx*ITEM_H}px)`;
+    setTimeout(()=>{
+      playStopSound();
+      document.getElementById('r'+r).classList.add('win');
+      if(idx===2){
+        document.getElementById('winVal').textContent=prize.label;
+        setTimeout(()=>{
+          spinning=false;done=true;
+          playWinSound();doConfetti();
+          setTimeout(()=>saveAndShowQR(prize),800);
+        },300);
+      }
+    },dur);
+  });
+}
+
+let _ac=null;
+function getAC(){if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();if(_ac.state==='suspended')_ac.resume();return _ac;}
+function makeNoise(ac,dur){const b=ac.createBuffer(1,Math.ceil(ac.sampleRate*dur),ac.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b;}
+function playSpinSound(){try{const ac=getAC(),now=ac.currentTime;for(let i=0;i<20;i++){const t=i*0.055,b=makeNoise(ac,0.04),s=ac.createBufferSource();s.buffer=b;const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=1200+Math.random()*500;f.Q.value=4;const g=ac.createGain();g.gain.setValueAtTime(0.35,now+t);g.gain.exponentialRampToValueAtTime(0.001,now+t+0.038);s.connect(f);f.connect(g);g.connect(ac.destination);s.start(now+t);s.stop(now+t+0.05);}}catch(e){}}
+function playStopSound(){try{const ac=getAC(),now=ac.currentTime,b=makeNoise(ac,0.08),s=ac.createBufferSource();s.buffer=b;const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=900;f.Q.value=3;const g=ac.createGain();g.gain.setValueAtTime(0.45,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.07);s.connect(f);f.connect(g);g.connect(ac.destination);s.start(now);s.stop(now+0.09);}catch(e){}}
+function playWinSound(){try{const ac=getAC(),now=ac.currentTime;[[0,523],[0.13,659],[0.26,784],[0.39,1047],[0.52,1319]].forEach(([t,f])=>{const o=ac.createOscillator();o.type='sine';const g=ac.createGain();o.frequency.value=f;g.gain.setValueAtTime(0,now+t);g.gain.linearRampToValueAtTime(0.28,now+t+0.02);g.gain.exponentialRampToValueAtTime(0.001,now+t+0.28);o.connect(g);g.connect(ac.destination);o.start(now+t);o.stop(now+t+0.3);});}catch(e){}}
+function doConfetti(){const cv=document.createElement('canvas');cv.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;';document.body.appendChild(cv);cv.width=innerWidth;cv.height=innerHeight;const ctx=cv.getContext('2d');const C=['#d4f56a','#a8d400','#78b000','#fff','#8fc20a'];const ps=Array.from({length:120},()=>({x:Math.random()*cv.width,y:-20,vx:(Math.random()-.5)*4,vy:2+Math.random()*5,c:C[~~(Math.random()*C.length)],a:Math.random()*6,s:(Math.random()-.5)*.18,w:4+Math.random()*6,h:7+Math.random()*12,al:1}));(function loop(){ctx.clearRect(0,0,cv.width,cv.height);let alive=false;ps.forEach(p=>{if(p.al<=0)return;p.x+=p.vx;p.y+=p.vy;p.a+=p.s;p.vy+=.07;if(p.y>cv.height*.85)p.al-=.03;alive=true;ctx.save();ctx.globalAlpha=p.al;ctx.translate(p.x,p.y);ctx.rotate(p.a);ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});if(alive)requestAnimationFrame(loop);else cv.remove();})();}
+</script>
+
+<script>
+/* ══ REWARDS SYSTEM ══ */
+const auth = firebase.auth();
+auth.useDeviceLanguage();
+
+const CITY_MAP={lobster:'Cozumel',buccanos:'Cozumel',azulmadera:'Cozumel',guidos:'Cozumel'};
+const venueCity=CITY_MAP[_vp]||'Cozumel';
+let currentUser=null,userData=null,cdInterval=null;
+
+localStorage.setItem('vaygoVenue', _vp);
+
+/* Countdown — reads from Firestore rifa/activa */
+function startCountdown(targetDate, rifaData){
+  if(cdInterval)clearInterval(cdInterval);
+  ['cdDays','cdHours','cdMins','cdSecs'].forEach(id=>document.getElementById(id).classList.add('active'));
+  ['cdSep1','cdSep2','cdSep3'].forEach(id=>document.getElementById(id).classList.add('active'));
+  document.getElementById('cdLabel').classList.add('active');
+  document.getElementById('cdDot').classList.add('active');
+  function tick(){
+    const diff=targetDate-new Date();
+    if(diff<=0){
+      clearInterval(cdInterval);
+      document.getElementById('cdLabel').textContent='Today!';
+      /* Show winner if published */
+      if(rifaData&&rifaData.status==='winner'&&rifaData.ganadorTicket){
+        setTimeout(()=>showWinnerModal(rifaData), 1000);
+      }
+      return;
+    }
+    const d=Math.floor(diff/864e5),h=Math.floor((diff%864e5)/36e5),m=Math.floor((diff%36e5)/6e4),s=Math.floor((diff%6e4)/1e3);
+    document.getElementById('cdDays').textContent=String(d).padStart(2,'0');
+    document.getElementById('cdHours').textContent=String(h).padStart(2,'0');
+    document.getElementById('cdMins').textContent=String(m).padStart(2,'0');
+    document.getElementById('cdSecs').textContent=String(s).padStart(2,'0');
+  }
+  tick();cdInterval=setInterval(tick,1000);
+}
+
+function showWinnerModal(data){
+  document.getElementById('wmTicket').textContent='#'+String(data.ganadorTicket).padStart(3,'0');
+  document.getElementById('wmName').textContent=data.ganadorNombre||'—';
+  document.getElementById('wmPrize').textContent=data.ganadorPremio||'Surprise Prize';
+
+  const claimBtn=document.getElementById('wmClaimBtn');
+  const backBtn=document.getElementById('wmBackBtn');
+  const congrats=document.getElementById('wmCongrats');
+
+  /* Check if logged in user is the winner */
+  const isWinner = currentUser && userData &&
+    (userData.displayName===data.ganadorNombre ||
+     currentUser.email===data.ganadorNombre ||
+     (userData.email && userData.email.split('@')[0]===data.ganadorNombre));
+
+  if(isWinner){
+    /* WINNER */
+    congrats.textContent='🎉 Congratulations! You won! Contact us on Instagram to claim your prize.';
+    congrats.style.color='#FFD700';
+    claimBtn.style.display='block';
+    backBtn.style.display='none';
+    doConfetti();
+  } else if(currentUser){
+    /* Logged in but not winner */
+    congrats.textContent='Better luck next time 🌴 Keep collecting tickets for the next raffle!';
+    congrats.style.color='rgba(255,255,255,0.5)';
+    claimBtn.style.display='none';
+    backBtn.style.display='block';
+  } else {
+    /* Not logged in */
+    congrats.textContent='Login to participate in the next raffle and win amazing prizes!';
+    congrats.style.color='rgba(255,255,255,0.5)';
+    claimBtn.style.display='none';
+    backBtn.style.display='block';
+  }
+
+  document.getElementById('winnerModal').classList.add('show');
+}
+
+function closeWinnerModal(){
+  document.getElementById('winnerModal').classList.remove('show');
+}
+
+db.collection('rifa').doc('activa').onSnapshot(snap=>{
+  if(!snap.exists)return;
+  const data=snap.data();
+  if(data&&data.sorteoFecha){
+    document.getElementById('cdLabel').textContent='Raffle';
+    startCountdown(new Date(data.sorteoFecha), data);
+  }
+  /* If winner already published and time is up — show immediately */
+  if(data&&data.status==='winner'&&data.ganadorTicket){
+    const target=new Date(data.sorteoFecha);
+    if(new Date()>=target) showWinnerModal(data);
+  }
+});
+
+/* User data */
+async function loadOrCreateUser(user){
+  const ref=db.collection('users').doc(user.uid);
+  const snap=await ref.get();
+  const month=new Date().toISOString().slice(0,7);
+  if(!snap.exists){
+    userData={email:user.email,displayName:user.email.split('@')[0],totalPoints:0,monthlyTickets:{},cities:[],createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+    await ref.set(userData);
+  }else{userData=snap.data();}
+  renderLoggedIn(month);
+}
+
+function renderLoggedIn(month){
+  if(!userData)return;
+  const m=month||new Date().toISOString().slice(0,7);
+  const tickets=(userData.monthlyTickets&&userData.monthlyTickets[m])||0;
+  document.getElementById('pbGuest').style.display='none';
+  document.getElementById('pbLogged').style.display='block';
+  document.getElementById('pbUserName').textContent=userData.displayName||userData.email.split('@')[0];
+  document.getElementById('pbUserPts').textContent=userData.totalPoints||0;
+  document.getElementById('pbUserTickets').textContent=tickets;
+  document.getElementById('pbUserCity').textContent=venueCity+' · Riviera Maya';
+  document.getElementById('userTickets').textContent=tickets;
+}
+
+async function addTicketForCoupon(uid){
+  const month=new Date().toISOString().slice(0,7);
+  try{
+    await db.collection('users').doc(uid).update({
+      totalPoints:firebase.firestore.FieldValue.increment(1),
+      [`monthlyTickets.${month}`]:firebase.firestore.FieldValue.increment(1),
+      cities:firebase.firestore.FieldValue.arrayUnion(venueCity)
+    });
+    await db.collection('raffle_tickets').add({uid,email:currentUser.email,displayName:userData?.displayName||currentUser.email.split('@')[0],month,venue:REST_ID,venueName:REST_NAME,city:venueCity,earnedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    if(!userData)userData={};
+    userData.totalPoints=(userData.totalPoints||0)+1;
+    if(!userData.monthlyTickets)userData.monthlyTickets={};
+    userData.monthlyTickets[month]=(userData.monthlyTickets[month]||0)+1;
+    renderLoggedIn(month);
+    showTicketEarned(userData.monthlyTickets[month]);
+  }catch(e){console.error('addTicket',e);}
+}
+
+function showTicketEarned(total){
+  if(document.getElementById('qr-ticket-earned'))return;
+  const el=document.createElement('div');
+  el.id='qr-ticket-earned';
+  el.style.cssText='background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);border-radius:12px;padding:12px 14px;margin-bottom:12px;text-align:center;';
+  el.innerHTML=`<div style="font-family:'Anton',sans-serif;font-size:22px;color:#FFD700;letter-spacing:1px;">+1 TICKET</div><div style="font-size:11px;color:rgba(255,215,0,0.7);margin-top:4px;">You have ${total} ticket${total>1?'s':''} for the Surprise Raffle</div><div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px;">Valid across all Riviera Maya</div>`;
+  const hint=document.querySelector('.qr-hint');
+  if(hint)hint.insertAdjacentElement('beforebegin',el);
+}
+
+auth.onAuthStateChanged(async user=>{
+  currentUser=user;
+  if(user){await loadOrCreateUser(user);}
+  else{document.getElementById('pbGuest').style.display='block';document.getElementById('pbLogged').style.display='none';document.getElementById('userTickets').textContent='0';}
+});
+
+function openPrizesModal(){document.getElementById('prizesModal').style.display='flex';}
+function closePrizesModal(){document.getElementById('prizesModal').style.display='none';}
+function openAuthModal(){
+  document.getElementById('authModal').classList.add('show');
+  document.getElementById('authStep1').classList.add('active');
+  document.getElementById('authStep2').classList.remove('active');
+  isSignIn=false;
+  document.getElementById('authToggleTxt').innerHTML='Already have an account? <span onclick="toggleAuthMode()" style="color:#d4f56a;text-decoration:underline;">Sign in</span>';
+  document.getElementById('authPassword').placeholder='password (min 6 characters)';
+}
+function closeAuthModal(){document.getElementById('authModal').classList.remove('show');}
+function hideBanner(){document.getElementById('pointsBanner').style.display='none';}
+function doLogOut(){auth.signOut().then(()=>{userData=null;document.getElementById('userTickets').textContent='0';});}
+
+let isSignIn=false;
+function toggleAuthMode(){
+  isSignIn=!isSignIn;
+  if(isSignIn){
+    document.getElementById('authToggleTxt').innerHTML='New here? <span onclick="toggleAuthMode()" style="color:#d4f56a;text-decoration:underline;">Create account</span>';
+    document.getElementById('authPassword').placeholder='your password';
+  } else {
+    document.getElementById('authToggleTxt').innerHTML='Already have an account? <span onclick="toggleAuthMode()" style="color:#d4f56a;text-decoration:underline;">Sign in</span>';
+    document.getElementById('authPassword').placeholder='password (min 6 characters)';
+  }
+}
+
+async function signInWithGoogle(){
+  try{
+    const provider=new firebase.auth.GoogleAuthProvider();
+    await auth.signInWithPopup(provider);
+    document.getElementById('authStep1').classList.remove('active');
+    document.getElementById('authStep2').classList.add('active');
+  }catch(e){
+    console.error(e);
+    if(e.code!=='auth/popup-closed-by-user') alert('Error signing in with Google. Try again.');
+  }
+}
+
+async function signInWithEmail(){
+  const email=document.getElementById('authEmail').value.trim();
+  const password=document.getElementById('authPassword').value;
+  if(!email||!email.includes('@')){alert('Enter a valid email');return;}
+  if(password.length<6){alert('Password must be at least 6 characters');return;}
+  try{
+    if(isSignIn){
+      await auth.signInWithEmailAndPassword(email,password);
+    } else {
+      await auth.createUserWithEmailAndPassword(email,password);
+    }
+    document.getElementById('authStep1').classList.remove('active');
+    document.getElementById('authStep2').classList.add('active');
+  }catch(e){
+    console.error(e);
+    if(e.code==='auth/email-already-in-use'){
+      alert('This email already has an account. Tap "Sign in" instead.');
+    } else if(e.code==='auth/wrong-password'||e.code==='auth/user-not-found'){
+      alert('Wrong email or password. Try again.');
+    } else {
+      alert('Error: '+e.message);
+    }
+  }
+}
+
+const _origSaveQR=window.saveAndShowQR;
+window.saveAndShowQR=async function(prize){
+  await _origSaveQR(prize);
+  if(currentUser){await addTicketForCoupon(currentUser.uid);}
+};
+</script>
+</body>
+</html>
