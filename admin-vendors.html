@@ -77,6 +77,13 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:#fff;min-height
 .cm-desc{font-size:13px;color:var(--gray);margin-bottom:16px;line-height:1.6;}
 .btn-close-all{width:100%;padding:14px;background:linear-gradient(90deg,var(--gold),#f0a500);border:none;border-radius:12px;color:#1a0a00;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 0 #7a4f00;}
 .status-msg{font-size:12px;text-align:center;margin-top:8px;min-height:18px;color:var(--lime);}
+.detail-tab{padding:8px 18px;border-radius:50px;font-size:12px;font-weight:700;border:1px solid var(--border);color:var(--gray);cursor:pointer;background:transparent;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.detail-tab.active{border-color:rgba(212,245,106,0.5);color:var(--lime);background:rgba(212,245,106,0.08);}
+.detail-row{display:flex;align-items:center;justify-content:space-between;padding:12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
+.detail-type{display:inline-block;padding:2px 8px;border-radius:50px;font-size:10px;font-weight:700;margin-bottom:4px;}
+.detail-type.direct{background:rgba(212,245,106,0.15);color:var(--lime);}
+.detail-type.indirect{background:rgba(255,215,0,0.12);color:var(--gold);}
+.detail-amount{font-family:'Anton',sans-serif;font-size:20px;color:var(--lime);}
 
 @media(max-width:500px){
   .add-row{grid-template-columns:1fr;}
@@ -158,6 +165,28 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:#fff;min-height
     <div id="vendorsList"><div style="text-align:center;color:var(--gray);padding:20px;">Cargando...</div></div>
   </div>
 
+</div>
+
+<!-- DETAIL MODAL -->
+<div id="detailModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.92);overflow-y:auto;padding:20px;">
+  <div style="max-width:600px;margin:0 auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div>
+        <div style="font-family:'Anton',sans-serif;font-size:22px;color:var(--lime);letter-spacing:2px;" id="detailName">—</div>
+        <div style="font-size:11px;color:var(--gray);letter-spacing:2px;" id="detailCode">—</div>
+      </div>
+      <button onclick="closeDetail()" style="padding:8px 18px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:50px;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;">✕ Cerrar</button>
+    </div>
+
+    <!-- TABS -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button class="detail-tab active" id="tabEarnings" onclick="showTab('earnings')">Cupones usados</button>
+      <button class="detail-tab" id="tabScans" onclick="showTab('scans')">Escaneos QR</button>
+    </div>
+
+    <div id="detailEarnings"></div>
+    <div id="detailScans" style="display:none;"></div>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -272,6 +301,7 @@ function renderVendors(){
       </div>
       <div class="vc-actions">
         <a class="btn-view" href="vendor-panel.html?id=${v.id}" target="_blank">Ver panel</a>
+        <button class="btn-view" style="cursor:pointer;" onclick="openDetail('${v.id}','${v.name||v.id}')">Ver detalle</button>
         ${isActive
           ? `<button class="btn-deactivate" onclick="toggleVendor('${v.id}','inactive')">Dar de baja</button>`
           : `<button class="btn-activate" onclick="toggleVendor('${v.id}','active')">Reactivar</button>`
@@ -316,6 +346,74 @@ async function toggleVendor(id, newStatus){
     await db.collection('vendors').doc(id).update({ status: newStatus });
     loadData();
   } catch(e){ console.error(e); }
+}
+
+/* ── DETAIL MODAL ── */
+async function openDetail(vendorId, vendorName){
+  document.getElementById('detailName').textContent = vendorName;
+  document.getElementById('detailCode').textContent = vendorId;
+  document.getElementById('detailModal').style.display = 'block';
+  showTab('earnings');
+
+  /* Load earnings */
+  const eSnap = await db.collection('vendor_earnings')
+    .where('vendorId','==',vendorId)
+    .orderBy('earnedAt','desc')
+    .get();
+  const earnings = eSnap.docs.map(d => d.data());
+
+  /* Load scans */
+  const sSnap = await db.collection('vendor_scans')
+    .where('vendorId','==',vendorId)
+    .orderBy('scannedAt','desc')
+    .get();
+  const scans = sSnap.docs.map(d => d.data());
+
+  /* Render earnings */
+  const eEl = document.getElementById('detailEarnings');
+  if(!earnings.length){
+    eEl.innerHTML = '<div style="text-align:center;color:var(--gray);padding:20px;font-size:13px;">Sin cupones aún</div>';
+  } else {
+    eEl.innerHTML = earnings.map(e => {
+      const date = e.earnedAt ? new Date(e.earnedAt.seconds*1000).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+      return `<div class="detail-row">
+        <div>
+          <span class="detail-type ${e.type}">${e.type === 'direct' ? 'Directo' : 'Indirecto'}</span>
+          <div style="font-size:13px;color:#fff;font-weight:700;">${e.venue || '—'}</div>
+          <div style="font-size:11px;color:var(--gray);">${date} · ${e.month}</div>
+        </div>
+        <div class="detail-amount">$${e.amount}</div>
+      </div>`;
+    }).join('');
+  }
+
+  /* Render scans */
+  const sEl = document.getElementById('detailScans');
+  if(!scans.length){
+    sEl.innerHTML = '<div style="text-align:center;color:var(--gray);padding:20px;font-size:13px;">Sin escaneos registrados</div>';
+  } else {
+    sEl.innerHTML = scans.map(s => {
+      const date = s.scannedAt ? new Date(s.scannedAt.seconds*1000).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+      return `<div class="detail-row">
+        <div>
+          <span class="detail-type scan">${s.isDirect ? 'Directo' : 'Compartido'}</span>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px;">${date} · ${s.month}</div>
+        </div>
+        <div style="font-size:11px;color:var(--gray);">${s.isNew ? '🆕 Nuevo' : 'Repetido'}</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function closeDetail(){
+  document.getElementById('detailModal').style.display = 'none';
+}
+
+function showTab(tab){
+  document.getElementById('detailEarnings').style.display = tab === 'earnings' ? 'block' : 'none';
+  document.getElementById('detailScans').style.display = tab === 'scans' ? 'block' : 'none';
+  document.getElementById('tabEarnings').classList.toggle('active', tab === 'earnings');
+  document.getElementById('tabScans').classList.toggle('active', tab === 'scans');
 }
 
 async function limpiarEscaneos(id){
