@@ -126,19 +126,38 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
 .auth-sub{font-size:13px;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:20px;line-height:1.5;}
 .auth-perks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
 .auth-perk{background:rgba(212,245,106,0.05);border:1px solid rgba(212,245,106,0.1);border-radius:10px;padding:10px;text-align:center;}
-.auth-perk-icon{font-size:18px;margin-bottom:4px;}
 .auth-perk-text{font-size:11px;color:#ffffff;line-height:1.4;font-weight:600;}
-.auth-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;color:#fff;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;margin-bottom:12px;-webkit-appearance:none;}
-.auth-input:focus{border-color:rgba(212,245,106,0.4);}
-.auth-input::placeholder{color:rgba(255,255,255,0.2);}
 .auth-btn{width:100%;padding:15px;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);border:none;border-radius:12px;color:#0a1a00;font-family:'Anton',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 0 #2d4000,0 8px 30px rgba(212,245,106,0.3),inset 0 1px 0 rgba(255,255,255,0.3);transition:transform 0.1s,box-shadow 0.1s;margin-bottom:14px;position:relative;overflow:hidden;}
 .auth-btn::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:shimmer 3s infinite;}
 .auth-btn:active{transform:translateY(4px);box-shadow:0 0 0 #2d4000,0 4px 10px rgba(212,245,106,0.2);}
+.auth-btn-google{width:100%;padding:14px;background:#fff;border:none;border-radius:12px;color:#1a1a1a;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;transition:transform 0.1s,opacity 0.1s;box-shadow:0 4px 0 rgba(0,0,0,0.3);}
+.auth-btn-google:active{transform:translateY(3px);opacity:0.9;}
+.auth-divider{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.08);}
+.auth-divider-txt{font-size:11px;color:rgba(255,255,255,0.25);white-space:nowrap;}
+.auth-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;color:#fff;font-family:'DM Sans',sans-serif;font-size:16px;outline:none;margin-bottom:10px;-webkit-appearance:none;}
+.auth-input:focus{border-color:rgba(212,245,106,0.4);}
+.auth-input::placeholder{color:rgba(255,255,255,0.2);}
 .auth-skip-link{display:block;text-align:center;font-size:12px;color:rgba(255,255,255,0.25);cursor:pointer;font-family:'DM Sans',sans-serif;}
 .auth-step{display:none;}
 .auth-step.active{display:block;}
 .auth-sent-icon{text-align:center;font-size:52px;margin:16px 0;}
 .auth-sent-email{font-size:12px;color:rgba(212,245,106,0.6);text-align:center;margin-bottom:20px;word-break:break-all;}
+.auth-toggle{font-size:12px;color:rgba(212,245,106,0.6);text-align:center;cursor:pointer;margin-bottom:14px;font-family:'DM Sans',sans-serif;}
+
+/* WINNER MODAL */
+#winnerModal{position:fixed;inset:0;z-index:600;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.97);padding:24px;}
+#winnerModal.show{display:flex;}
+@keyframes winnerEntrance{0%{transform:scale(0.7);opacity:0;}60%{transform:scale(1.05);}100%{transform:scale(1);opacity:1;}}
+.winner-box{background:#050e04;border:2px solid #FFD700;border-radius:28px;padding:32px 24px;text-align:center;width:100%;max-width:340px;box-shadow:0 0 60px rgba(255,215,0,0.25);animation:winnerEntrance 0.6s ease both;}
+.wm-label{font-size:10px;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:rgba(255,215,0,0.6);margin-bottom:12px;}
+.wm-trophy{font-size:56px;margin-bottom:8px;}
+.wm-ticket{font-family:'Anton',sans-serif;font-size:52px;color:#FFD700;line-height:1;text-shadow:0 0 30px rgba(255,215,0,0.5);}
+.wm-name{font-family:'Anton',sans-serif;font-size:24px;color:#fff;margin-top:8px;letter-spacing:2px;}
+.wm-prize{font-size:14px;font-weight:700;color:#d4f56a;margin-top:8px;}
+.wm-divider{width:60px;height:2px;background:rgba(255,215,0,0.3);margin:16px auto;}
+.wm-congrats{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:24px;}
+.wm-btn{width:100%;padding:14px;background:linear-gradient(180deg,#FFD700 0%,#f0a500 50%,#c47f00 100%);border:none;border-radius:12px;color:#1a0a00;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 0 #7a4f00;}
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -313,6 +332,20 @@ function goBackToVenue(){
 
 </div>
 
+<!-- WINNER MODAL -->
+<div id="winnerModal">
+  <div class="winner-box">
+    <div class="wm-label">🏆 Raffle Winner</div>
+    <div class="wm-trophy">🎁</div>
+    <div class="wm-ticket" id="wmTicket">#001</div>
+    <div class="wm-name" id="wmName">—</div>
+    <div class="wm-prize" id="wmPrize">—</div>
+    <div class="wm-divider"></div>
+    <div class="wm-congrats">Congratulations! Contact VAYGO on Instagram to claim your prize.</div>
+    <a href="https://instagram.com/vaygo.mx" target="_blank" class="wm-btn">CLAIM ON INSTAGRAM</a>
+  </div>
+</div>
+
 <!-- AUTH MODAL -->
 <div id="authModal">
   <div class="auth-sheet">
@@ -326,26 +359,22 @@ function goBackToVenue(){
         <div class="auth-perk"><div class="auth-perk-text">Valid across Riviera Maya</div></div>
         <div class="auth-perk"><div class="auth-perk-text">1 validated coupon = 1 ticket</div></div>
       </div>
+      <button class="auth-btn-google" onclick="signInWithGoogle()">
+        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Continue with Google
+      </button>
+      <div class="auth-divider"><div class="auth-divider-txt">or use email</div></div>
       <input class="auth-input" type="email" id="authEmail" placeholder="your@email.com" inputmode="email" autocomplete="email"/>
-      <button class="auth-btn" onclick="sendMagicLink()">CONTINUE →</button>
+      <input class="auth-input" type="password" id="authPassword" placeholder="password (min 6 characters)" autocomplete="new-password"/>
+      <button class="auth-btn" onclick="signInWithEmail()">CONTINUE →</button>
+      <div class="auth-toggle" id="authToggleTxt">Already have an account? <span onclick="toggleAuthMode()" style="color:#d4f56a;text-decoration:underline;">Sign in</span></div>
       <span class="auth-skip-link" onclick="closeAuthModal()">Just the coupon, no points</span>
     </div>
     <div class="auth-step" id="authStep2">
-      <div class="auth-title">CHECK YOUR EMAIL</div>
-      <div class="auth-sent-icon">📩</div>
-      <div class="auth-sub">We sent a magic link to:</div>
-      <div class="auth-sent-email" id="authSentTo"></div>
-      <div style="background:rgba(212,245,106,0.06);border:1px solid rgba(212,245,106,0.15);border-radius:12px;padding:14px;margin-bottom:20px;text-align:left;">
-        <div style="font-size:12px;color:#d4f56a;font-weight:800;margin-bottom:8px;letter-spacing:1px;">HOW TO ACTIVATE:</div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.8;">
-          1. Open the email on <strong style="color:#fff;">this same phone</strong><br/>
-          2. Tap the magic link<br/>
-          3. You'll be logged in automatically<br/>
-          4. Come back here and spin! 🎰
-        </div>
-      </div>
+      <div class="auth-title">YOU'RE IN! 🎉</div>
+      <div style="text-align:center;font-size:52px;margin:16px 0;">⭐</div>
+      <div class="auth-sub">Your account is active. Every coupon you validate earns you a raffle ticket!</div>
       <button class="auth-btn" onclick="closeAuthModal()">← BACK TO SPIN</button>
-      <div style="font-size:11px;color:rgba(255,255,255,0.25);text-align:center;margin-top:8px;">Didn't get the email? Check your spam folder</div>
     </div>
   </div>
 </div>
@@ -457,7 +486,7 @@ let currentUser=null,userData=null,cdInterval=null;
 localStorage.setItem('vaygoVenue', _vp);
 
 /* Countdown — reads from Firestore rifa/activa */
-function startCountdown(targetDate){
+function startCountdown(targetDate, rifaData){
   if(cdInterval)clearInterval(cdInterval);
   ['cdDays','cdHours','cdMins','cdSecs'].forEach(id=>document.getElementById(id).classList.add('active'));
   ['cdSep1','cdSep2','cdSep3'].forEach(id=>document.getElementById(id).classList.add('active'));
@@ -465,7 +494,15 @@ function startCountdown(targetDate){
   document.getElementById('cdDot').classList.add('active');
   function tick(){
     const diff=targetDate-new Date();
-    if(diff<=0){clearInterval(cdInterval);document.getElementById('cdLabel').textContent='Today!';return;}
+    if(diff<=0){
+      clearInterval(cdInterval);
+      document.getElementById('cdLabel').textContent='Today!';
+      /* Show winner if published */
+      if(rifaData&&rifaData.status==='winner'&&rifaData.ganadorTicket){
+        setTimeout(()=>showWinnerModal(rifaData), 1000);
+      }
+      return;
+    }
     const d=Math.floor(diff/864e5),h=Math.floor((diff%864e5)/36e5),m=Math.floor((diff%36e5)/6e4),s=Math.floor((diff%6e4)/1e3);
     document.getElementById('cdDays').textContent=String(d).padStart(2,'0');
     document.getElementById('cdHours').textContent=String(h).padStart(2,'0');
@@ -475,12 +512,25 @@ function startCountdown(targetDate){
   tick();cdInterval=setInterval(tick,1000);
 }
 
+function showWinnerModal(data){
+  document.getElementById('wmTicket').textContent='#'+String(data.ganadorTicket).padStart(3,'0');
+  document.getElementById('wmName').textContent=data.ganadorNombre||'—';
+  document.getElementById('wmPrize').textContent=data.ganadorPremio||'Surprise Prize';
+  document.getElementById('winnerModal').classList.add('show');
+  doConfetti();
+}
+
 db.collection('rifa').doc('activa').onSnapshot(snap=>{
   if(!snap.exists)return;
   const data=snap.data();
   if(data&&data.sorteoFecha){
     document.getElementById('cdLabel').textContent='Raffle';
-    startCountdown(new Date(data.sorteoFecha));
+    startCountdown(new Date(data.sorteoFecha), data);
+  }
+  /* If winner already published and time is up — show immediately */
+  if(data&&data.status==='winner'&&data.ganadorTicket){
+    const target=new Date(data.sorteoFecha);
+    if(new Date()>=target) showWinnerModal(data);
   }
 });
 
@@ -543,33 +593,67 @@ auth.onAuthStateChanged(async user=>{
   else{document.getElementById('pbGuest').style.display='block';document.getElementById('pbLogged').style.display='none';document.getElementById('userTickets').textContent='0';}
 });
 
-if(auth.isSignInWithEmailLink(window.location.href)){
-  let email=localStorage.getItem('vaygoRewardsEmail');
-  if(!email)email=window.prompt('Confirm your email:');
-  if(email){auth.signInWithEmailLink(email,window.location.href).then(()=>{
-    localStorage.removeItem('vaygoRewardsEmail');
-    const venue=localStorage.getItem('vaygoVenue')||_vp||'lobster';
-    window.location.href='slot2.html?venue='+venue;
-  }).catch(e=>console.error(e));}
-}
-
 function openPrizesModal(){document.getElementById('prizesModal').style.display='flex';}
 function closePrizesModal(){document.getElementById('prizesModal').style.display='none';}
-function openAuthModal(){document.getElementById('authModal').classList.add('show');document.getElementById('authStep1').classList.add('active');document.getElementById('authStep2').classList.remove('active');setTimeout(()=>document.getElementById('authEmail').focus(),300);}
+function openAuthModal(){
+  document.getElementById('authModal').classList.add('show');
+  document.getElementById('authStep1').classList.add('active');
+  document.getElementById('authStep2').classList.remove('active');
+  isSignIn=false;
+  document.getElementById('authToggleTxt').innerHTML='Already have an account? <span onclick="toggleAuthMode()" style="color:#d4f56a;text-decoration:underline;">Sign in</span>';
+  document.getElementById('authPassword').placeholder='password (min 6 characters)';
+}
 function closeAuthModal(){document.getElementById('authModal').classList.remove('show');}
 function hideBanner(){document.getElementById('pointsBanner').style.display='none';}
 function doLogOut(){auth.signOut().then(()=>{userData=null;document.getElementById('userTickets').textContent='0';});}
 
-async function sendMagicLink(){
-  const email=document.getElementById('authEmail').value.trim();
-  if(!email||!email.includes('@')){alert('Enter a valid email');return;}
+let isSignIn=false;
+function toggleAuthMode(){
+  isSignIn=!isSignIn;
+  if(isSignIn){
+    document.getElementById('authToggleTxt').innerHTML='New here? <span onclick="toggleAuthMode()" style="color:#d4f56a;text-decoration:underline;">Create account</span>';
+    document.getElementById('authPassword').placeholder='your password';
+  } else {
+    document.getElementById('authToggleTxt').innerHTML='Already have an account? <span onclick="toggleAuthMode()" style="color:#d4f56a;text-decoration:underline;">Sign in</span>';
+    document.getElementById('authPassword').placeholder='password (min 6 characters)';
+  }
+}
+
+async function signInWithGoogle(){
   try{
-    await auth.sendSignInLinkToEmail(email,{url:window.location.href,handleCodeInApp:true});
-    localStorage.setItem('vaygoRewardsEmail',email);
-    document.getElementById('authSentTo').textContent=email;
+    const provider=new firebase.auth.GoogleAuthProvider();
+    await auth.signInWithPopup(provider);
     document.getElementById('authStep1').classList.remove('active');
     document.getElementById('authStep2').classList.add('active');
-  }catch(e){console.error(e);alert('Error sending email. Try again.');}
+  }catch(e){
+    console.error(e);
+    if(e.code!=='auth/popup-closed-by-user') alert('Error signing in with Google. Try again.');
+  }
+}
+
+async function signInWithEmail(){
+  const email=document.getElementById('authEmail').value.trim();
+  const password=document.getElementById('authPassword').value;
+  if(!email||!email.includes('@')){alert('Enter a valid email');return;}
+  if(password.length<6){alert('Password must be at least 6 characters');return;}
+  try{
+    if(isSignIn){
+      await auth.signInWithEmailAndPassword(email,password);
+    } else {
+      await auth.createUserWithEmailAndPassword(email,password);
+    }
+    document.getElementById('authStep1').classList.remove('active');
+    document.getElementById('authStep2').classList.add('active');
+  }catch(e){
+    console.error(e);
+    if(e.code==='auth/email-already-in-use'){
+      alert('This email already has an account. Tap "Sign in" instead.');
+    } else if(e.code==='auth/wrong-password'||e.code==='auth/user-not-found'){
+      alert('Wrong email or password. Try again.');
+    } else {
+      alert('Error: '+e.message);
+    }
+  }
 }
 
 const _origSaveQR=window.saveAndShowQR;
