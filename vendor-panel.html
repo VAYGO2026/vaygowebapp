@@ -194,7 +194,7 @@ nav{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px
       <div class="qr-title">Tu código QR</div>
       <div id="qrCode"></div>
       <div class="qr-url" id="qrUrl"></div>
-      <button class="btn-share" onclick="shareQR()">COMPARTIR MI QR</button>
+      <button class="btn-share" onclick="openClientQR()">VER QR PARA CLIENTES</button>
     </div>
 
     <div class="earnings-list">
@@ -343,13 +343,8 @@ function generateQR(vendorId){
   });
 }
 
-function shareQR(){
-  const url = `https://vaygowebapp-ynao.vercel.app/app.html?ref=${currentVendor.id}&direct=1`;
-  if(navigator.share){
-    navigator.share({ title: 'VAYGO', text: '🎰 Descarga VAYGO y gana descuentos en los mejores venues de Cozumel!', url });
-  } else {
-    navigator.clipboard.writeText(url).then(() => alert('¡Link copiado! Compártelo con tus clientes.'));
-  }
+function openClientQR(){
+  window.open(`https://vaygowebapp-ynao.vercel.app/vendor-qr.html?id=${currentVendor.id}`, '_blank');
 }
 </script>
 </body>
