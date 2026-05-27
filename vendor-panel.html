@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VAYGO — Mi Panel de Vendedor</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;600;700;800&family=Righteous&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#04101E;--card:#071828;--border:#0D2540;--lime:#d4f56a;--pink:#FFD700;--cyan:#d4f56a;--gold:#FFD700;--green:#d4f56a;--gray:#6A9AB8;}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:#fff;min-height:100vh;}
+.grad-bar{height:3px;background:linear-gradient(90deg,var(--lime),var(--gold),var(--lime));background-size:300%;animation:gm 4s linear infinite;}
+@keyframes gm{0%{background-position:0%}100%{background-position:300%}}
+nav{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Anton',sans-serif;font-size:22px;letter-spacing:3px;color:var(--lime);}
+.nav-badge{background:rgba(212,245,106,0.1);border:1px solid rgba(212,245,106,0.3);border-radius:50px;padding:4px 12px;font-size:11px;color:var(--lime);font-weight:700;}
+.container{max-width:500px;margin:0 auto;padding:20px;}
+
+/* LOGIN */
+#loginScreen{max-width:360px;margin:60px auto;padding:20px;}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 24px;text-align:center;}
+.login-title{font-family:'Anton',sans-serif;font-size:24px;color:var(--lime);letter-spacing:2px;margin-bottom:8px;}
+.login-sub{font-size:13px;color:var(--gray);margin-bottom:24px;}
+.inp{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:12px;padding:14px 16px;color:#fff;font-size:15px;outline:none;margin-bottom:12px;font-family:'DM Sans',sans-serif;}
+.inp:focus{border-color:rgba(212,245,106,0.4);}
+.inp::placeholder{color:rgba(255,255,255,0.2);}
+.btn-main{width:100%;padding:14px;background:linear-gradient(180deg,var(--lime) 0%,#8fc20a 50%,#5a8000 100%);border:none;border-radius:12px;color:#0a1a00;font-family:'Anton',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 0 #2d4000;}
+.btn-main:active{transform:translateY(3px);box-shadow:0 0 0 #2d4000;}
+.err-msg{font-size:12px;color:#ff6b6b;margin-top:8px;display:none;}
+
+/* INACTIVE */
+#inactiveScreen{max-width:360px;margin:60px auto;padding:20px;text-align:center;}
+.inactive-box{background:var(--card);border:1px solid rgba(255,215,0,0.3);border-radius:20px;padding:32px 24px;}
+.inactive-icon{font-size:48px;margin-bottom:16px;}
+.inactive-title{font-family:'Anton',sans-serif;font-size:22px;color:var(--gold);letter-spacing:2px;margin-bottom:8px;}
+.inactive-sub{font-size:13px;color:var(--gray);line-height:1.7;}
+
+/* MAIN PANEL */
+#mainScreen{display:none;}
+.vendor-header{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;}
+.vendor-name{font-family:'Anton',sans-serif;font-size:24px;color:var(--lime);letter-spacing:2px;}
+.vendor-code{font-size:12px;color:var(--gray);margin-top:4px;letter-spacing:1px;}
+.vendor-status{display:inline-block;background:rgba(212,245,106,0.1);border:1px solid rgba(212,245,106,0.3);border-radius:50px;padding:3px 12px;font-size:11px;color:var(--lime);font-weight:700;margin-top:8px;}
+
+/* MONTH TABS */
+.month-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.month-tab{padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;border:1px solid var(--border);color:var(--gray);cursor:pointer;background:transparent;transition:all .2s;}
+.month-tab.active{border-color:rgba(212,245,106,0.5);color:var(--lime);background:rgba(212,245,106,0.08);}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;text-align:center;}
+.stat-card.gold{border-color:rgba(255,215,0,0.25);background:rgba(255,215,0,0.04);}
+.stat-num{font-family:'Anton',sans-serif;font-size:36px;color:var(--lime);line-height:1;}
+.stat-num.gold{color:var(--gold);}
+.stat-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-top:4px;}
+
+/* BREAKDOWN */
+.breakdown{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;}
+.breakdown-title{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:16px;}
+.breakdown-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.breakdown-row:last-child{border-bottom:none;}
+.br-left{}
+.br-type{font-size:14px;font-weight:700;color:#fff;}
+.br-desc{font-size:11px;color:var(--gray);margin-top:2px;}
+.br-right{text-align:right;}
+.br-count{font-family:'Anton',sans-serif;font-size:20px;color:var(--lime);}
+.br-amount{font-size:12px;color:var(--gray);margin-top:2px;}
+
+/* TOTAL */
+.total-card{background:rgba(212,245,106,0.06);border:2px solid rgba(212,245,106,0.3);border-radius:16px;padding:20px;text-align:center;margin-bottom:16px;}
+.total-label{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(212,245,106,0.6);margin-bottom:8px;}
+.total-amount{font-family:'Anton',sans-serif;font-size:52px;color:var(--lime);line-height:1;}
+.total-note{font-size:11px;color:var(--gray);margin-top:8px;}
+
+/* QR SECTION */
+.qr-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;text-align:center;}
+.qr-title{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:16px;}
+#qrCode{display:flex;justify-content:center;margin-bottom:12px;}
+#qrCode canvas,#qrCode img{border-radius:12px;padding:10px;background:#fff;}
+.qr-url{font-size:11px;color:var(--gray);word-break:break-all;margin-bottom:12px;}
+.btn-share{width:100%;padding:12px;background:rgba(212,245,106,0.1);border:1px solid rgba(212,245,106,0.3);border-radius:12px;color:var(--lime);font-family:'Anton',sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;}
+
+/* EARNINGS LIST */
+.earnings-list{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:24px;}
+.earnings-title{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:16px;}
+.earning-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.earning-row:last-child{border-bottom:none;}
+.er-type{display:inline-block;padding:2px 8px;border-radius:50px;font-size:10px;font-weight:700;}
+.er-type.direct{background:rgba(212,245,106,0.15);color:var(--lime);}
+.er-type.indirect{background:rgba(212,245,106,0.1);color:var(--lime);}
+.er-venue{color:var(--gray);font-size:11px;margin-top:2px;}
+.er-amount{font-family:'Anton',sans-serif;font-size:18px;color:var(--lime);}
+.empty-msg{text-align:center;color:var(--gray);font-size:13px;padding:20px;}
+</style>
+</head>
+<body>
+
+<div class="grad-bar"></div>
+<nav>
+  <div class="nav-logo">VAYGO</div>
+  <span class="nav-badge">Panel Vendedor</span>
+</nav>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-title">VAYGO VENDEDOR</div>
+    <div class="login-sub">Ingresa tu código de vendedor para ver tus comisiones</div>
+    <input class="inp" id="vendorCode" placeholder="Ej: VND-001" autocomplete="off" style="text-transform:uppercase;letter-spacing:2px;" onkeydown="if(event.key==='Enter')loginVendor()"/>
+    <button class="btn-main" onclick="loginVendor()">ENTRAR</button>
+    <div class="err-msg" id="loginErr">Código no encontrado o inactivo</div>
+  </div>
+</div>
+
+<!-- INACTIVE -->
+<div id="inactiveScreen" style="display:none;">
+  <div class="inactive-box">
+    <div class="inactive-icon">🔒</div>
+    <div class="inactive-title">CUENTA INACTIVA</div>
+    <div class="inactive-sub">Tu cuenta de vendedor ha sido desactivada. Contacta a VAYGO para más información.</div>
+  </div>
+</div>
+
+<!-- MAIN PANEL -->
+<div id="mainScreen">
+  <div class="container">
+
+    <div class="vendor-header">
+      <div class="vendor-name" id="vendorName">—</div>
+      <div class="vendor-code" id="vendorCodeDisplay">—</div>
+      <div class="vendor-status">● Activo</div>
+    </div>
+
+    <div class="month-tabs" id="monthTabs"></div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num" id="statScans">0</div>
+        <div class="stat-lbl">Escaneos QR</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statCoupons">0</div>
+        <div class="stat-lbl">Cupones usados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statDirect">0</div>
+        <div class="stat-lbl">Directos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statIndirect">0</div>
+        <div class="stat-lbl">Indirectos</div>
+      </div>
+    </div>
+
+    <!-- CONVERSION -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-bottom:8px;">Tasa de conversión</div>
+      <div style="font-family:'Anton',sans-serif;font-size:40px;color:var(--lime);" id="convRate">0%</div>
+      <div style="font-size:11px;color:var(--gray);margin-top:4px;" id="convDesc">De tus escaneos han usado cupón</div>
+    </div>
+
+    <div class="breakdown">
+      <div class="breakdown-title">Desglose del mes</div>
+      <div class="breakdown-row">
+        <div class="br-left">
+          <div class="br-type">Directos</div>
+          <div class="br-desc">$17 cada uno ($15 consumo + $2 descarga)</div>
+        </div>
+        <div class="br-right">
+          <div class="br-count" id="bdDirect">0</div>
+          <div class="br-amount" id="bdDirectAmt">$0</div>
+        </div>
+      </div>
+      <div class="breakdown-row">
+        <div class="br-left">
+          <div class="br-type">Indirectos</div>
+          <div class="br-desc">$15 cada uno (solo consumo)</div>
+        </div>
+        <div class="br-right">
+          <div class="br-count" id="bdIndirect">0</div>
+          <div class="br-amount" id="bdIndirectAmt">$0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="total-card">
+      <div class="total-label">Total a cobrar este mes</div>
+      <div class="total-amount" id="totalAmount">$0</div>
+      <div class="total-note">Pago el primer día del siguiente mes</div>
+    </div>
+
+    <div class="qr-section">
+      <div class="qr-title">Tu código QR</div>
+      <div id="qrCode"></div>
+      <div class="qr-url" id="qrUrl"></div>
+      <button class="btn-share" onclick="openClientQR()">VER QR PARA CLIENTES</button>
+    </div>
+
+    <div class="earnings-list">
+      <div class="earnings-title">Últimos cupones</div>
+      <div id="earningsList"><div class="empty-msg">Sin cupones este mes</div></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain:"vaygo-app.firebaseapp.com",
+  projectId:"vaygo-app",
+  storageBucket:"vaygo-app.firebasestorage.app",
+  messagingSenderId:"499741267414",
+  appId:"1:499741267414:web:e69cd43156adaea11bc077"
+});
+const db = firebase.firestore();
+
+let currentVendor = null;
+let currentMonth = new Date().toISOString().slice(0,7);
+let allEarnings = [];
+
+/* Check URL param */
+const urlParams = new URLSearchParams(window.location.search);
+const urlId = urlParams.get('id');
+if(urlId) { document.getElementById('vendorCode').value = urlId.toUpperCase(); loginVendor(); }
+
+async function loginVendor(){
+  const code = document.getElementById('vendorCode').value.trim().toUpperCase();
+  if(!code){ return; }
+  try {
+    const snap = await db.collection('vendors').doc(code).get();
+    if(!snap.exists){
+      document.getElementById('loginErr').style.display = 'block';
+      return;
+    }
+    const data = snap.data();
+    if(data.status === 'inactive'){
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('inactiveScreen').style.display = 'block';
+      return;
+    }
+    currentVendor = { id: code, ...data };
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainScreen').style.display = 'block';
+    document.getElementById('vendorName').textContent = data.name || code;
+    document.getElementById('vendorCodeDisplay').textContent = 'Código: ' + code;
+    loadEarnings(code);
+    generateQR(code);
+  } catch(e){
+    document.getElementById('loginErr').style.display = 'block';
+    console.error(e);
+  }
+}
+
+async function loadEarnings(vendorId){
+  try {
+    /* Reload vendor fresh to get latest scans */
+    const vSnap = await db.collection('vendors').doc(vendorId).get();
+    if(vSnap.exists) currentVendor = { id: vendorId, ...vSnap.data() };
+
+    const snap = await db.collection('vendor_earnings')
+      .where('vendorId','==',vendorId)
+      .orderBy('earnedAt','desc')
+      .get();
+    allEarnings = snap.docs.map(d => ({...d.data(), id: d.id}));
+
+    /* Build month tabs */
+    const months = [...new Set(allEarnings.map(e => e.month))].sort().reverse();
+    if(!months.length) months.push(new Date().toISOString().slice(0,7));
+    const tabsEl = document.getElementById('monthTabs');
+    tabsEl.innerHTML = '';
+    months.forEach(m => {
+      const btn = document.createElement('button');
+      btn.className = 'month-tab' + (m === currentMonth ? ' active' : '');
+      btn.textContent = m;
+      btn.onclick = () => {
+        currentMonth = m;
+        document.querySelectorAll('.month-tab').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        renderMonth();
+      };
+      tabsEl.appendChild(btn);
+    });
+    renderMonth();
+  } catch(e){ console.error(e); }
+}
+
+function renderMonth(){
+  const filtered = allEarnings.filter(e => e.month === currentMonth);
+  const directs = filtered.filter(e => e.type === 'direct');
+  const indirects = filtered.filter(e => e.type === 'indirect');
+  const directAmt = directs.reduce((s,e) => s + (e.amount||0), 0);
+  const indirectAmt = indirects.reduce((s,e) => s + (e.amount||0), 0);
+  const total = directAmt + indirectAmt;
+
+  /* Scans from vendor data */
+  const scans = (currentVendor.scans && currentVendor.scans[currentMonth])
+    ? (currentVendor.scans[currentMonth].total || 0) : 0;
+  const coupons = filtered.length;
+  const convRate = scans > 0 ? Math.round((coupons/scans)*100) : 0;
+
+  document.getElementById('statScans').textContent = scans;
+  document.getElementById('statCoupons').textContent = coupons;
+  document.getElementById('statDirect').textContent = directs.length;
+  document.getElementById('statIndirect').textContent = indirects.length;
+  document.getElementById('convRate').textContent = convRate + '%';
+  document.getElementById('convDesc').textContent = `${coupons} de ${scans} escaneos han usado cupón`;
+  document.getElementById('bdDirect').textContent = directs.length;
+  document.getElementById('bdDirectAmt').textContent = '$' + directAmt;
+  document.getElementById('bdIndirect').textContent = indirects.length;
+  document.getElementById('bdIndirectAmt').textContent = '$' + indirectAmt;
+  document.getElementById('totalAmount').textContent = '$' + total;
+
+  /* Earnings list */
+  const listEl = document.getElementById('earningsList');
+  if(!filtered.length){
+    listEl.innerHTML = '<div class="empty-msg">Sin cupones este mes</div>';
+    return;
+  }
+  listEl.innerHTML = filtered.slice(0,20).map(e => {
+    const date = e.earnedAt ? new Date(e.earnedAt.seconds*1000).toLocaleDateString('es-MX',{day:'2-digit',month:'short'}) : '—';
+    return `
+    <div class="earning-row">
+      <div>
+        <span class="er-type ${e.type}">${e.type === 'direct' ? 'Directo' : 'Indirecto'}</span>
+        <div class="er-venue">${e.venue || '—'} · ${date}</div>
+      </div>
+      <div class="er-amount">$${e.amount}</div>
+    </div>`;
+  }).join('');
+}
+
+function generateQR(vendorId){
+  const url = `https://vaygowebapp-ynao.vercel.app/app.html?ref=${vendorId}&direct=1`;
+  document.getElementById('qrUrl').textContent = url;
+  document.getElementById('qrCode').innerHTML = '';
+  new QRCode(document.getElementById('qrCode'), {
+    text: url,
+    width: 200,
+    height: 200,
+    colorDark: '#000',
+    colorLight: '#fff'
+  });
+}
+
+function openClientQR(){
+  window.open(`https://vaygowebapp-ynao.vercel.app/vendor-qr.html?id=${currentVendor.id}`, '_blank');
+}
+</script>
+</body>
+</html>

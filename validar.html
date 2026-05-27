@@ -160,7 +160,7 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, serverTimestamp, addDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
@@ -308,6 +308,48 @@ window.confirmUsed = async function() {
       validatedBy: currentVenue,
       validatedStaff: currentStaff
     });
+
+    /* ── VENDOR COMMISSION ── */
+    try {
+      /* Read vendorId from the code document — not from localStorage */
+      const codeSnap = await getDoc(doc(db, 'codes', pendingCode));
+      const codeData = codeSnap.exists() ? codeSnap.data() : null;
+      const ref = codeData && codeData.vendorId ? codeData.vendorId : null;
+      const isDirect = codeData && codeData.vendorDirect === '1';
+      const firstCouponPaid = codeData && codeData.vendorFirstPaid === '1';
+
+      if(ref){
+        /* Check vendor is active */
+        const vendorSnap = await getDoc(doc(db, 'vendors', ref));
+        if(vendorSnap.exists() && vendorSnap.data().status === 'active'){
+          const month = new Date().toISOString().slice(0,7);
+          let amount = 15;
+          let type = 'indirect';
+          if(isDirect && !firstCouponPaid){
+            amount = 17;
+            type = 'direct';
+            /* Mark first coupon as paid in the code document */
+            await updateDoc(doc(db, 'codes', pendingCode), { vendorFirstPaid: '1' });
+          }
+          await addDoc(collection(db, 'vendor_earnings'), {
+            vendorId: ref,
+            code: pendingCode,
+            venue: currentVenue,
+            amount,
+            type,
+            month,
+            earnedAt: serverTimestamp()
+          });
+          /* Update vendor monthly total */
+          await updateDoc(doc(db, 'vendors', ref), {
+            [`monthly.${month}.total`]: increment(amount),
+            [`monthly.${month}.coupons`]: increment(1),
+            [`monthly.${month}.direct`]: type === 'direct' ? increment(1) : increment(0),
+            [`monthly.${month}.indirect`]: type === 'indirect' ? increment(1) : increment(0),
+          });
+        }
+      }
+    } catch(e){ console.log('vendor commission error', e); }
     document.getElementById('rIcon').textContent = '🎉';
     document.getElementById('rTitle').textContent = '¡DESCUENTO APLICADO!';
     document.getElementById('rTitle').style.color = '#7FC142';

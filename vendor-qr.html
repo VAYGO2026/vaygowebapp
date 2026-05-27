@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>VAYGO — Scan & Win</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;700;800&family=Righteous&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{
+  width:100%;min-height:100vh;
+  background:#060E1C;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Sans',sans-serif;
+}
+.card{
+  width:90%;max-width:360px;
+  background:rgba(212,245,106,0.04);
+  border:2px solid rgba(212,245,106,0.2);
+  border-radius:28px;
+  padding:36px 28px 32px;
+  text-align:center;
+  box-shadow:0 0 60px rgba(212,245,106,0.08);
+}
+.logo{
+  font-family:'Anton',sans-serif;
+  font-size:48px;letter-spacing:6px;
+  color:#d4f56a;
+  text-shadow:0 0 40px rgba(212,245,106,0.4);
+  margin-bottom:4px;
+}
+.tagline{
+  font-family:'Righteous',sans-serif;
+  font-size:11px;letter-spacing:5px;text-transform:uppercase;
+  color:rgba(255,255,255,0.4);
+  margin-bottom:28px;
+}
+.qr-wrap{
+  background:#fff;
+  border-radius:16px;
+  padding:14px;
+  display:inline-block;
+  margin-bottom:24px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+#qrCode canvas,#qrCode img{display:block;}
+.scan-label{
+  font-family:'Righteous',sans-serif;
+  font-size:13px;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,255,255,0.5);
+  margin-bottom:8px;
+}
+.scan-title{
+  font-family:'Anton',sans-serif;
+  font-size:22px;letter-spacing:2px;
+  color:#fff;
+  margin-bottom:6px;
+}
+.scan-sub{
+  font-size:13px;color:rgba(255,255,255,0.45);
+  line-height:1.6;margin-bottom:24px;
+}
+.prizes-row{
+  display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
+  margin-bottom:24px;
+}
+.prize-pill{
+  background:rgba(255,215,0,0.1);
+  border:1px solid rgba(255,215,0,0.25);
+  border-radius:50px;padding:5px 12px;
+  font-size:11px;color:rgba(255,215,0,0.8);font-weight:700;
+}
+.prize-pill.top{
+  background:rgba(255,215,0,0.18);
+  border-color:rgba(255,215,0,0.45);
+  color:#FFD700;
+}
+.btn-share{
+  width:100%;padding:14px;
+  background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);
+  border:none;border-radius:50px;
+  color:#0a1a00;font-family:'Anton',sans-serif;
+  font-size:16px;letter-spacing:3px;cursor:pointer;
+  box-shadow:0 4px 0 #2d4000,inset 0 1px 0 rgba(255,255,255,0.3);
+  position:relative;overflow:hidden;
+  transition:transform 0.1s;
+}
+.btn-share::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:shimmer 3s infinite;}
+@keyframes shimmer{0%{left:-100%}100%{left:200%}}
+.btn-share:active{transform:translateY(3px);}
+.loading{color:rgba(255,255,255,0.3);font-size:13px;padding:40px;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">VAYGO</div>
+  <div class="tagline">Explore · Play · Win</div>
+
+  <div id="content" style="display:none;">
+    <div class="qr-wrap">
+      <div id="qrCode"></div>
+    </div>
+
+    <div class="scan-label">Scan & Get</div>
+    <div class="scan-title">FREE DISCOUNTS</div>
+    <div class="scan-sub">Scan the QR, spin the slot and unlock exclusive discounts at the best venues in Cozumel</div>
+
+    <div class="prizes-row">
+      <div class="prize-pill">VAYGO Cap</div>
+      <div class="prize-pill">Dinner for 2</div>
+      <div class="prize-pill">Ocean Tour</div>
+      <div class="prize-pill top">Hotel Night ⭐</div>
+    </div>
+
+    <button class="btn-share" onclick="shareQR()">SHARE MY QR</button>
+  </div>
+
+  <div id="loadingMsg" class="loading">Loading...</div>
+  <div id="errorMsg" style="display:none;color:#ff6b6b;font-size:13px;padding:20px;">Invalid vendor code.</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain:"vaygo-app.firebaseapp.com",
+  projectId:"vaygo-app",
+  storageBucket:"vaygo-app.firebasestorage.app",
+  messagingSenderId:"499741267414",
+  appId:"1:499741267414:web:e69cd43156adaea11bc077"
+});
+const db = firebase.firestore();
+
+const params = new URLSearchParams(window.location.search);
+const vendorId = params.get('id');
+let qrUrl = '';
+
+async function init(){
+  if(!vendorId){
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('errorMsg').style.display = 'block';
+    return;
+  }
+  try {
+    const snap = await db.collection('vendors').doc(vendorId).get();
+    if(!snap.exists || snap.data().status === 'inactive'){
+      document.getElementById('loadingMsg').style.display = 'none';
+      document.getElementById('errorMsg').style.display = 'block';
+      return;
+    }
+    /* Generate QR */
+    qrUrl = `https://vaygowebapp-ynao.vercel.app/app.html?ref=${vendorId}&direct=1`;
+    new QRCode(document.getElementById('qrCode'), {
+      text: qrUrl,
+      width: 220,
+      height: 220,
+      colorDark: '#000',
+      colorLight: '#fff'
+    });
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+  } catch(e){
+    document.getElementById('loadingMsg').textContent = 'Error loading QR';
+  }
+}
+
+function shareQR(){
+  if(navigator.share){
+    navigator.share({
+      title: 'VAYGO — Free Discounts in Cozumel!',
+      text: '🎰 Scan this QR to unlock exclusive discounts at the best venues in Cozumel!',
+      url: qrUrl
+    });
+  } else {
+    navigator.clipboard.writeText(qrUrl).then(() => alert('Link copied! Share it with your clients.'));
+  }
+}
+
+init();
+</script>
+</body>
+</html>
