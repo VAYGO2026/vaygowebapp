@@ -745,18 +745,18 @@ window.addEventListener('load', loadUserCount);
   </div>
 
   <!-- ── BOTTOM NAV ── -->
+    <!-- BACK -->
+    <a href="index.html" style="position:absolute;top:28px;left:16px;z-index:40;padding:8px 16px;border-radius:50px;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(212,245,106,0.5);color:#d4f56a;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.12em;text-decoration:none;cursor:pointer;box-shadow:0 0 12px rgba(212,245,106,0.15);">← BACK</a>
+
   <nav class="bottom-nav">
 
-    <!-- CITY -->
-    <a class="nav-item nav-city" href="index.html">
-      <div class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-          <circle cx="12" cy="9" r="2.5"/>
-        </svg>
-      </div>
-      <span class="nav-label">City</span>
+    <!-- SOS -->
+    <a class="nav-item" href="sos.html" style="flex:none;width:52px;height:52px;border-radius:50%;background:linear-gradient(180deg,#ff4444 0%,#cc0000 100%);box-shadow:0 4px 0 #880000,0 0 20px rgba(255,0,0,0.4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-decoration:none;animation:sosPulse 2s ease-in-out infinite;">
+      <span style="font-family:'Anton',sans-serif;font-size:13px;color:#fff;letter-spacing:1px;line-height:1;">SOS</span>
     </a>
+    <style>
+    @keyframes sosPulse{0%,100%{box-shadow:0 4px 0 #880000,0 0 16px rgba(255,0,0,0.3);}50%{box-shadow:0 4px 0 #880000,0 0 28px rgba(255,0,0,0.7);}}
+    </style>
 
     <!-- JOIN VAYGO -->
     <button class="nav-item nav-join" onclick="document.getElementById('joinModal').classList.add('open')">
@@ -1074,6 +1074,42 @@ async function sendRating() {
 <script>
 /* ── AD BANNER ROTATOR ── */
 const slides = document.querySelectorAll('.ad-slide');
+
+/* ── VENDOR REF TRACKING + SCAN COUNTER ── */
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('ref');
+  const direct = params.get('direct');
+  if(ref){
+    const isNewScan = !localStorage.getItem('vaygo_ref');
+    if(!localStorage.getItem('vaygo_ref')){
+      localStorage.setItem('vaygo_ref', ref);
+      localStorage.setItem('vaygo_ref_direct', direct === '1' ? '1' : '0');
+      localStorage.setItem('vaygo_ref_first_coupon', '0');
+    }
+    try {
+      const isDirect = direct === '1';
+      firebase.firestore().collection('vendor_scans').add({
+        vendorId: ref,
+        isDirect,
+        isNew: isNewScan,
+        month: new Date().toISOString().slice(0,7),
+        scannedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        userAgent: navigator.userAgent.slice(0,100)
+      });
+      const month = new Date().toISOString().slice(0,7);
+      const vendorRef = firebase.firestore().collection('vendors').doc(ref);
+      vendorRef.update({
+        [`scans.${month}.total`]: firebase.firestore.FieldValue.increment(1),
+        [`scans.${month}.direct`]: isDirect ? firebase.firestore.FieldValue.increment(1) : firebase.firestore.FieldValue.increment(0),
+      }).catch(() => {
+        vendorRef.set({
+          scans: { [month]: { total: 1, direct: isDirect ? 1 : 0 } }
+        }, { merge: true });
+      });
+    } catch(e){ console.log('scan tracking error', e); }
+  }
+})();
 
 /* ── VENDOR REF TRACKING + SCAN COUNTER ── */
 (function(){
