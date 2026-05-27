@@ -1074,6 +1074,24 @@ async function sendRating() {
 <script>
 /* ── AD BANNER ROTATOR ── */
 const slides = document.querySelectorAll('.ad-slide');
+
+/* ── VENDOR REF TRACKING ── */
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('ref');
+  const direct = params.get('direct');
+  if(ref){
+    /* Save vendor ref — keep existing if already set (indirect client) */
+    if(!localStorage.getItem('vaygo_ref')){
+      localStorage.setItem('vaygo_ref', ref);
+      localStorage.setItem('vaygo_ref_direct', direct === '1' ? '1' : '0');
+      localStorage.setItem('vaygo_ref_first_coupon', '0'); /* not yet paid $2 */
+    } else {
+      /* Already has a ref — this is an indirect client, keep original ref but mark indirect */
+      /* Don't overwrite existing ref */
+    }
+  }
+})();
 const dots   = document.querySelectorAll('.ad-dot');
 let current  = 0;
 let timer    = null;
