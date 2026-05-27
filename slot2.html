@@ -480,6 +480,15 @@ function doConfetti(){const cv=document.createElement('canvas');cv.style.cssText
 const auth = firebase.auth();
 auth.useDeviceLanguage();
 
+/* Handle Google redirect result */
+auth.getRedirectResult().then(result => {
+  if(result && result.user){
+    document.getElementById('authStep1').classList.remove('active');
+    document.getElementById('authStep2').classList.add('active');
+    document.getElementById('authModal').classList.add('show');
+  }
+}).catch(e => console.error(e));
+
 const CITY_MAP={lobster:'Cozumel',buccanos:'Cozumel',azulmadera:'Cozumel',guidos:'Cozumel'};
 const venueCity=CITY_MAP[_vp]||'Cozumel';
 let currentUser=null,userData=null,cdInterval=null;
@@ -661,13 +670,12 @@ function toggleAuthMode(){
 
 async function signInWithGoogle(){
   try{
-    const provider=new firebase.auth.GoogleAuthProvider();
-    await auth.signInWithPopup(provider);
-    document.getElementById('authStep1').classList.remove('active');
-    document.getElementById('authStep2').classList.add('active');
+    const provider = new firebase.auth.GoogleAuthProvider();
+    /* Use redirect — works on all mobile browsers */
+    await auth.signInWithRedirect(provider);
   }catch(e){
     console.error(e);
-    if(e.code!=='auth/popup-closed-by-user') alert('Error signing in with Google. Try again.');
+    alert('Error signing in with Google. Try again.');
   }
 }
 
