@@ -258,19 +258,19 @@ async function loginVendor(){
 
 async function loadEarnings(vendorId){
   try {
-    /* Reload vendor fresh to get latest scans */
+    /* Solo leemos /vendors/{id} — permitido por las reglas */
     const vSnap = await db.collection('vendors').doc(vendorId).get();
     if(vSnap.exists) currentVendor = { id: vendorId, ...vSnap.data() };
 
-    const snap = await db.collection('vendor_earnings')
-      .where('vendorId','==',vendorId)
-      .orderBy('earnedAt','desc')
-      .get();
-    allEarnings = snap.docs.map(d => ({...d.data(), id: d.id}));
+    /* Earnings guardados directamente en el doc del vendedor */
+    allEarnings = currentVendor.earnings || [];
 
-    /* Build month tabs */
-    const months = [...new Set(allEarnings.map(e => e.month))].sort().reverse();
+    /* Build month tabs desde earnings y scans */
+    const monthsFromEarnings = allEarnings.map(e => e.month).filter(Boolean);
+    const monthsFromScans = Object.keys(currentVendor.scans || {});
+    const months = [...new Set([...monthsFromEarnings, ...monthsFromScans])].sort().reverse();
     if(!months.length) months.push(new Date().toISOString().slice(0,7));
+
     const tabsEl = document.getElementById('monthTabs');
     tabsEl.innerHTML = '';
     months.forEach(m => {
@@ -286,7 +286,7 @@ async function loadEarnings(vendorId){
       tabsEl.appendChild(btn);
     });
     renderMonth();
-  } catch(e){ console.error(e); }
+  } catch(e){ console.error('loadEarnings error:', e); }
 }
 
 function renderMonth(){

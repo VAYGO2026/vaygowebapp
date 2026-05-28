@@ -200,9 +200,10 @@ html,body{width:100%;min-height:100%;background:#060E1C;font-family:'DM Sans',sa
   <div class="login-box">
     <div class="login-logo">VAYGO</div>
     <div class="login-sub">Admin · Tómbola</div>
+    <input class="login-input" type="email" id="adminEmail" placeholder="correo" style="letter-spacing:0;" onkeydown="if(event.key==='Enter')checkLogin()"/>
     <input class="login-input" type="password" id="adminPass" placeholder="contraseña" onkeydown="if(event.key==='Enter')checkLogin()"/>
     <button class="login-btn" onclick="checkLogin()">ENTRAR</button>
-    <div class="login-err" id="loginErr">Contraseña incorrecta</div>
+    <div class="login-err" id="loginErr">Correo o contraseña incorrectos</div>
   </div>
 </div>
 
@@ -332,6 +333,7 @@ html,body{width:100%;min-height:100%;background:#060E1C;font-family:'DM Sans',sa
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script>
 firebase.initializeApp({
   apiKey:"AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
@@ -354,21 +356,38 @@ function selectPrize(el, prize){
 }
 
 /* ── LOGIN ── */
-const ADMIN_PASS = 'vaygo2026';
-function checkLogin(){
-  const p = document.getElementById('adminPass').value;
-  if(p === ADMIN_PASS){
+const auth = firebase.auth();
+const ADMIN_EMAIL = 'vaygoapp@gmail.com';
+
+/* Check if already logged in */
+auth.onAuthStateChanged(user => {
+  if(user && user.email === ADMIN_EMAIL){
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminScreen').style.display = 'block';
     loadData();
-  } else {
+  }
+});
+
+async function checkLogin(){
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass = document.getElementById('adminPass').value;
+  if(!email || !pass){ document.getElementById('loginErr').style.display='block'; return; }
+  try {
+    const result = await auth.signInWithEmailAndPassword(email, pass);
+    if(result.user.email !== ADMIN_EMAIL){
+      await auth.signOut();
+      document.getElementById('loginErr').style.display = 'block';
+      return;
+    }
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminScreen').style.display = 'block';
+    loadData();
+  } catch(e){
     document.getElementById('loginErr').style.display = 'block';
     document.getElementById('adminPass').value = '';
   }
 }
-document.getElementById('adminPass').addEventListener('keydown', e => {
-  if(e.key === 'Enter') checkLogin();
-});
+document.getElementById('adminPass').addEventListener('keydown', e => { if(e.key==='Enter') checkLogin(); });
 
 /* ── DATA ── */
 let allTickets = [];

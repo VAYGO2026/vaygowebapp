@@ -848,7 +848,7 @@ window.addEventListener('load', loadUserCount);
       <div class="modal-sub">Scan or copy the link</div>
       <canvas class="qr-canvas" id="qrCanvas" width="160" height="160"></canvas>
       <div class="qr-link" id="qrLink"></div>
-      <button class="modal-submit" style="background:linear-gradient(135deg,#50ffa0,#00c97a);box-shadow:0 0 20px rgba(80,255,160,0.4)" onclick="navigator.share ? navigator.share({url: window.location.href}) : navigator.clipboard.writeText(window.location.href)">
+      <button class="modal-submit" style="background:linear-gradient(135deg,#50ffa0,#00c97a);box-shadow:0 0 20px rgba(80,255,160,0.4)" onclick="const u=window.location.origin+window.location.pathname; navigator.share ? navigator.share({url:u}) : navigator.clipboard.writeText(u)">
         SHARE LINK
       </button>
       <span class="modal-close" onclick="document.getElementById('qrModal').classList.remove('open')">✕ &nbsp;Close</span>
@@ -861,12 +861,9 @@ window.addEventListener('load', loadUserCount);
     <div class="ad-click-label">CLICK</div>
     <div class="ad-banner" id="adBanner">
 
-      <!-- AD 1 — WINJET -->
-      <div class="ad-slide active" data-url="https://winjet.mx">
-        <div style="width:100%;height:100%;position:relative;overflow:hidden;border-radius:16px;">
-          <img src="ad1.webp" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">
-          <div style="position:absolute;bottom:8px;right:10px;background:rgba(255,215,0,0.9);border-radius:50px;padding:2px 8px;font-size:9px;font-weight:800;color:#000;">AD</div>
-        </div>
+      <!-- AD 1 — 10 EXPERIENCES -->
+      <div class="ad-slide active" data-url="https://10experiencestour.com/10-experiences-lunch-and-dinner/">
+        <img src="ad5.webp" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">
       </div>
 
       <!-- AD 2 — BUCCANOS -->
@@ -885,7 +882,6 @@ window.addEventListener('load', loadUserCount);
         </div>
       </div>
 
-      <!-- AD 4 — VIDEO -->
       <!-- AD 4 — PRESIDENTE -->
       <div class="ad-slide" data-url="https://presidenteiccozumel.com/tarifa-especial/?utm_source=google&utm_medium=sem&utm_campaign=2026_pic-cozumel_google_conversiones_ixuxy_mx-brand&utm_content=google_aon-presidente_alwayson&utm_term=texto_texto_na_multi&gclsrc=aw.ds&&adset_id=195777675545&campaign_id=23842135601&gad_source=1&gad_campaignid=23842135601&gclid=CjwKCAjw5s_QBhAdEiwADD_gBpvHiMHL53k9cQf1gIgb_pf22qeXzQUg4Oo2d4lN7GeL6yxVTLhBQxoCNykQAvD_BwE">
         <div style="width:100%;height:100%;position:relative;overflow:hidden;border-radius:16px;">
@@ -894,19 +890,10 @@ window.addEventListener('load', loadUserCount);
         </div>
       </div>
 
-      <!-- AD 5 — IMAGE -->
-      <div class="ad-slide" data-url="https://vaygowebapp-ynao.vercel.app">
-        <div style="width:100%;height:100%;background:linear-gradient(160deg,#060E1C,#1a0533);position:relative;overflow:hidden;">
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-            <div style="text-align:center;">
-              <div style="font-family:'Anton',sans-serif;font-size:48px;color:#d4f56a;text-shadow:0 0 30px rgba(212,245,106,0.6);">VAYGO</div>
-              <div style="font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:3px;text-transform:uppercase;margin-top:4px;">Explore · Play · Win</div>
-            </div>
-          </div>
-          <div style="position:absolute;bottom:0;left:0;right:0;padding:12px 14px;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);">
-            <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;color:#d4f56a;">🎰 PLAY & WIN DISCOUNTS</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.7);margin-top:2px;">Spin the slot · Get your coupon · Tap to play →</div>
-          </div>
+      <!-- AD 5 — WINJET -->
+      <div class="ad-slide" data-url="https://winjet.mx">
+        <div style="width:100%;height:100%;position:relative;overflow:hidden;border-radius:16px;">
+          <img src="ad1.webp" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">
           <div style="position:absolute;bottom:8px;right:10px;background:rgba(255,215,0,0.9);border-radius:50px;padding:2px 8px;font-size:9px;font-weight:800;color:#000;">AD</div>
         </div>
       </div>
@@ -927,7 +914,9 @@ window.addEventListener('load', loadUserCount);
 <script>
 /* ── QR Modal ── */
 function drawQR(){
-  const url = window.location.href;
+  /* Siempre compartir URL limpia sin parámetro admin */
+  const cleanUrl = window.location.origin + window.location.pathname;
+  const url = cleanUrl;
   document.getElementById('qrLink').textContent = url;
   const canvas = document.getElementById('qrCanvas');
   const ctx = canvas.getContext('2d');
@@ -1090,6 +1079,38 @@ const slides = document.querySelectorAll('.ad-slide');
     try {
       const isDirect = direct === '1';
       firebase.firestore().collection('vendor_scans').add({
+        vendorId: ref, isDirect, isNew: isNewScan,
+        month: new Date().toISOString().slice(0,7),
+        scannedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        userAgent: navigator.userAgent.slice(0,100)
+      });
+      const month = new Date().toISOString().slice(0,7);
+      const vendorRef = firebase.firestore().collection('vendors').doc(ref);
+      vendorRef.update({
+        [`scans.${month}.total`]: firebase.firestore.FieldValue.increment(1),
+        [`scans.${month}.direct`]: isDirect ? firebase.firestore.FieldValue.increment(1) : firebase.firestore.FieldValue.increment(0),
+      }).catch(() => {
+        vendorRef.set({ scans: { [month]: { total: 1, direct: isDirect ? 1 : 0 } } }, { merge: true });
+      });
+    } catch(e){ console.log('scan tracking error', e); }
+  }
+})();
+
+/* ── VENDOR REF TRACKING + SCAN COUNTER ── */
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('ref');
+  const direct = params.get('direct');
+  if(ref){
+    const isNewScan = !localStorage.getItem('vaygo_ref');
+    if(!localStorage.getItem('vaygo_ref')){
+      localStorage.setItem('vaygo_ref', ref);
+      localStorage.setItem('vaygo_ref_direct', direct === '1' ? '1' : '0');
+      localStorage.setItem('vaygo_ref_first_coupon', '0');
+    }
+    try {
+      const isDirect = direct === '1';
+      firebase.firestore().collection('vendor_scans').add({
         vendorId: ref,
         isDirect,
         isNew: isNewScan,
@@ -1182,5 +1203,6 @@ document.getElementById('adBanner').addEventListener('touchend', () => {
 }, {passive:true});
 </script>
 
+<script src="admin-float.js"></script>
 </body>
 </html>
