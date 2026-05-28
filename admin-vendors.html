@@ -244,17 +244,17 @@ document.getElementById('adminPass').addEventListener('keydown', e => { if(e.key
 
 async function loadData(){
   try {
-    /* Load vendors */
+    /* Solo cargamos vendors — los datos de monthly están dentro de cada vendor doc */
     const vSnap = await db.collection('vendors').orderBy('createdAt','desc').get();
     allVendors = vSnap.docs.map(d => ({id: d.id, ...d.data()}));
 
-    /* Load earnings */
-    const eSnap = await db.collection('vendor_earnings').get();
-    allEarnings = eSnap.docs.map(d => ({...d.data(), docId: d.id}));
+    /* Build month tabs desde los monthly de todos los vendors */
+    const allMonths = new Set([currentMonth]);
+    allVendors.forEach(v => {
+      if(v.monthly) Object.keys(v.monthly).forEach(m => allMonths.add(m));
+    });
+    const months = [...allMonths].sort().reverse();
 
-    /* Build month tabs */
-    const months = [...new Set(allEarnings.map(e => e.month))].sort().reverse();
-    if(!months.includes(currentMonth)) months.unshift(currentMonth);
     const tabsEl = document.getElementById('monthTabs');
     tabsEl.innerHTML = '';
     months.forEach(m => {
@@ -276,12 +276,15 @@ async function loadData(){
 }
 
 function renderVendors(){
-  const monthEarnings = allEarnings.filter(e => e.month === currentMonth);
   const activeVendors = allVendors.filter(v => v.status === 'active');
 
-  /* Summary */
-  const totalCoupons = monthEarnings.length;
-  const totalAmount = monthEarnings.reduce((s,e) => s + (e.amount||0), 0);
+  /* Summary — leer de vendors.monthly */
+  let totalCoupons = 0;
+  let totalAmount = 0;
+  allVendors.forEach(v => {
+    const m = v.monthly && v.monthly[currentMonth];
+    if(m){ totalCoupons += m.coupons||0; totalAmount += m.total||0; }
+  });
   document.getElementById('sumVendors').textContent = activeVendors.length;
   document.getElementById('sumCoupons').textContent = totalCoupons;
   document.getElementById('sumTotal').textContent = '$' + totalAmount;
@@ -294,13 +297,13 @@ function renderVendors(){
   }
 
   listEl.innerHTML = allVendors.map(v => {
-    const vEarnings = monthEarnings.filter(e => e.vendorId === v.id);
-    const direct = vEarnings.filter(e => e.type === 'direct');
-    const indirect = vEarnings.filter(e => e.type === 'indirect');
-    const total = vEarnings.reduce((s,e) => s + (e.amount||0), 0);
+    const mData = (v.monthly && v.monthly[currentMonth]) || {};
+    const direct = mData.direct || 0;
+    const indirect = mData.indirect || 0;
+    const total = mData.total || 0;
+    const coupons = mData.coupons || 0;
     const isActive = v.status !== 'inactive';
     const scans = (v.scans && v.scans[currentMonth]) ? (v.scans[currentMonth].total || 0) : 0;
-    const coupons = vEarnings.length;
     const convRate = scans > 0 ? Math.round((coupons/scans)*100) : 0;
 
     return `
@@ -315,8 +318,8 @@ function renderVendors(){
       <div class="vc-stats">
         <div class="vc-stat"><div class="vc-stat-num">${scans}</div><div class="vc-stat-lbl">Escaneos QR</div></div>
         <div class="vc-stat"><div class="vc-stat-num">${coupons}</div><div class="vc-stat-lbl">Cupones usados</div></div>
-        <div class="vc-stat"><div class="vc-stat-num">${direct.length}</div><div class="vc-stat-lbl">Directos</div></div>
-        <div class="vc-stat"><div class="vc-stat-num">${indirect.length}</div><div class="vc-stat-lbl">Indirectos</div></div>
+        <div class="vc-stat"><div class="vc-stat-num">${direct}</div><div class="vc-stat-lbl">Directos</div></div>
+        <div class="vc-stat"><div class="vc-stat-num">${indirect}</div><div class="vc-stat-lbl">Indirectos</div></div>
         <div class="vc-stat"><div class="vc-stat-num gold">$${total}</div><div class="vc-stat-lbl">A pagar</div></div>
         <div class="vc-stat"><div class="vc-stat-num" style="font-size:16px;color:rgba(212,245,106,0.6);">${convRate}%</div><div class="vc-stat-lbl">Conversión</div></div>
       </div>
@@ -376,64 +379,53 @@ async function openDetail(vendorId, vendorName){
   document.getElementById('detailModal').style.display = 'block';
   showTab('earnings');
 
-  const loadingHTML = '<div style="text-align:center;color:var(--gray);padding:20px;font-size:13px;">Cargando...</div>';
-  document.getElementById('detailEarnings').innerHTML = loadingHTML;
-  document.getElementById('detailScans').innerHTML = loadingHTML;
+  /* Load earnings */
+  const eSnap = await db.collection('vendor_earnings')
+    .where('vendorId','==',vendorId)
+    .orderBy('earnedAt','desc')
+    .get();
+  const earnings = eSnap.docs.map(d => d.data());
 
-  try {
-    /* Load earnings — sin orderBy para no requerir índice compuesto */
-    const eSnap = await db.collection('vendor_earnings')
-      .where('vendorId','==',vendorId)
-      .get();
-    const earnings = eSnap.docs.map(d => d.data())
-      .sort((a,b) => (b.earnedAt?.seconds||0) - (a.earnedAt?.seconds||0));
+  /* Load scans */
+  const sSnap = await db.collection('vendor_scans')
+    .where('vendorId','==',vendorId)
+    .orderBy('scannedAt','desc')
+    .get();
+  const scans = sSnap.docs.map(d => d.data());
 
-    /* Load scans — sin orderBy para no requerir índice compuesto */
-    const sSnap = await db.collection('vendor_scans')
-      .where('vendorId','==',vendorId)
-      .get();
-    const scans = sSnap.docs.map(d => d.data())
-      .sort((a,b) => (b.scannedAt?.seconds||0) - (a.scannedAt?.seconds||0));
+  /* Render earnings */
+  const eEl = document.getElementById('detailEarnings');
+  if(!earnings.length){
+    eEl.innerHTML = '<div style="text-align:center;color:var(--gray);padding:20px;font-size:13px;">Sin cupones aún</div>';
+  } else {
+    eEl.innerHTML = earnings.map(e => {
+      const date = e.earnedAt ? new Date(e.earnedAt.seconds*1000).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+      return `<div class="detail-row">
+        <div>
+          <span class="detail-type ${e.type}">${e.type === 'direct' ? 'Directo' : 'Indirecto'}</span>
+          <div style="font-size:13px;color:#fff;font-weight:700;">${e.venue || '—'}</div>
+          <div style="font-size:11px;color:var(--gray);">${date} · ${e.month}</div>
+        </div>
+        <div class="detail-amount">$${e.amount}</div>
+      </div>`;
+    }).join('');
+  }
 
-    /* Render earnings */
-    const eEl = document.getElementById('detailEarnings');
-    if(!earnings.length){
-      eEl.innerHTML = '<div style="text-align:center;color:var(--gray);padding:20px;font-size:13px;">Sin cupones aún</div>';
-    } else {
-      eEl.innerHTML = earnings.map(e => {
-        const date = e.earnedAt ? new Date(e.earnedAt.seconds*1000).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-        return `<div class="detail-row">
-          <div>
-            <span class="detail-type ${e.type}">${e.type === 'direct' ? 'Directo' : 'Indirecto'}</span>
-            <div style="font-size:13px;color:#fff;font-weight:700;">${e.venue || '—'}</div>
-            <div style="font-size:11px;color:var(--gray);">${date} · ${e.month}</div>
-          </div>
-          <div class="detail-amount">$${e.amount}</div>
-        </div>`;
-      }).join('');
-    }
-
-    /* Render scans */
-    const sEl = document.getElementById('detailScans');
-    if(!scans.length){
-      sEl.innerHTML = '<div style="text-align:center;color:var(--gray);padding:20px;font-size:13px;">Sin escaneos registrados</div>';
-    } else {
-      sEl.innerHTML = scans.map(s => {
-        const date = s.scannedAt ? new Date(s.scannedAt.seconds*1000).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-        return `<div class="detail-row">
-          <div>
-            <span class="detail-type scan">${s.isDirect ? 'Directo' : 'Compartido'}</span>
-            <div style="font-size:11px;color:var(--gray);margin-top:2px;">${date} · ${s.month}</div>
-          </div>
-          <div style="font-size:11px;color:var(--gray);">${s.isNew ? '🆕 Nuevo' : 'Repetido'}</div>
-        </div>`;
-      }).join('');
-    }
-  } catch(err) {
-    console.error('openDetail error:', err);
-    const errHTML = `<div style="text-align:center;color:#ff6b6b;padding:20px;font-size:12px;">Error al cargar: ${err.message}</div>`;
-    document.getElementById('detailEarnings').innerHTML = errHTML;
-    document.getElementById('detailScans').innerHTML = errHTML;
+  /* Render scans */
+  const sEl = document.getElementById('detailScans');
+  if(!scans.length){
+    sEl.innerHTML = '<div style="text-align:center;color:var(--gray);padding:20px;font-size:13px;">Sin escaneos registrados</div>';
+  } else {
+    sEl.innerHTML = scans.map(s => {
+      const date = s.scannedAt ? new Date(s.scannedAt.seconds*1000).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+      return `<div class="detail-row">
+        <div>
+          <span class="detail-type scan">${s.isDirect ? 'Directo' : 'Compartido'}</span>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px;">${date} · ${s.month}</div>
+        </div>
+        <div style="font-size:11px;color:var(--gray);">${s.isNew ? '🆕 Nuevo' : 'Repetido'}</div>
+      </div>`;
+    }).join('');
   }
 }
 
