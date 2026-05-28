@@ -100,9 +100,10 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:#fff;min-height
   <div class="login-box">
     <div class="login-title">VAYGO</div>
     <div class="login-sub">Admin · Vendedores</div>
+    <input class="inp" type="email" id="adminEmail" placeholder="correo" style="letter-spacing:0;" onkeydown="if(event.key==='Enter')checkLogin()"/>
     <input class="inp" type="password" id="adminPass" placeholder="contraseña" onkeydown="if(event.key==='Enter')checkLogin()"/>
     <button class="btn-main" onclick="checkLogin()">ENTRAR</button>
-    <div class="err-msg" id="loginErr">Contraseña incorrecta</div>
+    <div class="err-msg" id="loginErr">Correo o contraseña incorrectos</div>
   </div>
 </div>
 
@@ -191,6 +192,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:#fff;min-height
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script>
 firebase.initializeApp({
   apiKey:"AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
@@ -201,7 +203,8 @@ firebase.initializeApp({
   appId:"1:499741267414:web:e69cd43156adaea11bc077"
 });
 const db = firebase.firestore();
-const ADMIN_PASS = 'vaygo2026';
+const auth = firebase.auth();
+const ADMIN_EMAIL = 'vaygoapp@gmail.com';
 
 let currentMonth = new Date().toISOString().slice(0,7);
 let allVendors = [];
@@ -209,12 +212,30 @@ let allEarnings = [];
 
 document.getElementById('corteMonth').textContent = currentMonth;
 
-function checkLogin(){
-  if(document.getElementById('adminPass').value === ADMIN_PASS){
+/* Check if already logged in */
+auth.onAuthStateChanged(user => {
+  if(user && user.email === ADMIN_EMAIL){
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('mainScreen').style.display = 'block';
     loadData();
-  } else {
+  }
+});
+
+async function checkLogin(){
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass = document.getElementById('adminPass').value;
+  if(!email || !pass){ document.getElementById('loginErr').style.display='block'; return; }
+  try {
+    const result = await auth.signInWithEmailAndPassword(email, pass);
+    if(result.user.email !== ADMIN_EMAIL){
+      await auth.signOut();
+      document.getElementById('loginErr').style.display = 'block';
+      return;
+    }
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainScreen').style.display = 'block';
+    loadData();
+  } catch(e){
     document.getElementById('loginErr').style.display = 'block';
     document.getElementById('adminPass').value = '';
   }
