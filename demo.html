@@ -80,7 +80,7 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
 
 /* AD BANNER */
 .ad-banner-wrap{position:absolute;bottom:72px;left:0;right:0;z-index:20;padding:0 18px;}
-.ad-banner{width:100%;height:200px;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 4px 20px rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.12);}
+.ad-banner{width:100%;height:290px;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 4px 20px rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.12);}
 .ad-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.6s ease;overflow:hidden;}
 .ad-slide.active{opacity:1;}
 .ad-slide-inner{width:100%;height:100%;background:linear-gradient(135deg,var(--c1),var(--c2));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
@@ -329,10 +329,11 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
 
     <!-- BOTTOM NAV -->
     <nav class="bottom-nav">
-      <div class="nav-item">
-        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <span class="nav-label">Home</span>
-      </div>
+      <!-- SOS -->
+      <a class="nav-item" href="https://vaygowebapp-ynao.vercel.app/sos.html" target="_blank" style="flex:none;width:52px;height:52px;border-radius:50%;background:linear-gradient(180deg,#ff4444 0%,#cc0000 100%);box-shadow:0 4px 0 #880000,0 0 20px rgba(255,0,0,0.4);display:flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;animation:sosPulse 2s ease-in-out infinite;">
+        <span style="font-family:'Anton',sans-serif;font-size:13px;color:#fff;letter-spacing:1px;">SOS</span>
+      </a>
+      <style>@keyframes sosPulse{0%,100%{box-shadow:0 4px 0 #880000,0 0 16px rgba(255,0,0,0.3);}50%{box-shadow:0 4px 0 #880000,0 0 28px rgba(255,0,0,0.7);}}</style>
       <div class="nav-item">
         <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
         <span class="nav-label">Join Vaygo</span>
