@@ -379,53 +379,69 @@ async function openDetail(vendorId, vendorName){
   document.getElementById('detailModal').style.display = 'block';
   showTab('earnings');
 
-  /* Load earnings */
-  const eSnap = await db.collection('vendor_earnings')
-    .where('vendorId','==',vendorId)
-    .orderBy('earnedAt','desc')
-    .get();
-  const earnings = eSnap.docs.map(d => d.data());
+  const loadingHTML = '<div style="text-align:center;color:var(--gray);padding:20px;font-size:13px;">Cargando...</div>';
+  document.getElementById('detailEarnings').innerHTML = loadingHTML;
+  document.getElementById('detailScans').innerHTML = loadingHTML;
 
-  /* Load scans */
-  const sSnap = await db.collection('vendor_scans')
-    .where('vendorId','==',vendorId)
-    .orderBy('scannedAt','desc')
-    .get();
-  const scans = sSnap.docs.map(d => d.data());
+  try {
+    /* Leer del doc del vendedor — earnings y scans guardados ahí */
+    const vSnap = await db.collection('vendors').doc(vendorId).get();
+    const vData = vSnap.data() || {};
 
-  /* Render earnings */
-  const eEl = document.getElementById('detailEarnings');
-  if(!earnings.length){
-    eEl.innerHTML = '<div style="text-align:center;color:var(--gray);padding:20px;font-size:13px;">Sin cupones aún</div>';
-  } else {
-    eEl.innerHTML = earnings.map(e => {
-      const date = e.earnedAt ? new Date(e.earnedAt.seconds*1000).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-      return `<div class="detail-row">
-        <div>
-          <span class="detail-type ${e.type}">${e.type === 'direct' ? 'Directo' : 'Indirecto'}</span>
-          <div style="font-size:13px;color:#fff;font-weight:700;">${e.venue || '—'}</div>
-          <div style="font-size:11px;color:var(--gray);">${date} · ${e.month}</div>
-        </div>
-        <div class="detail-amount">$${e.amount}</div>
-      </div>`;
-    }).join('');
-  }
+    /* Earnings — array guardado en vendors.earnings */
+    const earnings = (vData.earnings || [])
+      .filter(e => e.month === currentMonth)
+      .sort((a,b) => (b.earnedAt||'') > (a.earnedAt||'') ? 1 : -1);
 
-  /* Render scans */
-  const sEl = document.getElementById('detailScans');
-  if(!scans.length){
-    sEl.innerHTML = '<div style="text-align:center;color:var(--gray);padding:20px;font-size:13px;">Sin escaneos registrados</div>';
-  } else {
-    sEl.innerHTML = scans.map(s => {
-      const date = s.scannedAt ? new Date(s.scannedAt.seconds*1000).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-      return `<div class="detail-row">
-        <div>
-          <span class="detail-type scan">${s.isDirect ? 'Directo' : 'Compartido'}</span>
-          <div style="font-size:11px;color:var(--gray);margin-top:2px;">${date} · ${s.month}</div>
-        </div>
-        <div style="font-size:11px;color:var(--gray);">${s.isNew ? '🆕 Nuevo' : 'Repetido'}</div>
-      </div>`;
-    }).join('');
+    /* Scans — de vendor_scans (admin puede leerlos) */
+    let scans = [];
+    try {
+      const sSnap = await db.collection('vendor_scans')
+        .where('vendorId','==',vendorId)
+        .get();
+      scans = sSnap.docs.map(d => d.data())
+        .filter(s => s.month === currentMonth)
+        .sort((a,b) => (b.scannedAt?.seconds||0) - (a.scannedAt?.seconds||0));
+    } catch(e){ console.log('scans no disponibles', e); }
+
+    /* Render earnings */
+    const eEl = document.getElementById('detailEarnings');
+    if(!earnings.length){
+      eEl.innerHTML = '<div style="text-align:center;color:var(--gray);padding:20px;font-size:13px;">Sin cupones este mes</div>';
+    } else {
+      eEl.innerHTML = earnings.map(e => {
+        const date = e.earnedAt ? new Date(e.earnedAt).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+        return `<div class="detail-row">
+          <div>
+            <span class="detail-type ${e.type}">${e.type === 'direct' ? 'Directo' : 'Indirecto'}</span>
+            <div style="font-size:13px;color:#fff;font-weight:700;">${e.venue || '—'}</div>
+            <div style="font-size:11px;color:var(--gray);">${date} · ${e.month}</div>
+          </div>
+          <div class="detail-amount">$${e.amount}</div>
+        </div>`;
+      }).join('');
+    }
+
+    /* Render scans */
+    const sEl = document.getElementById('detailScans');
+    if(!scans.length){
+      sEl.innerHTML = '<div style="text-align:center;color:var(--gray);padding:20px;font-size:13px;">Sin escaneos registrados</div>';
+    } else {
+      sEl.innerHTML = scans.map(s => {
+        const date = s.scannedAt ? new Date(s.scannedAt.seconds*1000).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+        return `<div class="detail-row">
+          <div>
+            <span class="detail-type scan">${s.isDirect ? 'Directo' : 'Compartido'}</span>
+            <div style="font-size:11px;color:var(--gray);margin-top:2px;">${date} · ${s.month}</div>
+          </div>
+          <div style="font-size:11px;color:var(--gray);">${s.isNew ? '🆕 Nuevo' : 'Repetido'}</div>
+        </div>`;
+      }).join('');
+    }
+  } catch(err){
+    const errHTML = `<div style="text-align:center;color:#ff6b6b;padding:20px;font-size:12px;">Error: ${err.message}</div>`;
+    document.getElementById('detailEarnings').innerHTML = errHTML;
+    document.getElementById('detailScans').innerHTML = errHTML;
   }
 }
 
