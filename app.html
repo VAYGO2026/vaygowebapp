@@ -848,7 +848,7 @@ window.addEventListener('load', loadUserCount);
       <div class="modal-sub">Scan or copy the link</div>
       <canvas class="qr-canvas" id="qrCanvas" width="160" height="160"></canvas>
       <div class="qr-link" id="qrLink"></div>
-      <button class="modal-submit" style="background:linear-gradient(135deg,#50ffa0,#00c97a);box-shadow:0 0 20px rgba(80,255,160,0.4)" onclick="navigator.share ? navigator.share({url: window.location.href}) : navigator.clipboard.writeText(window.location.href)">
+      <button class="modal-submit" style="background:linear-gradient(135deg,#50ffa0,#00c97a);box-shadow:0 0 20px rgba(80,255,160,0.4)" onclick="const u=window.location.origin+window.location.pathname; navigator.share ? navigator.share({url:u}) : navigator.clipboard.writeText(u)">
         SHARE LINK
       </button>
       <span class="modal-close" onclick="document.getElementById('qrModal').classList.remove('open')">✕ &nbsp;Close</span>
@@ -914,7 +914,9 @@ window.addEventListener('load', loadUserCount);
 <script>
 /* ── QR Modal ── */
 function drawQR(){
-  const url = window.location.href;
+  /* Siempre compartir URL limpia sin parámetro admin */
+  const cleanUrl = window.location.origin + window.location.pathname;
+  const url = cleanUrl;
   document.getElementById('qrLink').textContent = url;
   const canvas = document.getElementById('qrCanvas');
   const ctx = canvas.getContext('2d');
