@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="VAYGO DEMO"/>
+<meta name="theme-color" content="#060E1C"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>VAYGO — Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Anton&family=Righteous&family=Pacifico&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;overflow:hidden;}
+
+/* ── SHELL ── */
+.shell{width:390px;height:100dvh;max-height:844px;border-radius:32px;overflow:hidden;position:relative;background:#060E1C;}
+@media(max-width:430px){.shell{width:100%;border-radius:0;}}
+
+/* ── SCREENS ── */
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;}
+.screen.active{display:flex;}
+
+/* ══════════════════════════════════════
+   SCREEN 1 — CITIES
+══════════════════════════════════════ */
+#s-cities{
+  background: linear-gradient(160deg,#0a2a1a 0%,#060E1C 60%);
+  align-items:center;justify-content:center;
+}
+.cities-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(212,245,106,0.07),transparent 70%);pointer-events:none;}
+.cities-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:0 48px;width:100%;z-index:1;}
+.where-label{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:#fff;margin-bottom:4px;text-align:center;}
+
+@property --angle{syntax:'<angle>';initial-value:0deg;inherits:false;}
+@keyframes rotateBorder{from{--angle:0deg;}to{--angle:360deg;}}
+@keyframes shimmer{0%{left:-100%;}100%{left:200%;}}
+
+.city-btn{width:100%;position:relative;border:none;border-radius:16px;padding:14px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:#0a1a00;text-align:center;letter-spacing:0.08em;transition:transform 0.13s;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);box-shadow:0 4px 0 #2d4000,0 6px 20px rgba(212,245,106,0.3),inset 0 1px 0 rgba(255,255,255,0.3);overflow:hidden;}
+.city-btn::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:shimmer 3s infinite;}
+.city-btn::before{content:'';position:absolute;inset:-2px;border-radius:18px;z-index:-1;background:conic-gradient(from var(--angle),transparent 0deg,transparent 55deg,rgba(180,220,80,0.6) 85deg,rgba(220,255,100,1.0) 120deg,rgba(180,220,80,0.6) 155deg,transparent 185deg,transparent 360deg);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:rotateBorder 1.8s linear infinite;}
+.city-btn:active{transform:translateY(3px);}
+.city-btn.coming{cursor:default;background:linear-gradient(180deg,rgba(212,245,106,0.3) 0%,rgba(143,194,10,0.22) 50%,rgba(90,128,0,0.18) 100%);color:rgba(255,255,255,0.7);box-shadow:0 4px 0 rgba(45,64,0,0.25),inset 0 1px 0 rgba(255,255,255,0.1);}
+.city-btn.coming::after,.city-btn.coming::before{display:none;}
+.city-btn.coming:active{transform:none;}
+.next-tag{font-size:10px;font-weight:800;color:#FFD700;letter-spacing:0.14em;margin-left:6px;vertical-align:middle;}
+
+/* DEMO badge */
+.demo-badge{position:absolute;top:18px;right:18px;z-index:100;background:rgba(212,245,106,0.15);border:1px solid rgba(212,245,106,0.4);border-radius:50px;padding:4px 12px;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:800;color:#d4f56a;letter-spacing:2px;text-transform:uppercase;}
+
+/* ══════════════════════════════════════
+   SCREEN 2 — APP (categorías + banner)
+══════════════════════════════════════ */
+#s-app{background:#060E1C;overflow:hidden;}
+
+.app-header{position:absolute;top:0;left:0;right:0;z-index:10;display:flex;flex-direction:column;align-items:center;padding-top:28px;text-align:center;}
+.h-top{font-family:'Righteous',sans-serif;font-size:13px;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.88);}
+.h-script{font-family:'Pacifico',cursive;font-size:34px;color:#d4f56a;line-height:1.1;margin-top:2px;text-shadow:0 2px 20px rgba(0,0,0,0.85),0 0 40px rgba(140,210,40,0.3);}
+.h-bottom{font-family:'Righteous',sans-serif;font-size:14px;letter-spacing:6px;text-transform:uppercase;color:#fff;margin-top:4px;}
+
+.grid-wrap{position:absolute;top:21%;left:0;right:0;z-index:10;padding:0 18px;display:flex;flex-direction:column;gap:10px;}
+.row{display:flex;gap:10px;justify-content:center;}
+
+@keyframes float{0%,100%{transform:translateY(0px);}50%{transform:translateY(-6px);}}
+
+.btn{flex:1;aspect-ratio:1/1;border-radius:18px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(0,0,0,0.38);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);transition:transform 0.13s,background 0.13s;padding:8px 4px;position:relative;animation:float 3s ease-in-out infinite;overflow:hidden;}
+.btn::before{content:'';position:absolute;inset:-3px;border-radius:21px;padding:3px;background:conic-gradient(from var(--angle),transparent 0deg,transparent 50deg,rgba(180,220,80,0.4) 75deg,rgba(220,255,100,0.85) 105deg,rgba(255,255,180,1.00) 125deg,rgba(220,255,100,0.85) 145deg,rgba(180,220,80,0.4) 170deg,transparent 195deg,transparent 360deg);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:rotateBorder 1.8s linear infinite;pointer-events:none;z-index:2;}
+.btn>*{position:relative;z-index:3;}
+.btn:active{transform:scale(0.93);background:rgba(0,0,0,0.55);}
+.btn svg{width:36px;height:36px;filter:drop-shadow(0 1px 4px rgba(0,0,0,0.4));}
+.btn span{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:800;color:#fff;letter-spacing:0.12em;text-transform:uppercase;text-shadow:0 1px 4px rgba(0,0,0,0.7);}
+.btn.locked{cursor:default;opacity:0.35;pointer-events:none;}
+.btn.eat-btn{opacity:1;pointer-events:auto;}
+
+/* AD BANNER */
+.ad-banner-wrap{position:absolute;bottom:72px;left:0;right:0;z-index:20;padding:0 18px;}
+.ad-banner{width:100%;height:200px;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 4px 20px rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.12);}
+.ad-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.6s ease;overflow:hidden;}
+.ad-slide.active{opacity:1;}
+.ad-slide-inner{width:100%;height:100%;background:linear-gradient(135deg,var(--c1),var(--c2));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
+.ad-label{font-family:'Anton',sans-serif;font-size:22px;color:#fff;letter-spacing:3px;text-shadow:0 2px 10px rgba(0,0,0,0.5);}
+.ad-sub{font-size:11px;color:rgba(255,255,255,0.75);font-weight:700;letter-spacing:2px;}
+.ad-dots{display:flex;justify-content:center;gap:5px;margin-top:6px;}
+.ad-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.3);transition:background 0.3s;}
+.ad-dot.active{background:#FFD700;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;z-index:30;height:72px;background:#d4f56a;display:flex;align-items:center;justify-content:space-around;padding:0 4px 8px;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;text-decoration:none;padding:6px 2px;border-radius:12px;transition:transform 0.15s;background:none;border:none;}
+.nav-item:active{transform:scale(0.88);}
+.nav-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center;}
+.nav-icon svg{width:22px;height:22px;}
+.nav-label{font-family:'DM Sans',sans-serif;font-size:8px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#000;}
+
+/* BACK btn */
+.back-pill{position:absolute;top:28px;left:16px;z-index:40;padding:6px 12px;border-radius:50px;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);border:1px solid rgba(212,245,106,0.5);color:#d4f56a;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.12em;text-decoration:none;cursor:pointer;border:none;}
+
+/* ══════════════════════════════════════
+   SCREEN 3 — RESTAURANT LIST
+══════════════════════════════════════ */
+#s-restaurants{background:#060E1C;overflow-y:auto;}
+.rest-header{padding:28px 18px 12px;display:flex;align-items:center;gap:12px;}
+.rest-title{font-family:'Anton',sans-serif;font-size:22px;color:#fff;letter-spacing:3px;}
+.rest-list{padding:0 18px 80px;display:flex;flex-direction:column;gap:12px;}
+.rest-card{border-radius:16px;overflow:hidden;cursor:pointer;transition:transform 0.13s;position:relative;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);}
+.rest-card:active{transform:scale(0.97);}
+.rest-card.locked{cursor:default;opacity:0.4;pointer-events:none;}
+.rest-card-inner{padding:16px 16px 14px;display:flex;align-items:center;gap:14px;}
+.rest-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.rest-name{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:#fff;}
+.rest-desc{font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px;}
+.rest-arrow{margin-left:auto;color:rgba(212,245,106,0.7);font-size:18px;font-weight:800;}
+.rest-active-tag{position:absolute;top:10px;right:10px;background:rgba(212,245,106,0.15);border:1px solid rgba(212,245,106,0.35);border-radius:50px;padding:2px 8px;font-size:9px;font-weight:800;color:#d4f56a;letter-spacing:1px;}
+
+/* ══════════════════════════════════════
+   SCREEN 4 — LOBSTER HOUSE
+══════════════════════════════════════ */
+#s-lobster{overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.lobster-hero{width:100%;height:260px;background:linear-gradient(135deg,#1a0a00,#3d1500,#1a0a00);position:relative;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.lobster-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(255,180,60,0.15),transparent 70%);}
+.lobster-emoji{font-size:80px;filter:drop-shadow(0 4px 20px rgba(255,150,50,0.5));}
+.lobster-hero-overlay{position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,transparent,#0d0600);}
+.lobster-info{background:linear-gradient(180deg,#0d0600,#060300);padding:20px 20px 100px;}
+.lobster-name{font-family:'Pacifico',cursive;font-size:24px;color:#ffc864;text-align:center;margin-bottom:2px;}
+.lobster-since{font-family:'Righteous',sans-serif;font-size:10px;color:rgba(255,200,120,0.65);text-align:center;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;}
+.ratings-row{display:flex;gap:8px;margin-bottom:16px;}
+.rating-card{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,180,80,0.18);border-radius:12px;padding:10px 8px;text-align:center;}
+.rating-src{font-size:10px;color:rgba(255,255,255,0.65);margin-bottom:3px;}
+.rating-num{font-size:18px;font-weight:800;color:#fff;}
+.rating-rev{font-size:9px;color:rgba(255,255,255,0.35);}
+.lobster-desc{font-size:13px;line-height:1.7;color:rgba(255,255,255,0.65);margin-bottom:14px;border-top:1px solid rgba(255,180,80,0.12);padding-top:14px;}
+.lobster-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.lobster-icon{font-size:15px;flex-shrink:0;}
+.lobster-text{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.4;}
+
+/* Lobster bottom bar */
+.lobster-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:390px;max-width:100%;background:rgba(10,5,0,0.95);backdrop-filter:blur(20px);border-top:1px solid rgba(255,180,80,0.18);padding:10px 16px 20px;display:flex;gap:8px;align-items:center;z-index:50;}
+@media(max-width:430px){.lobster-bar{width:100%;}}
+.action-row2{display:flex;gap:8px;flex:1;}
+.action-btn2{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;text-decoration:none;padding:9px 4px;border-radius:12px;background:rgba(10,5,0,0.82);border:1.5px solid rgba(255,180,40,0.3);transition:transform 0.14s;}
+.action-btn2:active{transform:scale(0.93);}
+.action-btn2 svg{width:18px;height:18px;}
+.action-lbl2{font-size:8px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.7);}
+.play-btn{flex:2;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:linear-gradient(180deg,rgba(255,220,60,1.0) 0%,rgba(220,130,0,1.0) 100%);border:1.5px solid rgba(255,240,120,0.8);border-radius:100px;padding:10px 16px;box-shadow:0 6px 22px rgba(255,180,0,0.40);animation:discountPulse 2s ease-in-out infinite;text-decoration:none;}
+@keyframes discountPulse{0%,100%{box-shadow:0 6px 22px rgba(255,180,0,0.40);}50%{box-shadow:0 8px 32px rgba(255,200,0,0.70);}}
+.play-btn:active{transform:translateY(2px);}
+.play-btn-text{font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:rgba(50,15,0,0.95);text-align:center;line-height:1.3;}
+
+/* ══════════════════════════════════════
+   SCREEN 5 — SLOT MACHINE DEMO
+══════════════════════════════════════ */
+#s-slot{background:linear-gradient(160deg,#060E1C 0%,#0a1a08 50%,#060E1C 100%);overflow-y:auto;-webkit-overflow-scrolling:touch;}
+#s-slot::before{content:'';position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(212,245,106,0.08) 0%,transparent 70%);top:30%;left:50%;transform:translate(-50%,-50%);animation:glow 4s ease-in-out infinite;pointer-events:none;}
+@keyframes glow{0%,100%{opacity:0.5;transform:translate(-50%,-50%) scale(1);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.2);}}
+
+.slot-inner{display:flex;flex-direction:column;align-items:center;padding:60px 24px 40px;width:100%;position:relative;z-index:1;}
+.slot-back{position:absolute;top:14px;left:14px;z-index:30;padding:8px 14px;border-radius:50px;background:rgba(212,245,106,0.08);border:1px solid rgba(212,245,106,0.2);color:#d4f56a;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;border-style:solid;}
+.vaygo-lbl{font-family:'Anton',sans-serif;font-size:36px;letter-spacing:6px;color:#d4f56a;text-shadow:0 0 30px rgba(212,245,106,0.5);line-height:1;}
+.spin-sub{font-family:'Righteous',sans-serif;font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-top:4px;margin-bottom:20px;}
+
+/* DEMO notice */
+.demo-notice{width:100%;margin-bottom:14px;background:rgba(255,180,0,0.08);border:1px solid rgba(255,180,0,0.3);border-radius:12px;padding:10px 14px;text-align:center;}
+.demo-notice-txt{font-size:11px;color:rgba(255,200,100,0.8);font-weight:700;letter-spacing:0.5px;}
+
+/* MACHINE */
+@keyframes winFlash{0%,100%{box-shadow:inset 0 0 20px rgba(0,0,0,0.5);}50%{box-shadow:inset 0 0 20px rgba(212,245,106,0.2),0 0 20px rgba(212,245,106,0.3);}}
+.machine{width:100%;background:rgba(212,245,106,0.04);border:1px solid rgba(212,245,106,0.15);border-radius:24px;padding:20px;position:relative;box-shadow:0 0 0 1px rgba(212,245,106,0.05),0 20px 60px rgba(0,0,0,0.5),inset 0 1px 0 rgba(212,245,106,0.08);margin-bottom:16px;}
+.machine::before,.machine::after{content:'';position:absolute;width:12px;height:12px;border-color:rgba(212,245,106,0.4);border-style:solid;}
+.machine::before{top:10px;left:10px;border-width:2px 0 0 2px;border-radius:4px 0 0 0;}
+.machine::after{bottom:10px;right:10px;border-width:0 2px 2px 0;border-radius:0 0 4px 0;}
+.reels-row{display:flex;gap:10px;margin-bottom:14px;}
+.reel{flex:1;height:110px;overflow:hidden;border-radius:12px;background:rgba(0,0,0,0.4);border:1px solid rgba(212,245,106,0.12);position:relative;box-shadow:inset 0 0 20px rgba(0,0,0,0.5);}
+.reel::before,.reel::after{content:'';position:absolute;left:0;right:0;height:30%;z-index:5;pointer-events:none;}
+.reel::before{top:0;background:linear-gradient(to bottom,rgba(0,0,0,0.8),transparent);}
+.reel::after{bottom:0;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);}
+.reel-inner{display:flex;flex-direction:column;will-change:transform;}
+.reel-item{height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}
+.reel.win{animation:winFlash 0.3s ease 4;}
+.stats-bar{display:flex;gap:6px;margin-bottom:14px;}
+.stat-box{flex:1;text-align:center;background:rgba(212,245,106,0.04);border:1px solid rgba(212,245,106,0.1);border-radius:8px;padding:5px 6px;}
+.stat-lbl{font-size:7px;font-weight:800;letter-spacing:1.5px;color:rgba(212,245,106,0.35);text-transform:uppercase;display:block;}
+.stat-val{font-family:'Righteous',sans-serif;font-size:13px;color:rgba(212,245,106,0.7);display:block;margin-top:1px;}
+.spin-btn{width:100%;height:52px;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);border:none;border-radius:14px;color:#0a1a00;font-family:'Anton',sans-serif;font-size:20px;letter-spacing:4px;cursor:pointer;box-shadow:0 4px 0 #2d4000,0 8px 30px rgba(212,245,106,0.3),inset 0 1px 0 rgba(255,255,255,0.3);transition:transform 0.1s;position:relative;overflow:hidden;}
+.spin-btn::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:shimmer 3s infinite;}
+.spin-btn:active:not(:disabled){transform:translateY(4px);}
+.spin-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* QR MODAL (demo) */
+#demoQR{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.97);padding:16px;overflow-y:auto;}
+#demoQR.show{display:flex;}
+.qr-box{background:#050e04;border-radius:24px;padding:24px 20px;text-align:center;width:100%;max-width:320px;border:2px solid #d4f56a;box-shadow:0 0 60px rgba(212,245,106,0.2);}
+.qr-prize-big{font-family:'Anton',sans-serif;font-size:64px;line-height:1;color:#fff;margin-bottom:4px;}
+.qr-rest{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:14px;}
+.qr-code-pill{background:#0a1a08;border-radius:10px;padding:8px 18px;font-family:monospace;font-size:17px;font-weight:700;color:#d4f56a;letter-spacing:2px;margin-bottom:6px;display:inline-block;border:1px solid rgba(212,245,106,0.2);}
+.qr-valid{font-size:12px;color:#d4f56a;font-weight:700;margin-bottom:14px;}
+.qr-canvas-wrap{display:flex;justify-content:center;margin:0 auto 10px;}
+.qr-hint{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:10px;}
+.demo-watermark{background:rgba(255,180,0,0.1);border:1px solid rgba(255,180,0,0.3);border-radius:8px;padding:8px 12px;font-size:10px;color:rgba(255,200,100,0.8);font-weight:700;margin-bottom:14px;letter-spacing:0.5px;}
+.qr-back-btn{width:100%;padding:14px;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);border:none;border-radius:50px;color:#0a1a00;font-family:'Anton',sans-serif;font-size:15px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 0 #2d4000;position:relative;overflow:hidden;}
+.qr-back-btn::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:shimmer 3s infinite;}
+
+/* ══════════════════════════════════════
+   VENDOR QR MODAL
+══════════════════════════════════════ */
+#vendorQR{position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.96);padding:20px;}
+#vendorQR.show{display:flex;}
+.vqr-box{background:#050f04;border:2px solid rgba(212,245,106,0.5);border-radius:24px;padding:28px 22px;text-align:center;width:100%;max-width:320px;box-shadow:0 0 60px rgba(212,245,106,0.15);}
+.vqr-title{font-family:'Anton',sans-serif;font-size:20px;color:#d4f56a;letter-spacing:3px;margin-bottom:4px;}
+.vqr-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:18px;line-height:1.5;}
+.vqr-canvas{display:flex;justify-content:center;margin:0 auto 12px;}
+.vqr-url{font-size:10px;color:rgba(212,245,106,0.5);word-break:break-all;margin-bottom:16px;font-family:monospace;}
+.vqr-close{width:100%;padding:13px;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);border:none;border-radius:12px;color:#0a1a00;font-family:'Anton',sans-serif;font-size:15px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 0 #2d4000;}
+
+/* Auth modal demo */
+#authDemo{position:fixed;inset:0;z-index:400;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0.88);}
+#authDemo.show{display:flex;}
+.auth-sheet{background:#050f04;border:1px solid rgba(212,245,106,0.2);border-radius:24px 24px 0 0;padding:28px 22px 44px;width:100%;max-width:390px;}
+.auth-handle{width:36px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin:0 auto 20px;}
+.auth-title{font-family:'Anton',sans-serif;font-size:22px;color:#d4f56a;letter-spacing:2px;text-align:center;margin-bottom:4px;}
+.auth-sub{font-size:13px;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:20px;line-height:1.5;}
+.auth-perks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+.auth-perk{background:rgba(212,245,106,0.05);border:1px solid rgba(212,245,106,0.1);border-radius:10px;padding:10px;text-align:center;font-size:11px;color:#fff;font-weight:600;line-height:1.4;}
+.auth-demo-notice{background:rgba(255,180,0,0.08);border:1px solid rgba(255,180,0,0.25);border-radius:10px;padding:12px;text-align:center;font-size:12px;color:rgba(255,200,100,0.8);font-weight:700;margin-bottom:16px;line-height:1.5;}
+.auth-close-btn{width:100%;padding:15px;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);border:none;border-radius:12px;color:#0a1a00;font-family:'Anton',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 0 #2d4000;}
+</style>
+</head>
+<body>
+<div class="shell" id="shell">
+
+  <!-- ══ SCREEN 1: CITIES ══ -->
+  <div class="screen active" id="s-cities">
+    <div class="cities-bg"></div>
+    <div class="demo-badge">DEMO</div>
+    <div class="cities-wrap">
+      <div class="where-label">Where are you?</div>
+      <button class="city-btn" onclick="goTo('s-app')">Cozumel</button>
+      <button class="city-btn coming" disabled>Playa del Carmen <span class="next-tag">NEXT</span></button>
+      <button class="city-btn coming" disabled>Tulum <span class="next-tag">NEXT</span></button>
+      <button class="city-btn coming" disabled>Bacalar <span class="next-tag">NEXT</span></button>
+      <button class="city-btn coming" disabled>Cancún <span class="next-tag">NEXT</span></button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 2: APP ══ -->
+  <div class="screen" id="s-app">
+    <button class="back-pill" onclick="goTo('s-cities')">← BACK</button>
+    <div class="demo-badge">DEMO</div>
+
+    <div class="app-header">
+      <div class="h-top">What do you</div>
+      <div class="h-script">want to explore</div>
+      <div class="h-bottom">Today?</div>
+    </div>
+
+    <div class="grid-wrap">
+      <!-- ROW 1 -->
+      <div class="row">
+        <button class="btn eat-btn" onclick="goTo('s-restaurants')">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M12 6v8c0 3.3 2.7 6 6 6v12" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M18 6v28" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M26 6c0 0-3 4-3 8s3 6 3 6v14" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 6c0 0-2 4-2 8" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <span>Eat</span>
+        </button>
+        <button class="btn locked">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M8 8h24l-3 8H11L8 8z" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 16l2 16h14l2-16" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><path d="M14 24h12" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <span>Drink</span>
+        </button>
+        <button class="btn locked">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" stroke="#fff" stroke-width="2.2"/><circle cx="20" cy="20" r="2.5" fill="#fff"/><path d="M20 7v3M20 30v3M7 20h3M30 20h3" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M24 12l-6 4-4 6 6-2 4-8z" fill="#fff" opacity="0.9"/></svg>
+          <span>Explore</span>
+        </button>
+        <button class="btn locked">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M6 26c3-4 8-6 14-5s10 1 14-3" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M8 20h24c0 0 2 4 0 8H8c-2-4 0-8 0-8z" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><path d="M10 20l3-8h14l3 8" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><circle cx="13" cy="29" r="2.5" fill="#fff"/><circle cx="27" cy="29" r="2.5" fill="#fff"/></svg>
+          <span>Tours</span>
+        </button>
+      </div>
+      <!-- ROW 2 -->
+      <div class="row">
+        <button class="btn locked">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M10 16h16l-2 12H12L10 16z" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><path d="M26 19h3a3 3 0 0 1 0 6h-3" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M15 10c0 0 1-3 3-2s1 4 3 3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Coffee</span>
+        </button>
+        <button class="btn locked">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="14" y="8" width="12" height="18" rx="6" stroke="#fff" stroke-width="2.2"/><path d="M14 20h12" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><path d="M20 26v6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M16 32h8" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <span>Dive</span>
+        </button>
+        <button class="btn locked">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M10 14h20l-2 18H12L10 14z" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><path d="M15 14c0-3 2-6 5-6s5 3 5 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M15 22h10" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Shop</span>
+        </button>
+        <button class="btn locked">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M6 24h28" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M8 24l2-8h10l2 8" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="27" r="3" stroke="#fff" stroke-width="2"/><circle cx="20" cy="27" r="3" stroke="#fff" stroke-width="2"/><path d="M25 24l2-5h5l2 5" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span>Rent</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- AD BANNER -->
+    <div class="ad-banner-wrap">
+      <div class="ad-banner" id="adBanner">
+        <div class="ad-slide active">
+          <div class="ad-slide-inner" style="--c1:#1a3a00;--c2:#0a2a0a;">
+            <div style="font-size:40px;">🦞</div>
+            <div class="ad-label">LOBSTER HOUSE</div>
+            <div class="ad-sub">FRESH CARIBBEAN SEAFOOD</div>
+          </div>
+        </div>
+        <div class="ad-slide">
+          <div class="ad-slide-inner" style="--c1:#001a3a;--c2:#0a1a2a;">
+            <div style="font-size:40px;">🏖️</div>
+            <div class="ad-label">BUCCANOS</div>
+            <div class="ad-sub">BEACH CLUB · COZUMEL</div>
+          </div>
+        </div>
+      </div>
+      <div class="ad-dots">
+        <div class="ad-dot active" id="dot0"></div>
+        <div class="ad-dot" id="dot1"></div>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <div class="nav-item">
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <span class="nav-label">Home</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <span class="nav-label">Join Vaygo</span>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#000" stroke="none"/></svg></div>
+        <span class="nav-label" style="font-size:7px;">@vaygo.mx</span>
+      </div>
+      <button class="nav-item" onclick="showVendorQR()">
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18h3M14 21h3M21 18v3"/></svg></div>
+        <span class="nav-label">QR / Share</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ══ SCREEN 3: RESTAURANTS ══ -->
+  <div class="screen" id="s-restaurants">
+    <div style="position:sticky;top:0;z-index:20;background:#060E1C;border-bottom:1px solid rgba(255,255,255,0.06);">
+      <div class="rest-header">
+        <button class="back-pill" style="position:static;" onclick="goTo('s-app')">← BACK</button>
+        <div class="rest-title">EAT</div>
+        <div class="demo-badge" style="position:static;margin-left:auto;">DEMO</div>
+      </div>
+    </div>
+    <div class="rest-list">
+
+      <!-- LOBSTER — activo -->
+      <div class="rest-card" onclick="goTo('s-lobster')">
+        <div class="rest-active-tag">🎰 Play & Win</div>
+        <div class="rest-card-inner">
+          <div class="rest-icon" style="background:rgba(255,150,50,0.15);">🦞</div>
+          <div>
+            <div class="rest-name">The Original Lobster House</div>
+            <div class="rest-desc">Premium seafood · Since 1983 · Cozumel</div>
+          </div>
+          <div class="rest-arrow">›</div>
+        </div>
+      </div>
+
+      <!-- LOCKED -->
+      <div class="rest-card locked">
+        <div class="rest-card-inner">
+          <div class="rest-icon" style="background:rgba(100,180,255,0.1);">🏖️</div>
+          <div>
+            <div class="rest-name">Buccanos Beach Club</div>
+            <div class="rest-desc">Beach club & restaurant · Cozumel</div>
+          </div>
+          <div class="rest-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="rest-card locked">
+        <div class="rest-card-inner">
+          <div class="rest-icon" style="background:rgba(100,200,150,0.1);">🌿</div>
+          <div>
+            <div class="rest-name">Azul Madera</div>
+            <div class="rest-desc">Tropical cuisine · Ocean views</div>
+          </div>
+          <div class="rest-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="rest-card locked">
+        <div class="rest-card-inner">
+          <div class="rest-icon" style="background:rgba(255,200,80,0.1);">🍝</div>
+          <div>
+            <div class="rest-name">Guido's Restaurant</div>
+            <div class="rest-desc">Italian & Mediterranean · Since 1990</div>
+          </div>
+          <div class="rest-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="rest-card locked">
+        <div class="rest-card-inner">
+          <div class="rest-icon" style="background:rgba(255,100,100,0.1);">🍣</div>
+          <div>
+            <div class="rest-name">La Cocay</div>
+            <div class="rest-desc">Seafood & sushi · Cozumel</div>
+          </div>
+          <div class="rest-arrow">›</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 4: LOBSTER HOUSE ══ -->
+  <div class="screen" id="s-lobster">
+    <div class="lobster-hero">
+      <div class="lobster-hero-bg"></div>
+      <div class="lobster-emoji">🦞</div>
+      <div class="lobster-hero-overlay"></div>
+    </div>
+    <div class="lobster-info">
+      <div class="lobster-name">The Original Lobster House</div>
+      <div class="lobster-since">Since 1983 · Cozumel, México</div>
+      <div class="ratings-row">
+        <div class="rating-card">
+          <div class="rating-src">Google</div>
+          <div style="font-size:16px;">⭐</div>
+          <div class="rating-num">4.7</div>
+          <div class="rating-rev">~500 reviews</div>
+        </div>
+        <div class="rating-card">
+          <div class="rating-src">TripAdvisor</div>
+          <div style="font-size:16px;">⭐</div>
+          <div class="rating-num">4.5</div>
+          <div class="rating-rev">+670 reviews</div>
+        </div>
+      </div>
+      <div class="lobster-desc">
+        The Original Lobster House is a premium seafood restaurant in Cozumel established in 1983. Known for its fresh Caribbean lobster, romantic tropical atmosphere, candlelight dining, live music, and upscale island vibe.
+      </div>
+      <div class="lobster-row">
+        <span class="lobster-icon">📍</span>
+        <span class="lobster-text">Av. Rafael E. Melgar Km 4.5, Zona Hotelera Norte, Cozumel, Q.R.</span>
+      </div>
+      <div class="lobster-row">
+        <span class="lobster-icon">🕐</span>
+        <span class="lobster-text">Mon–Sun · 1:00 PM – 10:30 PM</span>
+      </div>
+      <div class="lobster-row">
+        <span class="lobster-icon">📞</span>
+        <span class="lobster-text">+52 987 872 1650</span>
+      </div>
+    </div>
+
+    <div class="lobster-bar">
+      <button class="back-pill" style="position:static;flex-shrink:0;" onclick="goTo('s-restaurants')">← BACK</button>
+      <div class="action-row2">
+        <a class="action-btn2" href="https://www.instagram.com/theoriginallobsterhouse" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ff8c69" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#ff8c69" stroke="none"/></svg>
+          <span class="action-lbl2">Instagram</span>
+        </a>
+        <a class="action-btn2" href="https://www.theoriginallobsterhouse.com" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#60cfff" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          <span class="action-lbl2">Website</span>
+        </a>
+        <a class="action-btn2" href="https://www.theoriginallobsterhouse.com/menu" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ffd200" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+          <span class="action-lbl2">Menu</span>
+        </a>
+      </div>
+      <button class="play-btn" onclick="goTo('s-slot')">
+        <div>
+          <div class="play-btn-text">Play &amp; Get</div>
+          <div class="play-btn-text">Your Discount</div>
+        </div>
+        <span style="font-size:18px;font-weight:800;color:rgba(50,15,0,0.7);">›</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 5: SLOT MACHINE ══ -->
+  <div class="screen" id="s-slot">
+    <div class="slot-inner">
+      <button class="slot-back" onclick="goTo('s-lobster')">← BACK</button>
+
+      <div class="vaygo-lbl">VAYGO</div>
+      <div class="spin-sub">Spin · Win · Redeem</div>
+
+      <div class="demo-notice">
+        <div class="demo-notice-txt">🎮 DEMO MODE — El cupón no es canjeable</div>
+      </div>
+
+      <!-- SLOT MACHINE -->
+      <div class="machine">
+        <div class="reels-row">
+          <div class="reel" id="r0"><div class="reel-inner" id="ri0"></div></div>
+          <div class="reel" id="r1"><div class="reel-inner" id="ri1"></div></div>
+          <div class="reel" id="r2"><div class="reel-inner" id="ri2"></div></div>
+        </div>
+        <div class="stats-bar">
+          <div class="stat-box"><span class="stat-lbl">Credits</span><span class="stat-val">1</span></div>
+          <div class="stat-box"><span class="stat-lbl">Bet</span><span class="stat-val">MAX</span></div>
+          <div class="stat-box"><span class="stat-lbl">Win</span><span class="stat-val" id="winVal">—</span></div>
+        </div>
+        <button class="spin-btn" id="spinBtn" onclick="spin()">SPIN NOW</button>
+      </div>
+
+      <!-- LOGIN (demo) -->
+      <div style="width:100%;background:rgba(212,245,106,0.05);border:1px solid rgba(212,245,106,0.15);border-radius:16px;padding:14px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span style="font-size:20px;">⭐</span>
+          <div>
+            <div style="font-size:12px;font-weight:800;color:#d4f56a;">Collect raffle tickets</div>
+            <div style="font-size:11px;color:#fff;line-height:1.4;">Login to join the raffle · Or just spin and get your coupon</div>
+          </div>
+        </div>
+        <button style="width:100%;padding:11px;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);border:none;border-radius:10px;color:#0a1a00;font-family:'Anton',sans-serif;font-size:13px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 0 #2d4000;" onclick="document.getElementById('authDemo').classList.add('show')">Login / Sign up</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<!-- ══ DEMO QR MODAL ══ -->
+<div id="demoQR">
+  <div class="qr-box">
+    <div style="font-size:10px;color:#d4f56a;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px;">🎉 YOUR PRIZE</div>
+    <div class="qr-prize-big" id="dqr-prize">20% OFF</div>
+    <div class="qr-rest">The Original Lobster House</div>
+    <div class="qr-code-pill" id="dqr-code">VYG-DEMO-CODE</div>
+    <div class="qr-valid" id="dqr-valid">Valid until: 11:59 PM today</div>
+    <div class="qr-canvas-wrap" id="dqr-canvas"></div>
+    <div class="qr-hint">Show this QR to the staff to redeem</div>
+    <div class="demo-watermark">⚠️ DEMO — Este cupón no es válido para redimir</div>
+    <div style="background:rgba(212,245,106,0.05);border:1px solid rgba(212,245,106,0.2);border-radius:10px;padding:10px;font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:14px;">⚠️ Min purchase: <strong style="color:#d4f56a;">$20 USD</strong></div>
+    <button class="qr-back-btn" onclick="document.getElementById('demoQR').classList.remove('show');resetSlot()">← BACK TO VENUE</button>
+  </div>
+</div>
+
+<!-- ══ AUTH DEMO MODAL ══ -->
+<div id="authDemo">
+  <div class="auth-sheet">
+    <div class="auth-handle"></div>
+    <div class="auth-title">VAYGO REWARDS</div>
+    <div class="auth-sub">Sign up free and collect tickets in every city you visit</div>
+    <div class="auth-perks">
+      <div class="auth-perk">Monthly surprise raffle</div>
+      <div class="auth-perk">From a cap to a hotel night</div>
+      <div class="auth-perk">Valid across Riviera Maya</div>
+      <div class="auth-perk">Coupon = 1 raffle ticket</div>
+    </div>
+    <div class="auth-demo-notice">🎮 Esta es una demo<br>En la app real puedes crear tu cuenta</div>
+    <button class="auth-close-btn" onclick="document.getElementById('authDemo').classList.remove('show')">← BACK TO SPIN</button>
+  </div>
+</div>
+
+<!-- ══ VENDOR QR MODAL ══ -->
+<div id="vendorQR">
+  <div class="vqr-box">
+    <div class="vqr-title">SCAN &amp; DOWNLOAD</div>
+    <div class="vqr-sub">Escanea este QR para descargar VAYGO y empieza a ganar descuentos reales 🎰</div>
+    <div class="vqr-canvas" id="vendorQRCanvas"></div>
+    <div class="vqr-url" id="vendorQRUrl"></div>
+    <button class="vqr-close" onclick="document.getElementById('vendorQR').classList.remove('show')">CERRAR</button>
+  </div>
+</div>
+
+<script>
+/* ══ NAVIGATION ══ */
+const screens = document.querySelectorAll('.screen');
+function goTo(id){
+  screens.forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById(id).scrollTop = 0;
+}
+
+/* ══ VENDOR QR ══ */
+const params = new URLSearchParams(window.location.search);
+const vendorRef = params.get('ref') || 'VND-000';
+const vendorUrl = 'https://vaygowebapp-ynao.vercel.app/app.html?ref=' + vendorRef + '&direct=1';
+let vendorQRGenerated = false;
+
+function showVendorQR(){
+  if(!vendorQRGenerated){
+    const el = document.getElementById('vendorQRCanvas');
+    el.innerHTML = '';
+    new QRCode(el, {text: vendorUrl, width: 200, height: 200, colorDark: '#000', colorLight: '#fff'});
+    setTimeout(()=>{
+      const img = el.querySelector('img');
+      if(img){ img.style.padding='10px'; img.style.background='#fff'; img.style.borderRadius='10px'; img.style.display='block'; }
+    }, 100);
+    document.getElementById('vendorQRUrl').textContent = vendorUrl;
+    vendorQRGenerated = true;
+  }
+  document.getElementById('vendorQR').classList.add('show');
+}
+
+/* ══ AD BANNER ROTATION ══ */
+let adIdx = 0;
+const slides = document.querySelectorAll('.ad-slide');
+const dots = document.querySelectorAll('.ad-dot');
+setInterval(()=>{
+  slides[adIdx].classList.remove('active');
+  dots[adIdx].classList.remove('active');
+  adIdx = (adIdx + 1) % slides.length;
+  slides[adIdx].classList.add('active');
+  dots[adIdx].classList.add('active');
+}, 3000);
+
+/* ══ SLOT MACHINE ══ */
+const ITEMS = [{pct:'10%',color:'#d4f56a'},{pct:'15%',color:'#a8d400'},{pct:'20%',color:'#5a8000'}];
+const PRIZES = [{label:'10% OFF'},{label:'15% OFF'},{label:'20% OFF'}];
+const ITEM_H = 110;
+let spinning = false, done = false;
+
+function buildReels(){
+  for(let r=0;r<3;r++){
+    const inner = document.getElementById('ri'+r);
+    inner.innerHTML = '';
+    inner.style.cssText = 'display:flex;flex-direction:column;will-change:transform;';
+    const all = [...ITEMS,...ITEMS,...ITEMS,...ITEMS,...ITEMS];
+    all.forEach(item=>{
+      const div = document.createElement('div');
+      div.style.cssText = `height:${ITEM_H}px;min-height:${ITEM_H}px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;`;
+      div.innerHTML = `<span style="font-family:'Anton',sans-serif;font-size:30px;color:${item.color};text-shadow:0 0 20px ${item.color};line-height:1;">${item.pct}</span><span style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:11px;color:${item.color};opacity:0.7;letter-spacing:3px;">OFF</span>`;
+      inner.appendChild(div);
+    });
+    inner.style.transform = 'translateY(0px)';
+    inner.style.transition = 'none';
+  }
+}
+buildReels();
+
+function spin(){
+  if(spinning || done) return;
+  spinning = true;
+  document.getElementById('spinBtn').disabled = true;
+
+  const prize = PRIZES[Math.floor(Math.random()*PRIZES.length)];
+  const prizePercent = prize.label.split('%')[0]+'%';
+  const total = ITEMS.length;
+  let baseIdx = total*3;
+  for(let i=total*3;i<total*4;i++){ if(ITEMS[i%total].pct===prizePercent){baseIdx=i;break;} }
+
+  playSpinSound();
+
+  [0,1,2].forEach((r,idx)=>{
+    const inner = document.getElementById('ri'+r);
+    const dur = 1200+idx*350;
+    inner.style.transition = `transform ${dur}ms cubic-bezier(0.17,0.67,0.12,1.0)`;
+    inner.style.transform = `translateY(-${baseIdx*ITEM_H}px)`;
+    setTimeout(()=>{
+      playStopSound();
+      document.getElementById('r'+r).classList.add('win');
+      if(idx===2){
+        document.getElementById('winVal').textContent = prize.label;
+        setTimeout(()=>{
+          spinning=false; done=true;
+          playWinSound(); doConfetti();
+          setTimeout(()=>showDemoQR(prize.label), 800);
+        }, 300);
+      }
+    }, dur);
+  });
+}
+
+function showDemoQR(prizeLabel){
+  document.getElementById('dqr-prize').textContent = prizeLabel;
+  const code = 'VYG-DEMO-' + Math.random().toString(36).substring(2,6).toUpperCase();
+  document.getElementById('dqr-code').textContent = code;
+  document.getElementById('dqr-valid').textContent = 'Valid until: 11:59 PM today';
+  const el = document.getElementById('dqr-canvas');
+  el.innerHTML = '';
+  new QRCode(el, {text: code, width: 180, height: 180, colorDark:'#000', colorLight:'#fff'});
+  setTimeout(()=>{
+    const img = el.querySelector('img');
+    if(img){ img.style.padding='10px'; img.style.background='#fff'; img.style.borderRadius='10px'; img.style.display='block'; }
+  }, 100);
+  document.getElementById('demoQR').classList.add('show');
+}
+
+function resetSlot(){
+  spinning=false; done=false;
+  document.getElementById('spinBtn').disabled=false;
+  document.getElementById('spinBtn').textContent='SPIN NOW';
+  document.getElementById('winVal').textContent='—';
+  [0,1,2].forEach(r=>document.getElementById('r'+r).classList.remove('win'));
+  buildReels();
+  goTo('s-lobster');
+}
+
+/* ══ SOUNDS ══ */
+let _ac = null;
+function getAC(){ if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)(); if(_ac.state==='suspended')_ac.resume(); return _ac; }
+function makeNoise(ac,dur){ const b=ac.createBuffer(1,Math.ceil(ac.sampleRate*dur),ac.sampleRate); const d=b.getChannelData(0); for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1; return b; }
+function playSpinSound(){ try{ const ac=getAC(),now=ac.currentTime; for(let i=0;i<20;i++){ const t=i*0.055,b=makeNoise(ac,0.04),s=ac.createBufferSource(); s.buffer=b; const f=ac.createBiquadFilter(); f.type='bandpass'; f.frequency.value=1200+Math.random()*500; f.Q.value=4; const g=ac.createGain(); g.gain.setValueAtTime(0.35,now+t); g.gain.exponentialRampToValueAtTime(0.001,now+t+0.038); s.connect(f);f.connect(g);g.connect(ac.destination); s.start(now+t); s.stop(now+t+0.05); } }catch(e){} }
+function playStopSound(){ try{ const ac=getAC(),now=ac.currentTime,b=makeNoise(ac,0.08),s=ac.createBufferSource(); s.buffer=b; const f=ac.createBiquadFilter(); f.type='bandpass'; f.frequency.value=900; f.Q.value=3; const g=ac.createGain(); g.gain.setValueAtTime(0.45,now); g.gain.exponentialRampToValueAtTime(0.001,now+0.07); s.connect(f);f.connect(g);g.connect(ac.destination); s.start(now); s.stop(now+0.09); }catch(e){} }
+function playWinSound(){ try{ const ac=getAC(),now=ac.currentTime; [[0,523],[0.13,659],[0.26,784],[0.39,1047],[0.52,1319]].forEach(([t,f])=>{ const o=ac.createOscillator(); o.type='sine'; const g=ac.createGain(); o.frequency.value=f; g.gain.setValueAtTime(0,now+t); g.gain.linearRampToValueAtTime(0.28,now+t+0.02); g.gain.exponentialRampToValueAtTime(0.001,now+t+0.28); o.connect(g);g.connect(ac.destination); o.start(now+t); o.stop(now+t+0.3); }); }catch(e){} }
+
+/* ══ CONFETTI ══ */
+function doConfetti(){ const cv=document.createElement('canvas'); cv.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;'; document.body.appendChild(cv); cv.width=innerWidth; cv.height=innerHeight; const ctx=cv.getContext('2d'); const C=['#d4f56a','#a8d400','#78b000','#fff','#8fc20a']; const ps=Array.from({length:120},()=>({x:Math.random()*cv.width,y:-20,vx:(Math.random()-.5)*4,vy:2+Math.random()*5,c:C[~~(Math.random()*C.length)],a:Math.random()*6,s:(Math.random()-.5)*.18,w:4+Math.random()*6,h:7+Math.random()*12,al:1})); (function loop(){ ctx.clearRect(0,0,cv.width,cv.height); let alive=false; ps.forEach(p=>{ if(p.al<=0)return; p.x+=p.vx; p.y+=p.vy; p.a+=p.s; p.vy+=.07; if(p.y>cv.height*.85)p.al-=.03; alive=true; ctx.save(); ctx.globalAlpha=p.al; ctx.translate(p.x,p.y); ctx.rotate(p.a); ctx.fillStyle=p.c; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore(); }); if(alive)requestAnimationFrame(loop); else cv.remove(); })(); }
+</script>
+</body>
+</html>
