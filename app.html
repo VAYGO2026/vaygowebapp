@@ -806,9 +806,6 @@ window.addEventListener('load', loadUserCount);
       <span class="nav-label">QR / Share</span>
     </button>
 
-    <!-- ADMIN BTN — solo visible con ?admin=vaygo2026 -->
-    <button id="adminNavBtn" onclick="openAdmin()" style="display:none;flex:none;width:44px;height:44px;border-radius:50%;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 100%);box-shadow:0 3px 0 #2d4000,0 0 14px rgba(212,245,106,0.4);border:none;cursor:pointer;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:10px;color:#0a1a00;letter-spacing:1px;">ADM</button>
-
   </nav>
 
 
@@ -1204,109 +1201,6 @@ document.getElementById('adBanner').addEventListener('touchend', () => {
 }, {passive:true});
 </script>
 
-
-<!-- ══ ADMIN PANEL MODAL ══ -->
-<div id="adminModal" style="display:none;position:absolute;inset:0;z-index:200;background:rgba(0,0,0,0.97);flex-direction:column;overflow-y:auto;">
-  <div style="padding:48px 20px 40px;max-width:390px;margin:0 auto;width:100%;">
-
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
-      <div>
-        <div style="font-family:'Anton',sans-serif;font-size:28px;color:#d4f56a;letter-spacing:4px;">VAYGO</div>
-        <div style="font-family:'Righteous',sans-serif;font-size:10px;letter-spacing:4px;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-top:2px;">Admin Panel</div>
-      </div>
-      <button onclick="closeAdmin()" style="padding:10px 18px;border-radius:50px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">✕ CERRAR</button>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:10px;">
-
-      <a href="https://vaygowebapp-ynao.vercel.app/admin-tombola.html" style="text-decoration:none;">
-        <div style="display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:16px;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);">
-          <div style="width:46px;height:46px;border-radius:12px;background:rgba(255,215,0,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🎰</div>
-          <div style="flex:1;">
-            <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;color:#fff;">Tómbola</div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Admin rifa y sorteos</div>
-          </div>
-          <div style="color:rgba(255,215,0,0.5);font-size:18px;font-weight:800;">›</div>
-        </div>
-      </a>
-
-      <a href="https://vaygowebapp-ynao.vercel.app/validar.html" style="text-decoration:none;">
-        <div style="display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:16px;background:rgba(212,245,106,0.06);border:1px solid rgba(212,245,106,0.2);">
-          <div style="width:46px;height:46px;border-radius:12px;background:rgba(212,245,106,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📱</div>
-          <div style="flex:1;">
-            <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;color:#fff;">Validador Cupones</div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Escaneo QR meseros</div>
-          </div>
-          <div style="color:rgba(212,245,106,0.5);font-size:18px;font-weight:800;">›</div>
-        </div>
-      </a>
-
-      <a href="https://vaygowebapp-ynao.vercel.app/venues.html" style="text-decoration:none;">
-        <div style="display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:16px;background:rgba(100,180,255,0.06);border:1px solid rgba(100,180,255,0.2);">
-          <div style="width:46px;height:46px;border-radius:12px;background:rgba(100,180,255,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">💼</div>
-          <div style="flex:1;">
-            <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;color:#fff;">Cotización Paquetes</div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Venues y planes</div>
-          </div>
-          <div style="color:rgba(100,180,255,0.5);font-size:18px;font-weight:800;">›</div>
-        </div>
-      </a>
-
-      <a href="https://vaygowebapp-ynao.vercel.app/vendedores.html" style="text-decoration:none;">
-        <div style="display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:16px;background:rgba(255,120,80,0.06);border:1px solid rgba(255,120,80,0.2);">
-          <div style="width:46px;height:46px;border-radius:12px;background:rgba(255,120,80,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏪</div>
-          <div style="flex:1;">
-            <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;color:#fff;">Admin Negocios</div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Administración y pagos</div>
-          </div>
-          <div style="color:rgba(255,120,80,0.5);font-size:18px;font-weight:800;">›</div>
-        </div>
-      </a>
-
-      <a href="https://vaygowebapp-ynao.vercel.app/admin-vendors.html" style="text-decoration:none;">
-        <div style="display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:16px;background:rgba(180,100,255,0.06);border:1px solid rgba(180,100,255,0.2);">
-          <div style="width:46px;height:46px;border-radius:12px;background:rgba(180,100,255,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">👥</div>
-          <div style="flex:1;">
-            <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;color:#fff;">Admin Vendedores</div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Comisiones y escaneos</div>
-          </div>
-          <div style="color:rgba(180,100,255,0.5);font-size:18px;font-weight:800;">›</div>
-        </div>
-      </a>
-
-      <a href="https://vaygowebapp-ynao.vercel.app/vendor-panel.html" style="text-decoration:none;">
-        <div style="display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:16px;background:rgba(80,255,180,0.06);border:1px solid rgba(80,255,180,0.2);">
-          <div style="width:46px;height:46px;border-radius:12px;background:rgba(80,255,180,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📊</div>
-          <div style="flex:1;">
-            <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;color:#fff;">Panel Vendedor</div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Stats y QR vendedor</div>
-          </div>
-          <div style="color:rgba(80,255,180,0.5);font-size:18px;font-weight:800;">›</div>
-        </div>
-      </a>
-
-    </div>
-
-    <div style="margin-top:28px;text-align:center;font-size:10px;color:rgba(255,255,255,0.15);letter-spacing:2px;font-family:'Righteous',sans-serif;">VAYGO ADMIN · ACCESO PRIVADO</div>
-  </div>
-</div>
-
-<script>
-/* ── ADMIN ACCESS ── */
-(function(){
-  const p = new URLSearchParams(window.location.search);
-  if(p.get('admin') === 'vaygo2026'){
-    const btn = document.getElementById('adminNavBtn');
-    if(btn) btn.style.display = 'flex';
-  }
-})();
-
-function openAdmin(){
-  document.getElementById('adminModal').style.display = 'flex';
-}
-function closeAdmin(){
-  document.getElementById('adminModal').style.display = 'none';
-}
-</script>
+<script src="admin-float.js"></script>
 </body>
 </html>
