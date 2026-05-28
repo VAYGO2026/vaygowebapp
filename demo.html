@@ -26,8 +26,13 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
    SCREEN 1 — CITIES
 ══════════════════════════════════════ */
 #s-cities{
-  background: linear-gradient(160deg,#0a2a1a 0%,#060E1C 60%);
+  background: url('https://vaygowebapp-ynao.vercel.app/fondo-inicio.webp') center top / cover no-repeat;
   align-items:center;justify-content:center;
+}
+#s-cities::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,0.45) 100%);
+  pointer-events:none;
 }
 .cities-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(212,245,106,0.07),transparent 70%);pointer-events:none;}
 .cities-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:0 48px;width:100%;z-index:1;}
@@ -99,19 +104,31 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
 /* ══════════════════════════════════════
    SCREEN 3 — RESTAURANT LIST
 ══════════════════════════════════════ */
-#s-restaurants{background:#060E1C;overflow-y:auto;}
-.rest-header{padding:28px 18px 12px;display:flex;align-items:center;gap:12px;}
-.rest-title{font-family:'Anton',sans-serif;font-size:22px;color:#fff;letter-spacing:3px;}
-.rest-list{padding:0 18px 80px;display:flex;flex-direction:column;gap:12px;}
-.rest-card{border-radius:16px;overflow:hidden;cursor:pointer;transition:transform 0.13s;position:relative;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);}
-.rest-card:active{transform:scale(0.97);}
-.rest-card.locked{cursor:default;opacity:0.4;pointer-events:none;}
-.rest-card-inner{padding:16px 16px 14px;display:flex;align-items:center;gap:14px;}
-.rest-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
-.rest-name{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:#fff;}
-.rest-desc{font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px;}
-.rest-arrow{margin-left:auto;color:rgba(212,245,106,0.7);font-size:18px;font-weight:800;}
-.rest-active-tag{position:absolute;top:10px;right:10px;background:rgba(212,245,106,0.15);border:1px solid rgba(212,245,106,0.35);border-radius:50px;padding:2px 8px;font-size:9px;font-weight:800;color:#d4f56a;letter-spacing:1px;}
+#s-restaurants{
+  background: url('https://vaygowebapp-ynao.vercel.app/fondo-restaurant.webp') center center / cover no-repeat;
+  overflow:hidden;position:relative;
+}
+#s-restaurants::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,12,5,0.55) 0%,rgba(5,12,5,0.10) 28%,rgba(5,12,5,0.05) 48%,rgba(5,12,5,0.60) 82%,rgba(5,12,5,0.88) 100%);z-index:1;pointer-events:none;}
+#s-restaurants::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(5,12,5,0.45) 100%);z-index:2;pointer-events:none;}
+.rest-header{position:relative;z-index:10;padding:28px 18px 0;display:flex;align-items:center;gap:12px;flex-direction:column;text-align:center;}
+.rest-title{font-family:'Pacifico',cursive;font-size:36px;color:#d4f56a;text-shadow:0 2px 20px rgba(0,0,0,0.85),0 0 40px rgba(140,210,40,0.3);}
+.rest-subtitle{font-family:'Righteous',sans-serif;font-size:13px;letter-spacing:7px;text-transform:uppercase;color:#d4f56a;margin-top:4px;}
+.rest-tagline{font-family:'Righteous',sans-serif;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,0.80);margin-top:6px;}
+.rest-list{position:absolute;top:38%;left:0;right:0;z-index:10;display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 28px;}
+.rest-card{white-space:nowrap;position:relative;border:2px solid transparent;border-radius:16px;padding:14px 18px;backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);cursor:pointer;transition:background 0.13s;background-image:linear-gradient(#0a120a,#0a120a),conic-gradient(from var(--angle),rgba(180,220,80,0.15) 0deg,rgba(180,220,80,0.15) 60deg,rgba(220,255,100,0.5) 90deg,rgba(255,255,180,1.0) 130deg,rgba(220,255,100,0.5) 170deg,rgba(180,220,80,0.15) 200deg,rgba(180,220,80,0.15) 360deg);background-origin:border-box;background-clip:padding-box,border-box;box-shadow:0 4px 24px rgba(0,0,0,0.38);min-width:max-content;width:100%;animation:rotateBorder 3s linear infinite;}
+.rest-card:nth-child(1){animation-delay:0s;}
+.rest-card:nth-child(2){animation-delay:0.75s;}
+.rest-card:nth-child(3){animation-delay:1.5s;}
+.rest-card:nth-child(4){animation-delay:2.25s;}
+.rest-card:active{background:rgba(15,25,15,0.68);}
+.rest-card.locked{cursor:default;opacity:0.35;pointer-events:none;}
+.rest-card-inner{display:flex;flex-direction:column;}
+.rest-icon{display:none;}
+.rest-name{font-size:15px;font-weight:800;color:#fff;margin-bottom:1px;letter-spacing:0.1px;}
+.rest-desc{font-size:12px;color:rgba(255,255,255,0.70);}
+.rest-arrow{display:none;}
+.rest-active-tag{display:none;}
+.rest-bottom{position:absolute;bottom:24px;left:24px;right:24px;z-index:10;display:flex;align-items:center;justify-content:space-between;}
 
 /* ══════════════════════════════════════
    SCREEN 4 — LOBSTER HOUSE
@@ -298,18 +315,10 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
     <div class="ad-banner-wrap">
       <div class="ad-banner" id="adBanner">
         <div class="ad-slide active">
-          <div class="ad-slide-inner" style="--c1:#1a3a00;--c2:#0a2a0a;">
-            <div style="font-size:40px;">🦞</div>
-            <div class="ad-label">LOBSTER HOUSE</div>
-            <div class="ad-sub">FRESH CARIBBEAN SEAFOOD</div>
-          </div>
+          <img src="https://vaygowebapp-ynao.vercel.app/ad5.webp" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">
         </div>
         <div class="ad-slide">
-          <div class="ad-slide-inner" style="--c1:#001a3a;--c2:#0a1a2a;">
-            <div style="font-size:40px;">🏖️</div>
-            <div class="ad-label">BUCCANOS</div>
-            <div class="ad-sub">BEACH CLUB · COZUMEL</div>
-          </div>
+          <img src="https://vaygowebapp-ynao.vercel.app/ad1.webp" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">
         </div>
       </div>
       <div class="ad-dots">
@@ -341,81 +350,55 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
 
   <!-- ══ SCREEN 3: RESTAURANTS ══ -->
   <div class="screen" id="s-restaurants">
-    <div style="position:sticky;top:0;z-index:20;background:#060E1C;border-bottom:1px solid rgba(255,255,255,0.06);">
-      <div class="rest-header">
-        <button class="back-pill" style="position:static;" onclick="goTo('s-app')">← BACK</button>
-        <div class="rest-title">EAT</div>
-        <div class="demo-badge" style="position:static;margin-left:auto;">DEMO</div>
+    <!-- Header estilo restaurant.html -->
+    <div class="rest-header">
+      <svg style="width:28px;margin-bottom:8px;opacity:0.95;" viewBox="0 0 34 22" fill="none"><path d="M17 1 L17 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/><path d="M8 3.5 L6.5 2.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M26 3.5 L27.5 2.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M17 1 Q17 13 4 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M17 1 Q17 13 30 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M4 21 Q17 17 30 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+      <div style="font-family:'Righteous',sans-serif;font-size:11px;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.88);">The Most Exclusive</div>
+      <div class="rest-title">restaurants</div>
+      <div class="rest-subtitle">On The Island</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:8px;width:200px;"><div style="flex:1;height:1px;background:rgba(212,245,106,0.40);"></div><div style="width:5px;height:5px;background:rgba(212,245,106,0.70);transform:rotate(45deg);flex-shrink:0;"></div><div style="flex:1;height:1px;background:rgba(212,245,106,0.40);"></div></div>
+      <div class="rest-tagline">Explore &nbsp;–&nbsp; Play &nbsp;–&nbsp; Win</div>
+    </div>
+
+    <!-- Cards estilo restaurant.html -->
+    <div class="rest-list">
+      <div class="rest-card" onclick="goTo('s-lobster')">
+        <div class="rest-card-inner">
+          <div class="rest-name">The Original Lobster House</div>
+          <div class="rest-desc">Seafood clásico premium</div>
+        </div>
+      </div>
+      <div class="rest-card locked">
+        <div class="rest-card-inner">
+          <div class="rest-name">Buccanos</div>
+          <div class="rest-desc">Beach luxury / Sunset Club</div>
+        </div>
+      </div>
+      <div class="rest-card locked">
+        <div class="rest-card-inner">
+          <div class="rest-name">Azul Madera</div>
+          <div class="rest-desc">Mexican-Mediterranean Fusion</div>
+        </div>
+      </div>
+      <div class="rest-card locked">
+        <div class="rest-card-inner">
+          <div class="rest-name">Guido's</div>
+          <div class="rest-desc">Italian Mediterranean Timeless Classic</div>
+        </div>
       </div>
     </div>
-    <div class="rest-list">
 
-      <!-- LOBSTER — activo -->
-      <div class="rest-card" onclick="goTo('s-lobster')">
-        <div class="rest-active-tag">🎰 Play & Win</div>
-        <div class="rest-card-inner">
-          <div class="rest-icon" style="background:rgba(255,150,50,0.15);">🦞</div>
-          <div>
-            <div class="rest-name">The Original Lobster House</div>
-            <div class="rest-desc">Premium seafood · Since 1983 · Cozumel</div>
-          </div>
-          <div class="rest-arrow">›</div>
-        </div>
-      </div>
-
-      <!-- LOCKED -->
-      <div class="rest-card locked">
-        <div class="rest-card-inner">
-          <div class="rest-icon" style="background:rgba(100,180,255,0.1);">🏖️</div>
-          <div>
-            <div class="rest-name">Buccanos Beach Club</div>
-            <div class="rest-desc">Beach club & restaurant · Cozumel</div>
-          </div>
-          <div class="rest-arrow">›</div>
-        </div>
-      </div>
-
-      <div class="rest-card locked">
-        <div class="rest-card-inner">
-          <div class="rest-icon" style="background:rgba(100,200,150,0.1);">🌿</div>
-          <div>
-            <div class="rest-name">Azul Madera</div>
-            <div class="rest-desc">Tropical cuisine · Ocean views</div>
-          </div>
-          <div class="rest-arrow">›</div>
-        </div>
-      </div>
-
-      <div class="rest-card locked">
-        <div class="rest-card-inner">
-          <div class="rest-icon" style="background:rgba(255,200,80,0.1);">🍝</div>
-          <div>
-            <div class="rest-name">Guido's Restaurant</div>
-            <div class="rest-desc">Italian & Mediterranean · Since 1990</div>
-          </div>
-          <div class="rest-arrow">›</div>
-        </div>
-      </div>
-
-      <div class="rest-card locked">
-        <div class="rest-card-inner">
-          <div class="rest-icon" style="background:rgba(255,100,100,0.1);">🍣</div>
-          <div>
-            <div class="rest-name">La Cocay</div>
-            <div class="rest-desc">Seafood & sushi · Cozumel</div>
-          </div>
-          <div class="rest-arrow">›</div>
-        </div>
-      </div>
-
+    <!-- Bottom buttons -->
+    <div class="rest-bottom">
+      <button class="back-pill" style="position:static;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);border:1px solid rgba(212,245,106,0.5);color:#d4f56a;font-size:13px;font-weight:800;letter-spacing:0.12em;padding:10px 18px;border-radius:50px;cursor:pointer;" onclick="goTo('s-app')">BACK</button>
+      <div class="demo-badge" style="position:static;">DEMO</div>
     </div>
   </div>
 
   <!-- ══ SCREEN 4: LOBSTER HOUSE ══ -->
   <div class="screen" id="s-lobster">
-    <div class="lobster-hero">
+    <div class="lobster-hero" style="background:url('https://vaygowebapp-ynao.vercel.app/fondo-lobster.webp') center center / cover no-repeat;">
       <div class="lobster-hero-bg"></div>
-      <div class="lobster-emoji">🦞</div>
       <div class="lobster-hero-overlay"></div>
     </div>
     <div class="lobster-info">
