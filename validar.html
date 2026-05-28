@@ -168,7 +168,7 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, serverTimestamp, addDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, serverTimestamp, addDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const fbApp = initializeApp({
   apiKey: "AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
@@ -324,7 +324,7 @@ window.confirmUsed = async function() {
             type = 'direct';
             await updateDoc(doc(db, 'codes', pendingCode), { vendorFirstPaid: '1' });
           }
-          await addDoc(collection(db, 'vendor_earnings'), {
+          const earningData = {
             vendorId: ref,
             code: pendingCode,
             venue: currentVenue,
@@ -332,8 +332,20 @@ window.confirmUsed = async function() {
             type,
             month,
             earnedAt: serverTimestamp()
-          });
+          };
+          await addDoc(collection(db, 'vendor_earnings'), earningData);
+
+          /* También guardar en el doc del vendedor para que vendor-panel pueda leerlo sin permisos de admin */
+          const earningForVendor = {
+            code: pendingCode,
+            venue: currentVenue,
+            amount,
+            type,
+            month,
+            earnedAt: new Date().toISOString()
+          };
           await updateDoc(doc(db, 'vendors', ref), {
+            earnings: arrayUnion(earningForVendor),
             [`monthly.${month}.total`]: increment(amount),
             [`monthly.${month}.coupons`]: increment(1),
             [`monthly.${month}.direct`]: type === 'direct' ? increment(1) : increment(0),
