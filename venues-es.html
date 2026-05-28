@@ -330,9 +330,9 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
   <p class="hero-note">No somos una app de descuentos. &nbsp;·&nbsp; Somos una plataforma premium de experiencias turísticas.</p>
 
   <div class="stats-bar">
-    <div class="stat-item"><div class="stat-num">45+</div><div class="stat-lbl">Usuarios Activos</div></div>
-    <div class="stat-item"><div class="stat-num">13+</div><div class="stat-lbl">Venues en Cozumel</div></div>
-    <div class="stat-item"><div class="stat-num">4</div><div class="stat-lbl">Categorías</div></div>
+    <div class="stat-item"><div class="stat-num">32+</div><div class="stat-lbl">Venues Activos</div></div>
+    <div class="stat-item"><div class="stat-num">8</div><div class="stat-lbl">Categorías</div></div>
+    <div class="stat-item"><div class="stat-num">4</div><div class="stat-lbl">VIP por Categoría</div></div>
     <div class="stat-item"><div class="stat-num">24h</div><div class="stat-lbl">Para Estar Activo</div></div>
   </div>
 </section>
@@ -354,25 +354,16 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
       </div>
       <div class="what-visual">
         <div style="display:flex;gap:16px;align-items:flex-start;justify-content:center;">
-          <div style="position:relative;">
-            <img src="https://i.imgur.com/placeholder1.png" 
-                 style="width:200px;border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.15);"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-            <div style="display:none;width:200px;height:380px;border-radius:28px;background:rgba(212,245,106,0.04);border:1px solid rgba(212,245,106,0.15);align-items:center;justify-content:center;font-size:12px;color:rgba(212,245,106,0.4);text-align:center;padding:20px;">
-              VAYGO<br/>App Screenshot<br/>Imagen 1
-            </div>
+          <div>
+            <img src="https://vaygowebapp-ynao.vercel.app/screen-inicio.webp"
+                 style="width:200px;border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.15);display:block;"/>
           </div>
-          <div style="margin-top:40px;position:relative;">
-            <img src="https://i.imgur.com/placeholder2.png"
-                 style="width:200px;border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.15);"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-            <div style="display:none;width:200px;height:380px;border-radius:28px;background:rgba(212,245,106,0.04);border:1px solid rgba(212,245,106,0.15);align-items:center;justify-content:center;font-size:12px;color:rgba(212,245,106,0.4);text-align:center;padding:20px;">
-              VAYGO<br/>App Screenshot<br/>Imagen 2
-            </div>
+          <div style="margin-top:40px;">
+            <img src="https://vaygowebapp-ynao.vercel.app/screen-categorias.webp"
+                 style="width:200px;border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.15);display:block;"/>
           </div>
         </div>
-        <div class="float-stat fs1"><div class="fs-num">13+</div><div class="fs-lbl">Venues Activos</div></div>
-        <div class="float-stat fs2"><div class="fs-num">45+</div><div class="fs-lbl">Usuarios Hoy</div></div>
+        <div class="float-stat fs1"><div class="fs-num">32+</div><div class="fs-lbl">Venues Activos</div></div>
       </div>
     </div>
   </div>
@@ -386,25 +377,54 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
       <h2 class="section-title">3 Pasos. 30 Segundos.<br/><span style="color:var(--cyan)">Un Cliente Nuevo.</span></h2>
       <p class="section-sub">Del escaneo a la visita en menos de un minuto.</p>
     </div>
-    <div class="steps reveal">
-      <div class="step active">
-        <div class="step-n">01</div>
-        <span class="step-ico">📱</span>
-        <div class="step-t">Escanea el QR</div>
-        <p class="step-b">El turista llega a Cozumel y escanea el código QR de VAYGO en el muelle, hotel o punto de alto tráfico. Sin necesidad de descargar ninguna app.</p>
+    <div class="steps reveal" style="display:flex;flex-direction:column;gap:48px;">
+
+      <!-- PASO 1 -->
+      <div style="display:flex;gap:40px;align-items:center;flex-wrap:wrap;">
+        <div style="flex:1;min-width:260px;">
+          <div class="step-n" style="font-family:'Bebas Neue',sans-serif;font-size:72px;color:rgba(212,245,106,0.12);line-height:1;">01</div>
+          <span class="step-ico" style="font-size:36px;display:block;margin-bottom:12px;">📱</span>
+          <div class="step-t" style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:10px;">Escanea el QR</div>
+          <p class="step-b" style="font-size:14px;color:rgba(255,255,255,0.55);line-height:1.8;">El turista llega a Cozumel y escanea el código QR de VAYGO en el muelle, hotel o punto de alto tráfico. Sin necesidad de descargar ninguna app.</p>
+        </div>
+        <div style="flex:1;min-width:200px;display:flex;justify-content:center;">
+          <img src="https://vaygowebapp-ynao.vercel.app/screen-qr.webp" style="width:220px;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.15);display:block;"/>
+        </div>
       </div>
-      <div class="step">
-        <div class="step-n">02</div>
-        <span class="step-ico">🎰</span>
-        <div class="step-t">Gira y Desbloquea</div>
-        <p class="step-b">Elige una categoría — EAT, DRINK, SHOP o TOURS — y gira el slot machine para revelar una experiencia exclusiva en tu venue.</p>
+
+      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(212,245,106,0.15),transparent);"></div>
+
+      <!-- PASO 2 -->
+      <div style="display:flex;gap:40px;align-items:center;flex-wrap:wrap;">
+        <div style="flex:1;min-width:260px;">
+          <div class="step-n" style="font-family:'Bebas Neue',sans-serif;font-size:72px;color:rgba(212,245,106,0.12);line-height:1;">02</div>
+          <span class="step-ico" style="font-size:36px;display:block;margin-bottom:12px;">🎰</span>
+          <div class="step-t" style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:10px;">Gira y Desbloquea</div>
+          <p class="step-b" style="font-size:14px;color:rgba(255,255,255,0.55);line-height:1.8;">Elige una categoría — EAT, DRINK, SHOP o TOURS — y gira el slot machine para revelar una experiencia exclusiva en tu venue.</p>
+        </div>
+        <div style="flex:2;min-width:280px;display:flex;gap:12px;justify-content:center;align-items:flex-start;">
+          <img src="https://vaygowebapp-ynao.vercel.app/screen-eat.webp" style="width:150px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.12);display:block;"/>
+          <img src="https://vaygowebapp-ynao.vercel.app/screen-locacion.webp" style="width:150px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.12);display:block;margin-top:24px;"/>
+          <img src="https://vaygowebapp-ynao.vercel.app/screen-slot.webp" style="width:150px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.12);display:block;"/>
+        </div>
       </div>
-      <div class="step">
-        <div class="step-n">03</div>
-        <span class="step-ico">🏆</span>
-        <div class="step-t">Llega y Consume</div>
-        <p class="step-b">El turista llega con su código QR. Tu staff lo valida en segundos y aplica el beneficio. Cliente nuevo. Listo.</p>
+
+      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(212,245,106,0.15),transparent);"></div>
+
+      <!-- PASO 3 -->
+      <div style="display:flex;gap:40px;align-items:center;flex-wrap:wrap;">
+        <div style="flex:1;min-width:260px;">
+          <div class="step-n" style="font-family:'Bebas Neue',sans-serif;font-size:72px;color:rgba(212,245,106,0.12);line-height:1;">03</div>
+          <span class="step-ico" style="font-size:36px;display:block;margin-bottom:12px;">🏆</span>
+          <div class="step-t" style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:10px;">Llega y Consume</div>
+          <p class="step-b" style="font-size:14px;color:rgba(255,255,255,0.55);line-height:1.8;">El turista llega con su código QR. Tu staff lo valida en segundos y aplica el beneficio. Cliente nuevo. Listo.</p>
+        </div>
+        <div style="flex:1;min-width:280px;display:flex;gap:12px;justify-content:center;align-items:flex-start;">
+          <img src="https://vaygowebapp-ynao.vercel.app/screen-consumo.webp" style="width:180px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.12);display:block;"/>
+          <img src="https://vaygowebapp-ynao.vercel.app/screen-validar.webp" style="width:180px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.12);display:block;margin-top:24px;"/>
+        </div>
       </div>
+
     </div>
   </div>
 </section>
