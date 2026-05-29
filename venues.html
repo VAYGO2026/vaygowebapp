@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -311,7 +311,7 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
   <div class="hero-mesh"></div>
   <div class="hero-line"></div>
 
-  <div class="hero-badge"><span></span>Cozumel · Riviera Maya · Expansion 2026</div>
+  <div class="hero-badge">Cozumel · Riviera Maya · Expansion 2026</div>
 
   <h1 class="hero-title">
     DISCOVER<br/>
@@ -330,9 +330,9 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
   <p class="hero-note">Not a discount app. &nbsp;·&nbsp; A premium tourism experience platform.</p>
 
   <div class="stats-bar">
-    <div class="stat-item"><div class="stat-num">45+</div><div class="stat-lbl">Active Users</div></div>
-    <div class="stat-item"><div class="stat-num">13+</div><div class="stat-lbl">Venues in Cozumel</div></div>
-    <div class="stat-item"><div class="stat-num">4</div><div class="stat-lbl">Categories</div></div>
+    <div class="stat-item"><div class="stat-num">32+</div><div class="stat-lbl">Active Venues</div></div>
+    <div class="stat-item"><div class="stat-num">8</div><div class="stat-lbl">Categories</div></div>
+    <div class="stat-item"><div class="stat-num">4</div><div class="stat-lbl">VIP por Categoría</div></div>
     <div class="stat-item"><div class="stat-num">24h</div><div class="stat-lbl">To Go Live</div></div>
   </div>
 </section>
@@ -353,28 +353,17 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
         </div>
       </div>
       <div class="what-visual">
-        <div class="app-card">
-          <div class="app-card-header">
-            <div class="app-card-logo">VAYGO</div>
-            <div class="app-card-badge">● LIVE</div>
+        <div style="display:flex;gap:16px;align-items:flex-start;justify-content:center;">
+          <div>
+            <img src="https://vaygowebapp-ynao.vercel.app/screen-inicio.webp"
+                 style="width:200px;border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.15);display:block;"/>
           </div>
-          <div class="app-cats">
-            <div class="app-cat">🍽️<span>EAT</span></div>
-            <div class="app-cat">🍹<span>DRINK</span></div>
-            <div class="app-cat">🗺️<span>TOURS</span></div>
-            <div class="app-cat">🤿<span>DIVE</span></div>
-          </div>
-          <div class="app-slot">
-            <div class="slot-label">Spin & Win</div>
-            <div class="slot-reels">
-              <div class="reel">🦞</div>
-              <div class="reel">🎰</div>
-              <div class="reel">🏆</div>
-            </div>
+          <div style="margin-top:40px;">
+            <img src="https://vaygowebapp-ynao.vercel.app/screen-categorias.webp"
+                 style="width:200px;border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.15);display:block;"/>
           </div>
         </div>
-        <div class="float-stat fs1"><div class="fs-num">13+</div><div class="fs-lbl">Venues Active</div></div>
-        <div class="float-stat fs2"><div class="fs-num">45+</div><div class="fs-lbl">Users Today</div></div>
+        <div class="float-stat fs1"><div class="fs-num">32+</div><div class="fs-lbl">Active Venues</div></div>
       </div>
     </div>
   </div>
@@ -388,25 +377,54 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
       <h2 class="section-title">3 Steps. 30 Seconds.<br/><span style="color:var(--cyan)">A New Customer.</span></h2>
       <p class="section-sub">From scan to visit in under a minute.</p>
     </div>
-    <div class="steps reveal">
-      <div class="step active">
-        <div class="step-n">01</div>
-        <span class="step-ico">📱</span>
-        <div class="step-t">Scan the QR</div>
-        <p class="step-b">The tourist arrives in Cozumel and scans the VAYGO QR code at the dock, hotel or high-traffic point. No app download needed.</p>
+    <div class="steps reveal" style="display:flex;flex-direction:column;gap:48px;">
+
+      <!-- PASO 1 -->
+      <div style="display:flex;gap:40px;align-items:center;flex-wrap:wrap;">
+        <div style="flex:1;min-width:260px;">
+          <div class="step-n" style="font-family:'Bebas Neue',sans-serif;font-size:72px;color:rgba(212,245,106,0.12);line-height:1;">01</div>
+          
+          <div class="step-t" style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:10px;">Scan the QR</div>
+          <p class="step-b" style="font-size:14px;color:rgba(255,255,255,0.55);line-height:1.8;">The tourist arrives in Cozumel and scans the VAYGO QR code at the dock, hotel or high-traffic point. No app download needed.</p>
+        </div>
+        <div style="flex:1;min-width:200px;display:flex;justify-content:center;">
+          <img src="https://vaygowebapp-ynao.vercel.app/screen-qr.webp" style="width:220px;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.15);display:block;"/>
+        </div>
       </div>
-      <div class="step">
-        <div class="step-n">02</div>
-        <span class="step-ico">🎰</span>
-        <div class="step-t">Spin & Unlock</div>
-        <p class="step-b">They choose a category — EAT, DRINK, SHOP or TOURS — and spin the slot machine to reveal an exclusive experience at your venue.</p>
+
+      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(212,245,106,0.15),transparent);"></div>
+
+      <!-- PASO 2 -->
+      <div style="display:flex;gap:40px;align-items:center;flex-wrap:wrap;">
+        <div style="flex:1;min-width:260px;">
+          <div class="step-n" style="font-family:'Bebas Neue',sans-serif;font-size:72px;color:rgba(212,245,106,0.12);line-height:1;">02</div>
+          
+          <div class="step-t" style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:10px;">Spin & Unlock</div>
+          <p class="step-b" style="font-size:14px;color:rgba(255,255,255,0.55);line-height:1.8;">They choose a category — EAT, DRINK, SHOP or TOURS — and spin the slot machine to reveal an exclusive experience at your venue.</p>
+        </div>
+        <div style="flex:2;min-width:280px;display:flex;gap:12px;justify-content:center;align-items:flex-start;">
+          <img src="https://vaygowebapp-ynao.vercel.app/screen-eat.webp" style="width:150px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.12);display:block;"/>
+          <img src="https://vaygowebapp-ynao.vercel.app/screen-locacion.webp" style="width:150px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.12);display:block;margin-top:24px;"/>
+          <img src="https://vaygowebapp-ynao.vercel.app/screen-slot.webp" style="width:150px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.12);display:block;"/>
+        </div>
       </div>
-      <div class="step">
-        <div class="step-n">03</div>
-        <span class="step-ico">🏆</span>
-        <div class="step-t">Arrive & Consume</div>
-        <p class="step-b">The tourist arrives with their QR code. Your staff validates it in seconds and applies the benefit. New customer. Done.</p>
+
+      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(212,245,106,0.15),transparent);"></div>
+
+      <!-- PASO 3 -->
+      <div style="display:flex;gap:40px;align-items:center;flex-wrap:wrap;">
+        <div style="flex:1;min-width:260px;">
+          <div class="step-n" style="font-family:'Bebas Neue',sans-serif;font-size:72px;color:rgba(212,245,106,0.12);line-height:1;">03</div>
+          
+          <div class="step-t" style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:10px;">Arrive & Consume</div>
+          <p class="step-b" style="font-size:14px;color:rgba(255,255,255,0.55);line-height:1.8;">The tourist arrives with their QR code. Your staff validates it in seconds and applies the benefit. New customer. Done.</p>
+        </div>
+        <div style="flex:1;min-width:280px;display:flex;gap:12px;justify-content:center;align-items:flex-start;">
+          <img src="https://vaygowebapp-ynao.vercel.app/screen-consumo.webp" style="width:180px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.12);display:block;"/>
+          <img src="https://vaygowebapp-ynao.vercel.app/screen-validar.webp" style="width:180px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.12);display:block;margin-top:24px;"/>
+        </div>
       </div>
+
     </div>
   </div>
 </section>
@@ -420,32 +438,32 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
     </div>
     <div class="ben-grid">
       <div class="ben reveal">
-        <span class="ben-ico">🎯</span>
+        
         <div class="ben-t">Real & Predictable Traffic</div>
         <p class="ben-b">Users arrive at your venue with an active code — they already decided to visit before leaving the hotel.</p>
       </div>
       <div class="ben reveal">
-        <span class="ben-ico">📱</span>
+        
         <div class="ben-t">100% Digital, No App</div>
         <p class="ben-b">Nothing to download. The tourist opens VAYGO from their browser. Zero friction, maximum conversion.</p>
       </div>
       <div class="ben reveal">
-        <span class="ben-ico">🔥</span>
+        
         <div class="ben-t">Viral by Design</div>
         <p class="ben-b">The slot machine creates addiction and organic social sharing. Your customers share it themselves.</p>
       </div>
       <div class="ben reveal">
-        <span class="ben-ico">📊</span>
+        
         <div class="ben-t">Monthly Statistics</div>
         <p class="ben-b">Know exactly how many customers VAYGO generated for you each month. Real data for real decisions.</p>
       </div>
       <div class="ben reveal">
-        <span class="ben-ico">✅</span>
+        
         <div class="ben-t">Free Validator App</div>
         <p class="ben-b">Free validation app for your staff. Scan the QR, confirm the benefit and it's registered in seconds.</p>
       </div>
       <div class="ben reveal">
-        <span class="ben-ico">⚡</span>
+        
         <div class="ben-t">Live in 24 Hours</div>
         <p class="ben-b">Register today, customers tomorrow. No long contracts, no complex setup. No complications.</p>
       </div>
@@ -462,15 +480,28 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
         <h2 class="section-title">What Category<br/><span style="color:var(--cyan)">Is Your Business?</span></h2>
       </div>
     </div>
-    <div class="cats-grid">
-      <div class="cat reveal"><span class="cat-ico">🍴</span><div class="cat-n">EAT</div><p class="cat-d">Restaurants, cafés, brunch, seafood, fine dining</p></div>
-      <div class="cat reveal"><span class="cat-ico">🍹</span><div class="cat-n">DRINK</div><p class="cat-d">Bars, cocktails, nightlife, beach clubs</p></div>
-      <div class="cat reveal"><span class="cat-ico">🛍️</span><div class="cat-n">SHOP</div><p class="cat-d">Boutiques, jewelry, crafts, premium souvenirs</p></div>
-      <div class="cat reveal"><span class="cat-ico">🗺️</span><div class="cat-n">TOURS</div><p class="cat-d">Excursions, snorkeling, adventures</p></div>
-      <div class="cat reveal"><span class="cat-ico">🤿</span><div class="cat-n">DIVE</div><p class="cat-d">Scuba diving, snorkel, reef experiences</p></div>
-      <div class="cat reveal"><span class="cat-ico">🛵</span><div class="cat-n">RENT</div><p class="cat-d">Bikes, scooters, cars, equipment</p></div>
-      <div class="cat reveal"><span class="cat-ico">☕</span><div class="cat-n">COFFEE</div><p class="cat-d">Specialty coffee, pastries, brunch spots</p></div>
-      <div class="cat reveal"><span class="cat-ico">🧭</span><div class="cat-n">EXPLORE</div><p class="cat-d">Cenotes, ruins, nature, unique adventures</p></div>
+    <!-- Screenshot de las 8 categorías reales -->
+    <div class="reveal" style="display:flex;gap:40px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:48px;">
+      <div style="flex:1;min-width:280px;max-width:380px;">
+        <div style="display:flex;justify-content:center;">
+          <img src="https://i.imgur.com/placeholder_cats.png"
+               style="width:280px;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(212,245,106,0.15);"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+          <div style="display:none;width:280px;height:340px;border-radius:24px;background:rgba(212,245,106,0.04);border:1px solid rgba(212,245,106,0.15);"></div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:280px;max-width:440px;">
+        <div class="cats-grid">
+          <div class="cat reveal"><div class="cat-n">EAT</div><p class="cat-d">4 VIP restaurants</p></div>
+          <div class="cat reveal"><div class="cat-n">DRINK</div><p class="cat-d">4 bars & clubs</p></div>
+          <div class="cat reveal"><div class="cat-n">EXPLORE</div><p class="cat-d">4 experiences</p></div>
+          <div class="cat reveal"><div class="cat-n">TOURS</div><p class="cat-d">4 exclusive tours</p></div>
+          <div class="cat reveal"><div class="cat-n">COFFEE</div><p class="cat-d">4 premium cafés</p></div>
+          <div class="cat reveal"><div class="cat-n">DIVE</div><p class="cat-d">4 dive centers</p></div>
+          <div class="cat reveal"><div class="cat-n">SHOP</div><p class="cat-d">4 VIP shops</p></div>
+          <div class="cat reveal"><div class="cat-n">RENT</div><p class="cat-d">4 rental services</p></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -480,8 +511,8 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
   <div class="inner">
     <div class="game-grid reveal">
       <div>
-        <div class="section-eyebrow">Gamification</div>
-        <h2 class="section-title">Tourism Meets<br/><span style="color:var(--cyan)">Gamification</span></h2>
+        <div class="section-eyebrow">Gamificación</div>
+        <h2 class="section-title">Tourism Meets<br/><span style="color:var(--cyan)">Gamificación</span></h2>
         <p class="section-sub">Users interact with businesses through rewards, exclusive experiences and the VAYGO Slot Machine system.</p>
         <div class="game-feats">
           <div class="gfeat">
@@ -489,7 +520,7 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
             <div><div class="gfeat-t">Slot Machine</div><div class="gfeat-d">Spin to reveal exclusive discounts and experiences</div></div>
           </div>
           <div class="gfeat">
-            <div class="gfeat-ico" style="background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.15);">🏆</div>
+            <div class="gfeat-ico" style="background:rgba(212,245,106,0.08);border:1px solid rgba(212,245,106,0.15);"></div>
             <div><div class="gfeat-t">VIP Benefits</div><div class="gfeat-d">Premium rewards for premium experiences</div></div>
           </div>
           <div class="gfeat">
@@ -497,32 +528,25 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
             <div><div class="gfeat-t">Raffle Tickets</div><div class="gfeat-d">Every coupon becomes a chance to win monthly prizes</div></div>
           </div>
           <div class="gfeat">
-            <div class="gfeat-ico" style="background:rgba(0,255,178,0.08);border:1px solid rgba(0,255,178,0.15);">⚡</div>
+            <div class="gfeat-ico" style="background:rgba(212,245,106,0.08);border:1px solid rgba(212,245,106,0.15);"></div>
             <div><div class="gfeat-t">Surprise Experiences</div><div class="gfeat-d">Unexpected rewards that create real emotion</div></div>
           </div>
         </div>
       </div>
       <div class="slot-visual">
-        <div class="slot-machine">
-          <div class="sm-header">
-            <div>
-              <div class="sm-logo">VAYGO</div>
-              <div class="sm-sub">Spin · Win · Redeem</div>
-            </div>
-            <span style="font-size:28px;">🦞</span>
+        <div style="display:flex;gap:12px;justify-content:center;align-items:flex-start;">
+          <div style="position:relative;">
+            <img src="https://i.imgur.com/placeholder_slot_full.png"
+                 style="width:200px;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.7),0 0 40px rgba(212,245,106,0.08),0 0 0 1px rgba(212,245,106,0.15);"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+            <div style="display:none;width:200px;height:400px;border-radius:24px;background:rgba(212,245,106,0.04);border:1px solid rgba(212,245,106,0.15);align-items:center;justify-content:center;font-size:11px;color:rgba(212,245,106,0.4);text-align:center;padding:16px;">Slot Machine<br/>Screenshot</div>
           </div>
-          <div class="sm-reels-wrap">
-            <div class="sm-reels">
-              <div class="sm-reel win">🎰</div>
-              <div class="sm-reel win">🎰</div>
-              <div class="sm-reel win">🎰</div>
-            </div>
+          <div style="margin-top:60px;">
+            <img src="https://i.imgur.com/placeholder_slot_zoom.png"
+                 style="width:180px;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 30px rgba(212,245,106,0.1),0 0 0 1px rgba(212,245,106,0.15);"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+            <div style="display:none;width:180px;height:200px;border-radius:16px;background:rgba(212,245,106,0.04);border:1px solid rgba(212,245,106,0.15);align-items:center;justify-content:center;font-size:11px;color:rgba(212,245,106,0.4);text-align:center;padding:16px;">Slot Zoom<br/>Screenshot</div>
           </div>
-          <div class="sm-win">
-            <div class="sm-win-label">20% OFF</div>
-            <div class="sm-win-sub">The Original Lobster House</div>
-          </div>
-          <button class="sm-btn">SPIN NOW</button>
         </div>
       </div>
     </div>
@@ -538,10 +562,10 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
         <h2 class="section-title">Every Experience<br/>Gives You More<br/><span style="color:var(--gold)">Chances To Win</span></h2>
         <p class="section-sub">Each redeemed coupon becomes an accumulated raffle ticket.</p>
         <div class="rewards-list">
-          <div class="reward"><span class="reward-ico">🏨</span><div class="reward-t">Hotel Nights</div><div class="reward-d">Premium stays in the Riviera Maya</div></div>
-          <div class="reward"><span class="reward-ico">🗺️</span><div class="reward-t">Tours</div><div class="reward-d">Exclusive excursions and adventures</div></div>
-          <div class="reward"><span class="reward-ico">🍽️</span><div class="reward-t">VIP Dinners</div><div class="reward-d">At the best restaurants on the island</div></div>
-          <div class="reward"><span class="reward-ico">🎁</span><div class="reward-t">Merchandise</div><div class="reward-d">VAYGO branded premium items</div></div>
+          <div class="reward"><div class="reward-t">Hotel Nights</div><div class="reward-d">Premium stays in the Riviera Maya</div></div>
+          <div class="reward"><div class="reward-t">Tours</div><div class="reward-d">Exclusive excursions and adventures</div></div>
+          <div class="reward"><div class="reward-t">VIP Dinners</div><div class="reward-d">At the best restaurants on the island</div></div>
+          <div class="reward"><div class="reward-t">Merchandise</div><div class="reward-d">VAYGO branded premium items</div></div>
         </div>
         <div class="rewards-note">
           <div class="rn-label">Important</div>
@@ -549,17 +573,11 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
         </div>
       </div>
       <div class="rewards-visual">
-        <div class="raffle-card">
-          <div class="rc-icon">🎰</div>
-          <div class="rc-title">VAYGO RAFFLE</div>
-          <div class="rc-sub">Monthly · Riviera Maya</div>
-          <div class="tickets-row">
-            <div class="ticket">#0047</div>
-            <div class="ticket">#0048</div>
-            <div class="ticket">#0049</div>
-            <div class="ticket">#0050</div>
-            <div class="ticket">#0051</div>
-          </div>
+        <div style="display:flex;justify-content:center;">
+          <img src="https://i.imgur.com/placeholder_raffle.png"
+               style="width:240px;border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,0.7),0 0 40px rgba(212,245,106,0.06),0 0 0 1px rgba(212,245,106,0.15);"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+          <div style="display:none;width:240px;height:420px;border-radius:28px;background:rgba(212,245,106,0.04);border:1px solid rgba(212,245,106,0.15);align-items:center;justify-content:center;font-size:12px;color:rgba(212,245,106,0.4);text-align:center;padding:20px;">Raffle<br/>Screenshot</div>
         </div>
       </div>
     </div>
@@ -626,7 +644,7 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
     <div class="reveal">
       <div class="plan-card">
         <div class="plan-glow"></div>
-        <span class="plan-icon">🚀</span>
+        
         <div class="plan-name">PLAN ÚNICO</div>
         <div class="plan-desc">All categories · EAT · DRINK · SHOP · TOURS</div>
         <div class="plan-price-row">
@@ -644,7 +662,7 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
           <li>Direct WhatsApp support</li>
           <li>No contracts · Cancel anytime</li>
         </ul>
-        <a href="https://mpago.la/22PyKV9" target="_blank" class="plan-btn" style="color:#0a1a00;">💳 PAY WITH MERCADOPAGO</a>
+        <a href="https://mpago.la/22PyKV9" target="_blank" class="plan-btn" style="color:#0a1a00;">PAY WITH MERCADOPAGO</a>
       </div>
     </div>
     <div class="included reveal">
@@ -666,20 +684,20 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
         <h2 class="section-title">Tourism Support<br/><span style="color:#a8d400">Integrated</span></h2>
         <p class="section-sub">VAYGO also provides emergency assistance features for tourists. More than discovery — a smarter tourism experience.</p>
         <div class="sos-items">
-          <div class="sos-item"><div class="sos-item-ico">🚨</div><div><div class="sos-item-t">Emergency Numbers</div><div class="sos-item-d">911, Police, Fire, Red Cross — one tap away</div></div></div>
-          <div class="sos-item"><div class="sos-item-ico">🏥</div><div><div class="sos-item-t">Hospitals</div><div class="sos-item-d">Amerimed, International Hospital, Cruz Roja</div></div></div>
-          <div class="sos-item"><div class="sos-item-ico">🏛️</div><div><div class="sos-item-t">Consulates</div><div class="sos-item-d">USA, Canada, UK, Germany, France, Spain</div></div></div>
-          <div class="sos-item"><div class="sos-item-ico">📍</div><div><div class="sos-item-t">Share My Location</div><div class="sos-item-d">Instant GPS location sharing with one tap</div></div></div>
+          <div class="sos-item"><div class="sos-item-ico"></div><div><div class="sos-item-t">Emergency Numbers</div><div class="sos-item-d">911, Police, Fire, Red Cross — one tap away</div></div></div>
+          <div class="sos-item"><div class="sos-item-ico"></div><div><div class="sos-item-t">Hospitals</div><div class="sos-item-d">Amerimed, International Hospital, Cruz Roja</div></div></div>
+          <div class="sos-item"><div class="sos-item-ico"></div><div><div class="sos-item-t">Consulates</div><div class="sos-item-d">USA, Canada, UK, Germany, France, Spain</div></div></div>
+          <div class="sos-item"><div class="sos-item-ico"></div><div><div class="sos-item-t">Share My Location</div><div class="sos-item-d">Instant GPS location sharing with one tap</div></div></div>
         </div>
       </div>
       <div class="sos-card">
         <div class="sos-tag">Emergency · Cozumel</div>
         <div class="sos-911">911</div>
         <div class="sos-pills">
-          <div class="sos-pill">🚑 Red Cross · +52 987 872 0103</div>
-          <div class="sos-pill">🔥 Fire Dept · +52 987 872 0405</div>
-          <div class="sos-pill">🚓 Police · +52 987 872 9800</div>
-          <div class="sos-pill">🏥 Amerimed · +52 987 869 5555</div>
+          <div class="sos-pill">Red Cross · +52 987 872 0103</div>
+          <div class="sos-pill">Bomberos · +52 987 872 0405</div>
+          <div class="sos-pill">Policía · +52 987 872 9800</div>
+          <div class="sos-pill">Amerimed · +52 987 869 5555</div>
         </div>
       </div>
     </div>
@@ -694,7 +712,7 @@ footer{background:var(--bg);padding:40px 5%;display:flex;align-items:center;just
     <h2 class="cta-title reveal">Tourists Are Already<br/>Traveling.<br/><span style="color:#a8d400">Will They Discover<br/>Your Business?</span></h2>
     <p class="cta-sub reveal">Activate today. No contracts. No complications.<br/>Online registration, secure payment, live in 24 hours.</p>
     <div class="cta-btns reveal">
-      <a href="https://vaygowebapp-ynao.vercel.app/registro.html" class="btn-primary">📝 Register My Venue</a>
+      <a href="https://vaygowebapp-ynao.vercel.app/registro.html" class="btn-primary">Register My Venue</a>
       <a href="https://wa.me/529871412188?text=Hola%2C+quiero+info+sobre+VAYGO" target="_blank" class="btn-whatsapp">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         Talk on WhatsApp
