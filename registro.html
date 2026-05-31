@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>VAYGO — Únete como Venue</title>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script> 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
 firebase.initializeApp({
@@ -88,7 +88,7 @@ nav {
 .plans { padding: 100px 5%; background: var(--bg); }
 .plans-header { text-align: center; margin-bottom: 60px; }
 .plans-badge { display: inline-block; background: rgba(212,245,106,0.08); border: 1px solid rgba(212,245,106,0.3); border-radius: 100px; padding: 6px 18px; font-size: 10px; font-weight: 700; color: var(--lime2); letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 16px; }
-.plans-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 860px; margin: 0 auto; }
+.plans-grid { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 560px; margin: 0 auto; }
 .plan-card { background: var(--card); border: 1px solid var(--border); border-radius: 22px; padding: 36px 32px; position: relative; overflow: hidden; transition: border-color .3s, transform .3s; cursor: pointer; }
 .plan-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, rgba(212,245,106,0.4), transparent); transform: scaleX(0); transition: transform .3s; }
 .plan-card:hover { border-color: rgba(212,245,106,0.3); transform: translateY(-3px); }
@@ -461,7 +461,7 @@ footer { padding: 32px 5%; display: flex; align-items: center; justify-content: 
         <h2 class="section-title">Elige Tu<br/><span class="accent">Presencia</span></h2>
         <p style="font-size:14px;color:var(--gray);margin-top:10px;">Suscripción mensual. Sin contratos. Cancela cuando quieras.</p>
       </div>
-      <div class="plans-grid reveal" id="plansGrid" style="grid-template-columns:repeat(2,1fr);max-width:860px;">
+      <div class="plans-grid reveal" id="plansGrid">
 
         <!-- PLAN 1: CATEGORÍA -->
         <div class="plan-card" data-plan="categoria" data-name="Categoría" data-price="$3,000 MXN/mes (preventa)" onclick="selectPlan(this)">
