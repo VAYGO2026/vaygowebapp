@@ -309,17 +309,11 @@ footer {
 <body>
 
 <!-- VIDEO MODAL -->
+<script src="https://player.vimeo.com/api/player.js"></script>
 <div class="video-overlay" id="videoOverlay" onclick="closeVideoOnBg(event)">
   <div class="video-wrap">
     <button class="video-close" onclick="closeVideo()">✕ &nbsp;Cerrar</button>
-    <div class="video-container">
-      <iframe id="vimeoFrame"
-        src=""
-        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-        referrerpolicy="strict-origin-when-cross-origin"
-        title="VAYGO CLIENTE">
-      </iframe>
-    </div>
+    <div class="video-container" id="vimeoContainer"></div>
   </div>
 </div>
 
@@ -456,15 +450,33 @@ footer {
 </footer>
 
 <script>
+let vimeoPlayer = null;
+
 function openVideo() {
-  document.getElementById('vimeoFrame').src =
-    'https://player.vimeo.com/video/1197191444?autoplay=1&muted=0&title=0&byline=0&portrait=0&badge=0&autopause=0';
+  const container = document.getElementById('vimeoContainer');
+  container.innerHTML = '';
+  vimeoPlayer = new Vimeo.Player(container, {
+    id: 1197191444,
+    width: '100%',
+    autoplay: true,
+    title: false,
+    byline: false,
+    portrait: false,
+    badge: false,
+    responsive: true
+  });
+  vimeoPlayer.play().catch(() => {});
   document.getElementById('videoOverlay').classList.add('show');
   document.body.style.overflow = 'hidden';
 }
 
 function closeVideo() {
-  document.getElementById('vimeoFrame').src = '';
+  if (vimeoPlayer) {
+    vimeoPlayer.pause().catch(() => {});
+    vimeoPlayer.destroy().catch(() => {});
+    vimeoPlayer = null;
+  }
+  document.getElementById('vimeoContainer').innerHTML = '';
   document.getElementById('videoOverlay').classList.remove('show');
   document.body.style.overflow = '';
 }
@@ -473,7 +485,6 @@ function closeVideoOnBg(e) {
   if (e.target === document.getElementById('videoOverlay')) closeVideo();
 }
 
-// ESC to close
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeVideo(); });
 
 // Scroll reveal
