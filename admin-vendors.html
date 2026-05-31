@@ -77,6 +77,9 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:#fff;min-height
 .cm-desc{font-size:13px;color:var(--gray);margin-bottom:16px;line-height:1.6;}
 .btn-close-all{width:100%;padding:14px;background:linear-gradient(90deg,var(--gold),#f0a500);border:none;border-radius:12px;color:#1a0a00;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 0 #7a4f00;}
 .status-msg{font-size:12px;text-align:center;margin-top:8px;min-height:18px;color:var(--lime);}
+.vc-paid{background:rgba(212,245,106,0.06);border:1px solid rgba(212,245,106,0.2);border-radius:10px;padding:8px 14px;font-size:12px;color:var(--lime);font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+.btn-mark-paid{padding:8px 16px;background:rgba(212,245,106,0.1);border:1px solid rgba(212,245,106,0.3);border-radius:8px;color:var(--lime);font-size:12px;font-weight:700;cursor:pointer;}
+.btn-unpaid{padding:8px 16px;background:rgba(255,100,100,0.08);border:1px solid rgba(255,100,100,0.2);border-radius:8px;color:#ff6b6b;font-size:12px;font-weight:700;cursor:pointer;}
 .detail-tab{padding:8px 18px;border-radius:50px;font-size:12px;font-weight:700;border:1px solid var(--border);color:var(--gray);cursor:pointer;background:transparent;transition:all .2s;font-family:'DM Sans',sans-serif;}
 .detail-tab.active{border-color:rgba(212,245,106,0.5);color:var(--lime);background:rgba(212,245,106,0.08);}
 .detail-row{display:flex;align-items:center;justify-content:space-between;padding:12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
@@ -327,6 +330,8 @@ function renderVendors(){
     const isActive = v.status !== 'inactive';
     const scans = (v.scans && v.scans[currentMonth]) ? (v.scans[currentMonth].total || 0) : 0;
     const convRate = scans > 0 ? Math.round((coupons/scans)*100) : 0;
+    const isPaid = !!(v.payments && v.payments[currentMonth]);
+    const paidDate = isPaid ? v.payments[currentMonth] : '';
 
     return `
     <div class="vendor-card">
@@ -515,6 +520,27 @@ async function limpiarEscaneos(id){
     await batch.commit();
     loadData();
   } catch(e){ console.error(e); alert('Error: ' + e.message); }
+}
+
+async function markPaid(id, amount) {
+  if(!confirm(`¿Confirmar pago de $${amount} MXN a este vendedor?\n\nEsto quedará registrado como pagado en ${currentMonth}.`)) return;
+  const today = new Date().toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'});
+  try {
+    await db.collection('vendors').doc(id).update({
+      [`payments.${currentMonth}`]: today
+    });
+    loadData();
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function markUnpaid(id) {
+  if(!confirm('¿Deshacer el pago de este vendedor para ' + currentMonth + '?')) return;
+  try {
+    await db.collection('vendors').doc(id).update({
+      [`payments.${currentMonth}`]: firebase.firestore.FieldValue.delete()
+    });
+    loadData();
+  } catch(e) { alert('Error: ' + e.message); }
 }
 
 async function cerrarCorte(){
