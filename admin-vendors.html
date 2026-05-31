@@ -77,9 +77,6 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:#fff;min-height
 .cm-desc{font-size:13px;color:var(--gray);margin-bottom:16px;line-height:1.6;}
 .btn-close-all{width:100%;padding:14px;background:linear-gradient(90deg,var(--gold),#f0a500);border:none;border-radius:12px;color:#1a0a00;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 0 #7a4f00;}
 .status-msg{font-size:12px;text-align:center;margin-top:8px;min-height:18px;color:var(--lime);}
-.vc-paid{background:rgba(212,245,106,0.06);border:1px solid rgba(212,245,106,0.2);border-radius:10px;padding:8px 14px;font-size:12px;color:var(--lime);font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:10px;}
-.btn-mark-paid{padding:8px 16px;background:rgba(212,245,106,0.1);border:1px solid rgba(212,245,106,0.3);border-radius:8px;color:var(--lime);font-size:12px;font-weight:700;cursor:pointer;}
-.btn-unpaid{padding:8px 16px;background:rgba(255,100,100,0.08);border:1px solid rgba(255,100,100,0.2);border-radius:8px;color:#ff6b6b;font-size:12px;font-weight:700;cursor:pointer;}
 .detail-tab{padding:8px 18px;border-radius:50px;font-size:12px;font-weight:700;border:1px solid var(--border);color:var(--gray);cursor:pointer;background:transparent;transition:all .2s;font-family:'DM Sans',sans-serif;}
 .detail-tab.active{border-color:rgba(212,245,106,0.5);color:var(--lime);background:rgba(212,245,106,0.08);}
 .detail-row{display:flex;align-items:center;justify-content:space-between;padding:12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
@@ -153,26 +150,11 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:#fff;min-height
       <button class="btn-add" onclick="addVendor()">AGREGAR</button>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
-      <div>
-        <div class="field-label">Nombre del Titular</div>
-        <input class="field-inp" id="newTitular" placeholder="Nombre completo"/>
-      </div>
-      <div>
-        <div class="field-label">Banco</div>
-        <input class="field-inp" id="newBanco" placeholder="BBVA, Banamex, HSBC..."/>
-      </div>
-      <div>
-        <div class="field-label">CLABE Interbancaria</div>
-        <input class="field-inp" id="newClabe" placeholder="18 dígitos"/>
-      </div>
-      <div>
-        <div class="field-label">Cuenta MercadoPago</div>
-        <input class="field-inp" id="newMpago" placeholder="Email o teléfono MP"/>
-      </div>
-      <div>
-        <div class="field-label">WhatsApp del Vendedor</div>
-        <input class="field-inp" id="newPhone" placeholder="529871234567"/>
-      </div>
+      <div><div class="field-label">Nombre del Titular</div><input class="field-inp" id="newTitular" placeholder="Nombre completo"/></div>
+      <div><div class="field-label">Banco</div><input class="field-inp" id="newBanco" placeholder="BBVA, Banamex..."/></div>
+      <div><div class="field-label">CLABE Interbancaria</div><input class="field-inp" id="newClabe" placeholder="18 digitos"/></div>
+      <div><div class="field-label">Cuenta MercadoPago</div><input class="field-inp" id="newMpago" placeholder="Email o telefono MP"/></div>
+      <div><div class="field-label">WhatsApp</div><input class="field-inp" id="newPhone" placeholder="529871234567"/></div>
     </div>
     <div class="add-status" id="addStatus"></div>
   </div>
@@ -350,27 +332,10 @@ function renderVendors(){
         <div class="vc-stat"><div class="vc-stat-num gold">$${total}</div><div class="vc-stat-lbl">A pagar</div></div>
         <div class="vc-stat"><div class="vc-stat-num" style="font-size:16px;color:rgba(212,245,106,0.6);">${convRate}%</div><div class="vc-stat-lbl">Conversión</div></div>
       </div>
-      ${(v.clabe||v.mpago||v.banco) ? `
-      <div style="background:rgba(255,215,0,0.04);border:1px solid rgba(255,215,0,0.15);border-radius:10px;padding:12px 14px;margin-bottom:10px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">💳 Datos de Pago</div>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
-          ${v.titular?`<span style="font-size:13px;color:#fff;font-weight:700;">${v.titular}</span>`:''}
-          ${v.banco?`<span style="font-size:12px;color:var(--gray);">${v.banco}</span>`:''}
-          ${v.clabe?`<span style="font-size:12px;color:#4FA3E8;font-family:monospace;letter-spacing:.05em;">CLABE: ${v.clabe}</span>`:''}
-          ${v.mpago?`<span style="font-size:12px;color:var(--lime);">MP: ${v.mpago}</span>`:''}
-        </div>
-      </div>` : ''}
       <div class="vc-actions">
         <a class="btn-view" href="vendor-panel.html?id=${v.id}" target="_blank">Ver panel</a>
-        <a class="btn-view" style="background:rgba(37,211,102,0.1);border-color:rgba(37,211,102,0.3);color:#25D366;" href="https://wa.me/?text=${encodeURIComponent('Hola ' + (v.name||v.id) + '! 👋
-
-Aquí está tu panel personal de VAYGO 🎰
-
-👉 https://vaygowebapp-ynao.vercel.app/vendor-panel.html?id=' + v.id + '
-
-Desde ahí puedes ver tus cupones, ganancias y estadísticas del mes. ¡Mucho éxito! 🚀')}" target="_blank">📲 Compartir link</a>
+        <button class="btn-view" style="background:rgba(37,211,102,0.1);border-color:rgba(37,211,102,0.3);color:#25D366;" onclick="compartirPanel('${v.id}','${(v.name||v.id).replace(/'/g,'')}')">Compartir link</button>
         <button class="btn-view" style="cursor:pointer;" onclick="openDetail('${v.id}','${v.name||v.id}')">Ver detalle</button>
-
         ${isActive
           ? `<button class="btn-deactivate" onclick="toggleVendor('${v.id}','inactive')">Dar de baja</button>`
           : `<button class="btn-activate" onclick="toggleVendor('${v.id}','active')">Reactivar</button>`
@@ -530,24 +495,29 @@ async function limpiarEscaneos(id){
 }
 
 async function markPaid(id, amount) {
-  if(!confirm(`¿Confirmar pago de $${amount} MXN a este vendedor?\n\nEsto quedará registrado como pagado en ${currentMonth}.`)) return;
-  const today = new Date().toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'});
+  if (!confirm('Confirmar pago de $' + amount + ' MXN a este vendedor? Quedara registrado como pagado en ' + currentMonth + '.')) return;
+  var today = new Date().toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'});
   try {
-    await db.collection('vendors').doc(id).update({
-      [`payments.${currentMonth}`]: today
-    });
+    var update = {};
+    update['payments.' + currentMonth] = today;
+    await db.collection('vendors').doc(id).update(update);
     loadData();
   } catch(e) { alert('Error: ' + e.message); }
 }
 
 async function markUnpaid(id) {
-  if(!confirm('¿Deshacer el pago de este vendedor para ' + currentMonth + '?')) return;
+  if (!confirm('Deshacer el pago de este vendedor para ' + currentMonth + '?')) return;
   try {
-    await db.collection('vendors').doc(id).update({
-      [`payments.${currentMonth}`]: firebase.firestore.FieldValue.delete()
-    });
+    var update = {};
+    update['payments.' + currentMonth] = firebase.firestore.FieldValue.delete();
+    await db.collection('vendors').doc(id).update(update);
     loadData();
   } catch(e) { alert('Error: ' + e.message); }
+}
+
+function compartirPanel(id, nombre) {
+  var msg = 'Hola ' + nombre + '! Tu panel personal VAYGO: https://vaygowebapp-ynao.vercel.app/vendor-panel.html?id=' + id + ' - Desde ahi puedes ver tus cupones, ganancias y estadisticas del mes.';
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
 }
 
 async function cerrarCorte(){
