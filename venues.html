@@ -209,8 +209,9 @@ nav {
 }
 .video-close:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
 .video-container {
-  position: relative; padding-bottom: 56.25%; height: 0;
+  position: relative; padding-bottom: 177.77%; height: 0;
   border-radius: 20px; overflow: hidden;
+  max-width: 380px; margin: 0 auto;
   box-shadow: 0 40px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(212,245,106,0.1);
 }
 .video-container iframe {
@@ -314,7 +315,7 @@ footer {
     <div class="video-container">
       <iframe id="vimeoFrame"
         src=""
-        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
+        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
         referrerpolicy="strict-origin-when-cross-origin"
         title="VAYGO CLIENTE">
       </iframe>
@@ -457,7 +458,7 @@ footer {
 <script>
 function openVideo() {
   document.getElementById('vimeoFrame').src =
-    'https://player.vimeo.com/video/1197191444?autoplay=1&title=0&byline=0&portrait=0&badge=0';
+    'https://player.vimeo.com/video/1197191444?autoplay=1&muted=0&title=0&byline=0&portrait=0&badge=0&autopause=0';
   document.getElementById('videoOverlay').classList.add('show');
   document.body.style.overflow = 'hidden';
 }
