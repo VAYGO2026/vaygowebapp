@@ -362,6 +362,13 @@ function renderVendors(){
       </div>` : ''}
       <div class="vc-actions">
         <a class="btn-view" href="vendor-panel.html?id=${v.id}" target="_blank">Ver panel</a>
+        <a class="btn-view" style="background:rgba(37,211,102,0.1);border-color:rgba(37,211,102,0.3);color:#25D366;" href="https://wa.me/?text=${encodeURIComponent('Hola ' + (v.name||v.id) + '! 👋
+
+Aquí está tu panel personal de VAYGO 🎰
+
+👉 https://vaygowebapp-ynao.vercel.app/vendor-panel.html?id=' + v.id + '
+
+Desde ahí puedes ver tus cupones, ganancias y estadísticas del mes. ¡Mucho éxito! 🚀')}" target="_blank">📲 Compartir link</a>
         <button class="btn-view" style="cursor:pointer;" onclick="openDetail('${v.id}','${v.name||v.id}')">Ver detalle</button>
 
         ${isActive
