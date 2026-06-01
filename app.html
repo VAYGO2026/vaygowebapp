@@ -148,7 +148,7 @@ html,body{
   transition:transform 0.13s, background 0.13s;
   padding:8px 4px;
   position: relative;
-  /* animation removed */
+  /* animation: float removed */
   overflow: hidden;
 }
 
@@ -220,10 +220,6 @@ html,body{
 
 /* ── Bottom Nav Bar ── */
 .user-counter {
-  position: absolute;
-  bottom: 440px;
-  right: 18px;
-  z-index: 9;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -234,6 +230,10 @@ html,body{
   border-radius: 50px;
   padding: 4px 12px;
   border: 1px solid rgba(255,215,0,0.2);
+  align-self: flex-end;
+  margin-right: 18px;
+  margin-top: 6px;
+  margin-bottom: 2px;
 }
 .user-counter-text {
   font-family: 'DM Sans', sans-serif;
@@ -509,12 +509,6 @@ html,body{
 @media(max-width:430px){
   .app{ width:100%; border-radius:0; }
 }
-@media(max-width:430px) and (min-height:800px){
-  .user-counter{ bottom: 490px; }
-}
-@media(max-width:430px) and (min-height:900px){
-  .user-counter{ bottom: 540px; }
-}
 
 /* ── AD BANNER ── */
 .ad-click-label {
@@ -742,12 +736,13 @@ window.addEventListener('load', loadUserCount);
       </button>
 
     </div>
-  </div>
 
-  <!-- USER COUNTER -->
-  <div class="user-counter">
-    <span class="user-counter-text">USERS</span>
-    <span class="user-counter-num" id="userCount">...</span>
+    <!-- USER COUNTER -->
+    <div class="user-counter">
+      <span class="user-counter-text">USERS</span>
+      <span class="user-counter-num" id="userCount">...</span>
+    </div>
+
   </div>
 
   <!-- ── BOTTOM NAV ── -->
