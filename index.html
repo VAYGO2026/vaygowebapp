@@ -84,7 +84,7 @@ html,body{
 /* ── CITIES wrapper ── */
 .cities{
   position:absolute;
-  top:48%;
+  top:clamp(48%, 52%, 58%);
   left:0; right:0;
   z-index:10;
   display:flex;
@@ -92,6 +92,18 @@ html,body{
   align-items:center;
   gap:11px;
   padding: 0 48px;
+}
+
+/* Samsung S+ and tall screens */
+@media(min-height:860px){
+  .cities{ top: 50%; }
+}
+@media(min-height:960px){
+  .cities{ top: 52%; }
+}
+@media(max-height:700px){
+  .cities{ top: 44%; gap: 8px; }
+  .city-btn{ padding: 11px 18px; font-size: 14px; }
 }
 
 /* ── @property for neon rotation ── */
