@@ -177,6 +177,7 @@ const db=firebase.firestore();
 const VENUE_CONFIGS={
   lobster:{id:'lobster',name:'The Original Lobster House'},
   snorkel:{id:'snorkel',name:'Cozumel Snorkel Center'},
+  '10experiences':{id:'10experiences',name:'10 Experiences'},
   buccanos:{id:'buccanos',name:'Buccanos Beach Club'},
   azulmadera:{id:'azulmadera',name:'Azul Madera'},
   guidos:{id:'guidos',name:"Guido's Restaurant"},
@@ -184,7 +185,9 @@ const VENUE_CONFIGS={
 const _vp=(new URLSearchParams(window.location.search)).get('venue')||'lobster';
 const _vc=VENUE_CONFIGS[_vp]||VENUE_CONFIGS['lobster'];
 const REST_ID=_vc.id,REST_NAME=_vc.name,MIN_PURCHASE="$20 USD";
-const PRIZES=[{label:"10% OFF",color:"#d4f56a"},{label:"15% OFF",color:"#a8d400"},{label:"20% OFF",color:"#78b000"}];
+const PRIZES = _vp === '10experiences'
+  ? [{label:"5% OFF",color:"#d4f56a"},{label:"10% OFF",color:"#a8d400"},{label:"15% OFF",color:"#78b000"}]
+  : [{label:"10% OFF",color:"#d4f56a"},{label:"15% OFF",color:"#a8d400"},{label:"20% OFF",color:"#78b000"}];
 
 function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const s=n=>Array.from({length:n},()=>c[Math.floor(Math.random()*c.length)]).join('');return'VYG-'+s(4)+'-'+s(4);}
 function getExpiry(){const n=new Date(),e=new Date(n);e.setHours(23,59,59,0);if(e<=n)e.setDate(e.getDate()+1);return e;}
@@ -218,7 +221,7 @@ function showQR(code,prize,expiresISO){
 }
 
 function goBackToVenue(){
-  const vm={lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html',snorkel:'snorkel.html'};
+  const vm={lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html',snorkel:'snorkel.html','10experiences':'10experiences.html'};
   window.location.href=vm[_vp]||'lobster.html';
 }
 </script>
@@ -392,7 +395,9 @@ function goBackToVenue(){
 </div>
 
 <script>
-const ITEMS=[{pct:"10%",color:"#d4f56a"},{pct:"15%",color:"#a8d400"},{pct:"20%",color:"#5a8000"}];
+ITEMS = _vp === '10experiences'
+  ? [{pct:"5%",color:"#d4f56a"},{pct:"10%",color:"#a8d400"},{pct:"15%",color:"#5a8000"}]
+  : [{pct:"10%",color:"#d4f56a"},{pct:"15%",color:"#a8d400"},{pct:"20%",color:"#5a8000"}];
 const ITEM_H=110;
 let spinning=false,done=false;
 
@@ -485,7 +490,7 @@ auth.getRedirectResult().then(result => {
   }
 }).catch(e => console.error(e));
 
-const CITY_MAP={lobster:'Cozumel',buccanos:'Cozumel',azulmadera:'Cozumel',guidos:'Cozumel',snorkel:'Cozumel'};
+const CITY_MAP={lobster:'Cozumel',buccanos:'Cozumel',azulmadera:'Cozumel',guidos:'Cozumel',snorkel:'Cozumel','10experiences':'Cozumel'};
 const venueCity=CITY_MAP[_vp]||'Cozumel';
 let currentUser=null,userData=null,cdInterval=null;
 
