@@ -148,7 +148,7 @@ html,body{
   transition:transform 0.13s, background 0.13s;
   padding:8px 4px;
   position: relative;
-  animation: float 3s ease-in-out infinite;
+  /* animation: float removed */
   overflow: hidden;
 }
 
@@ -220,11 +220,7 @@ html,body{
 
 /* ── Bottom Nav Bar ── */
 .user-counter {
-  position: absolute;
-  bottom: 432px;
-  right: 18px;
-  z-index: 29;
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   align-items: center;
   gap: 6px;
@@ -509,12 +505,11 @@ html,body{
 @media(max-width:430px){
   .app{ width:100%; border-radius:0; }
 }
+.demo-overlay{position:fixed;inset:0;z-index:9998;pointer-events:all;cursor:not-allowed;}
+.demo-badge{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:9999;background:rgba(6,14,28,0.92);border:1px solid rgba(212,245,106,0.3);border-radius:100px;padding:8px 20px;font-size:11px;font-weight:700;color:rgba(212,245,106,0.7);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;pointer-events:none;backdrop-filter:blur(10px);}
 
 /* ── AD BANNER ── */
 .ad-click-label {
-  position: absolute;
-  top: 2px;
-  left: 18px;
   font-family: 'DM Sans', sans-serif;
   font-size: 10px;
   font-weight: 800;
@@ -522,16 +517,14 @@ html,body{
   letter-spacing: 2px;
   text-transform: uppercase;
   text-shadow: 0 0 8px rgba(212,245,106,0.5);
-  z-index: 25;
 }
 
 .ad-banner-wrap {
   position: absolute;
-  bottom: 88px;
+  bottom: 80px;
   left: 0; right: 0;
   z-index: 20;
-  padding: 0 18px;
-  padding-top: 20px;
+  padding: 0 18px 0;
 }
 
 .ad-banner {
@@ -596,6 +589,17 @@ firebase.initializeApp({
   appId: "1:499741267414:web:e69cd43156adaea11bc077"
 });
 const db = firebase.firestore();
+
+// ── DEMO MODE ──
+(function(){
+  const p = new URLSearchParams(window.location.search);
+  if(p.get('admin') !== 'vaygo2026'){
+    window.addEventListener('DOMContentLoaded', function(){
+      document.getElementById('demoOverlay').style.display = 'block';
+      document.getElementById('demoBadge').style.display = 'block';
+    });
+  }
+})();
 
 // Load user count from Firebase
 async function loadUserCount() {
@@ -738,12 +742,6 @@ window.addEventListener('load', loadUserCount);
     </div>
   </div>
 
-  <!-- USER COUNTER -->
-  <div class="user-counter">
-    <span class="user-counter-text">USERS</span>
-    <span class="user-counter-num" id="userCount">...</span>
-  </div>
-
   <!-- ── BOTTOM NAV ── -->
     <!-- BACK -->
     <a href="index.html" style="position:absolute;top:28px;left:16px;z-index:40;padding:6px 12px;border-radius:50px;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(212,245,106,0.5);color:#d4f56a;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.12em;text-decoration:none;box-shadow:0 0 10px rgba(212,245,106,0.1);">← BACK</a>
@@ -858,7 +856,13 @@ window.addEventListener('load', loadUserCount);
 
   <!-- ── AD BANNER ── -->
   <div class="ad-banner-wrap">
-    <div class="ad-click-label">CLICK</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div class="ad-click-label" style="position:static;margin:0;">CLICK</div>
+      <div class="user-counter">
+        <span class="user-counter-text">USERS</span>
+        <span class="user-counter-num" id="userCount">...</span>
+      </div>
+    </div>
     <div class="ad-banner" id="adBanner">
 
       <!-- AD 1 — 10 EXPERIENCES -->
@@ -883,7 +887,7 @@ window.addEventListener('load', loadUserCount);
       </div>
 
       <!-- AD 4 — PRESIDENTE -->
-      <div class="ad-slide" data-url="https://www.cozumelsnorkelcenter.com/tours/turtle-sanctuary-snorkel-tour/?gad_source=1&gad_campaignid=19607590008&gclid=Cj0KCQjw2_TQBhCnARIsAF3-XhyOlh4NsWq50ocANGyDtzMZk7OXg1kH5PPsCjui35GvEFvPb5243dcaAlqVEALw_wcB">
+      <div class="ad-slide" data-url="https://presidenteiccozumel.com/tarifa-especial/?utm_source=google&utm_medium=sem&utm_campaign=2026_pic-cozumel_google_conversiones_ixuxy_mx-brand&utm_content=google_aon-presidente_alwayson&utm_term=texto_texto_na_multi&gclsrc=aw.ds&&adset_id=195777675545&campaign_id=23842135601&gad_source=1&gad_campaignid=23842135601&gclid=CjwKCAjw5s_QBhAdEiwADD_gBpvHiMHL53k9cQf1gIgb_pf22qeXzQUg4Oo2d4lN7GeL6yxVTLhBQxoCNykQAvD_BwE">
         <div style="width:100%;height:100%;position:relative;overflow:hidden;border-radius:16px;">
           <img src="ad4.webp" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">
           <div style="position:absolute;bottom:8px;right:10px;background:rgba(255,215,0,0.9);border-radius:50px;padding:2px 8px;font-size:9px;font-weight:800;color:#000;">AD</div>
@@ -1203,6 +1207,8 @@ document.getElementById('adBanner').addEventListener('touchend', () => {
 }, {passive:true});
 </script>
 
+<div id="demoOverlay" class="demo-overlay" style="display:none;"></div>
+<div id="demoBadge" class="demo-badge" style="display:none;">🔒 Coming Soon · Cozumel 2026</div>
 <script src="admin-float.js"></script>
 </body>
 </html>
