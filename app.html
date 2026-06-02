@@ -593,7 +593,12 @@ const db = firebase.firestore();
 // ── DEMO MODE ──
 (function(){
   const p = new URLSearchParams(window.location.search);
-  if(p.get('admin') !== 'vaygo2026'){
+  // Si viene con ?admin=vaygo2026 guarda la sesión
+  if(p.get('admin') === 'vaygo2026'){
+    sessionStorage.setItem('vaygo_admin', 'true');
+  }
+  const isAdmin = sessionStorage.getItem('vaygo_admin') === 'true';
+  if(!isAdmin){
     function activateDemo(){
       const ov = document.getElementById('demoOverlay');
       const bd = document.getElementById('demoBadge');
