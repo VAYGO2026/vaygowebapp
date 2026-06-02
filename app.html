@@ -594,10 +594,17 @@ const db = firebase.firestore();
 (function(){
   const p = new URLSearchParams(window.location.search);
   if(p.get('admin') !== 'vaygo2026'){
-    window.addEventListener('DOMContentLoaded', function(){
-      document.getElementById('demoOverlay').style.display = 'block';
-      document.getElementById('demoBadge').style.display = 'block';
-    });
+    function activateDemo(){
+      const ov = document.getElementById('demoOverlay');
+      const bd = document.getElementById('demoBadge');
+      if(ov) ov.style.display = 'block';
+      if(bd) bd.style.display = 'block';
+    }
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', activateDemo);
+    } else {
+      activateDemo();
+    }
   }
 })();
 
