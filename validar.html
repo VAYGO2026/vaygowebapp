@@ -138,7 +138,7 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
     <div class="box">
       <div class="box-title">📷 Escanear QR del cliente</div>
       <div class="box-sub">Apunta la cámara al QR o ingresa el código manual</div>
-      <video id="preview" autoplay playsinline muted></video>
+      <video id="preview" playsinline webkit-playsinline muted autoplay playsinline muted></video>
       <canvas id="scanCanvas"></canvas>
       <div class="scan-status" id="scanStatus"></div>
       <div class="loading" id="loadingMsg">🔍 Verificando en Firebase...</div>
@@ -257,8 +257,16 @@ window.validateCode = async function(raw) {
   document.getElementById('loadingMsg').style.display = 'block';
   document.getElementById('resultBox').style.display = 'none';
 
+  // Timeout for slow internet connections
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('timeout')), 8000)
+  );
+
   try {
-    const snap = await getDoc(doc(db, 'codes', code));
+    const snap = await Promise.race([
+      getDoc(doc(db, 'codes', code)),
+      timeout
+    ]);
     document.getElementById('loadingMsg').style.display = 'none';
     if(!snap.exists()) return showResult('notfound', { code });
 
@@ -287,7 +295,11 @@ window.validateCode = async function(raw) {
 
   } catch(e) {
     document.getElementById('loadingMsg').style.display = 'none';
-    showResult('error', { code });
+    if(e.message === 'timeout') {
+      showResult('timeout', { code });
+    } else {
+      showResult('error', { code });
+    }
   }
 };
 
@@ -386,7 +398,8 @@ function showResult(type, data) {
     expired:    {icon:'⏰',color:'#FFD700',border:'rgba(255,215,0,0.4)',title:'CÓDIGO EXPIRADO',sub:'Este código ya venció.',btn:false},
     notfound:   {icon:'🚫',color:'#FFD700',border:'rgba(255,215,0,0.4)',title:'NO ENCONTRADO',sub:'Este código no existe en VAYGO.',btn:false},
     invalid:    {icon:'🚫',color:'#FFD700',border:'rgba(255,215,0,0.4)',title:'CÓDIGO INVÁLIDO',sub:'Formato incorrecto.',btn:false},
-    error:      {icon:'⚠️',color:'#FFD700',border:'rgba(255,215,0,0.4)',title:'ERROR DE CONEXIÓN',sub:'No se pudo verificar. Revisa internet.',btn:false},
+    error:      {icon:'⚠️',color:'#FFD700',border:'rgba(255,215,0,0.4)',title:'SIN CONEXIÓN',sub:'No se pudo verificar.<br><strong>Usa el código manual</strong> o conéctate a mejor internet.',btn:false},
+    timeout:    {icon:'⏳',color:'#FFD700',border:'rgba(255,215,0,0.4)',title:'CONEXIÓN LENTA',sub:'El servidor tardó mucho.<br><strong>Intenta de nuevo</strong> o usa el código manual.',btn:false},
   };
 
   const c = cfgs[type] || cfgs.invalid;
@@ -431,19 +444,46 @@ let scanStream = null;
 let animFrame = null;
 
 function startScanner() {
-  navigator.mediaDevices.getUserMedia({
-    video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
-  }).then(stream => {
-    scanStream = stream;
-    const video = document.getElementById('preview');
-    video.srcObject = stream;
-    video.style.display = 'block';
-    document.getElementById('startBtn').style.display = 'none';
-    document.getElementById('stopBtn').style.display = 'flex';
-    document.getElementById('scanStatus').textContent = '🔍 Buscando QR...';
-    scanActive = true;
-    video.addEventListener('loadedmetadata', () => { video.play(); scanLoop(); });
-  }).catch(() => { alert('No se pudo abrir la cámara. Usa el código manual.'); });
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    alert('Tu navegador no soporta la cámara. Usa el código manual.');
+    return;
+  }
+  // Try rear camera first, fallback to any camera
+  const tryCamera = (constraints) => {
+    return navigator.mediaDevices.getUserMedia(constraints)
+      .then(stream => {
+        scanStream = stream;
+        const video = document.getElementById('preview');
+        video.srcObject = stream;
+        video.setAttribute('playsinline', true); // iOS requirement
+        video.setAttribute('muted', true);
+        video.style.display = 'block';
+        document.getElementById('startBtn').style.display = 'none';
+        document.getElementById('stopBtn').style.display = 'flex';
+        document.getElementById('scanStatus').textContent = '📷 Apunta la cámara al código QR...';
+        scanActive = true;
+        video.addEventListener('loadedmetadata', () => {
+          video.play().then(() => scanLoop()).catch(() => scanLoop());
+        });
+        video.addEventListener('canplay', () => {
+          if(scanActive && video.paused) video.play().catch(()=>{});
+        });
+      });
+  };
+
+  // First try rear camera with high res
+  tryCamera({ video: { facingMode: { exact: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } })
+    .catch(() =>
+      // Fallback: any rear camera
+      tryCamera({ video: { facingMode: 'environment' } })
+    )
+    .catch(() =>
+      // Last resort: any camera
+      tryCamera({ video: true })
+    )
+    .catch(() => {
+      alert('No se pudo abrir la cámara.\n\nEn iPhone: abre en Safari.\nEn Android: permite el acceso a la cámara.\n\nUsa el código manual como alternativa.');
+    });
 }
 
 function stopScanner() {
