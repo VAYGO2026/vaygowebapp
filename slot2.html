@@ -180,6 +180,7 @@ const VENUE_CONFIGS={
   '10experiences':{id:'10experiences',name:'10 Experiences'},
   monina:{id:'monina',name:'La Monina'},
   aquiyahora:{id:'aquiyahora',name:'Aquí y Ahora'},
+  carruaje:{id:'carruaje',name:'Carruajes del Caribe'},
   buccanos:{id:'buccanos',name:'Buccanos Beach Club'},
   azulmadera:{id:'azulmadera',name:'Azul Madera'},
   guidos:{id:'guidos',name:"Guido's Restaurant"},
@@ -223,7 +224,7 @@ function showQR(code,prize,expiresISO){
 }
 
 function goBackToVenue(){
-  const vm={lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html',snorkel:'snorkel.html','10experiences':'10experiences.html',monina:'monina.html',aquiyahora:'aquiyahora.html'};
+  const vm={lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html',snorkel:'snorkel.html','10experiences':'10experiences.html',monina:'monina.html',aquiyahora:'aquiyahora.html',carruaje:'carruaje.html'};
   window.location.href=vm[_vp]||'lobster.html';
 }
 </script>
@@ -492,7 +493,7 @@ auth.getRedirectResult().then(result => {
   }
 }).catch(e => console.error(e));
 
-const CITY_MAP={lobster:'Cozumel',buccanos:'Cozumel',azulmadera:'Cozumel',guidos:'Cozumel',snorkel:'Cozumel','10experiences':'Cozumel',monina:'Cozumel',aquiyahora:'Cozumel'};
+const CITY_MAP={lobster:'Cozumel',buccanos:'Cozumel',azulmadera:'Cozumel',guidos:'Cozumel',snorkel:'Cozumel','10experiences':'Cozumel',monina:'Cozumel',aquiyahora:'Cozumel',carruaje:'Cozumel'};
 const venueCity=CITY_MAP[_vp]||'Cozumel';
 let currentUser=null,userData=null,cdInterval=null;
 
