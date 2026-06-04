@@ -1225,11 +1225,12 @@ let current  = 0;
 let timer    = null;
 
 function showSlide(idx){
+  if(slides.length === 0) return;
   slides[current].classList.remove('active');
-  dots[current].classList.remove('active');
+  if(dots[current]) dots[current].classList.remove('active');
   current = idx % slides.length;
   slides[current].classList.add('active');
-  dots[current].classList.add('active');
+  if(dots[current]) dots[current].classList.add('active');
 }
 
 function nextSlide(){ showSlide(current + 1); }
@@ -1243,12 +1244,15 @@ document.getElementById('adBanner').addEventListener('click', () => {
   if(url && url !== '#') window.open(url, '_blank');
 });
 
-// Pause on touch, resume after
+// Pause on touch, resume after delay
 document.getElementById('adBanner').addEventListener('touchstart', () => {
   clearInterval(timer);
 }, {passive:true});
 document.getElementById('adBanner').addEventListener('touchend', () => {
-  timer = setInterval(nextSlide, 3000);
+  clearInterval(timer);
+  setTimeout(() => {
+    timer = setInterval(nextSlide, 3000);
+  }, 3000);
 }, {passive:true});
 </script>
 
