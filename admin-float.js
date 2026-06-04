@@ -12,7 +12,7 @@
     #vaygo-admin-fab{
       position:fixed;top:14px;right:14px;z-index:9999;
       width:48px;height:48px;border-radius:50%;
-      background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);
+      background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%); 
       box-shadow:0 4px 0 #2d4000,0 0 18px rgba(212,245,106,0.5);
       border:none;cursor:pointer;
       display:flex;align-items:center;justify-content:center;
