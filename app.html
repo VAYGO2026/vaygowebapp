@@ -929,6 +929,7 @@ window.addEventListener('load', loadUserCount);
       <div class="ad-dot"></div>
       <div class="ad-dot"></div>
       <div class="ad-dot"></div>
+      <div class="ad-dot"></div>
     </div>
   </div>
 
@@ -1209,7 +1210,7 @@ function showSlide(idx){
 function nextSlide(){ showSlide(current + 1); }
 
 // Auto rotate every 2 seconds
-timer = setInterval(nextSlide, 3500);
+timer = setInterval(nextSlide, 3000);
 
 // Tap to open URL
 document.getElementById('adBanner').addEventListener('click', () => {
@@ -1222,7 +1223,7 @@ document.getElementById('adBanner').addEventListener('touchstart', () => {
   clearInterval(timer);
 }, {passive:true});
 document.getElementById('adBanner').addEventListener('touchend', () => {
-  timer = setInterval(nextSlide, 3500);
+  timer = setInterval(nextSlide, 3000);
 }, {passive:true});
 </script>
 
