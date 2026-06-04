@@ -505,8 +505,32 @@ html,body{
 @media(max-width:430px){
   .app{ width:100%; border-radius:0; }
 }
-.demo-overlay{position:fixed;inset:0;z-index:9998;pointer-events:all;cursor:not-allowed;}
-.demo-badge{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:9999;background:rgba(6,14,28,0.92);border:1px solid rgba(212,245,106,0.3);border-radius:100px;padding:8px 20px;font-size:11px;font-weight:700;color:rgba(212,245,106,0.7);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;pointer-events:none;backdrop-filter:blur(10px);}
+/* DEMO MODE - block only buttons, not banner */
+.demo-block{
+  position:absolute;
+  top:0; left:0; right:0;
+  bottom:130px;
+  z-index:9998;
+  pointer-events:all;
+  cursor:not-allowed;
+}
+.demo-badge{
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  z-index:9999;
+  background:rgba(6,14,28,0.85);
+  border:1px solid rgba(212,245,106,0.3);
+  border-radius:100px;
+  padding:8px 20px;
+  font-size:11px;font-weight:700;
+  color:rgba(212,245,106,0.7);
+  letter-spacing:2px;text-transform:uppercase;
+  white-space:nowrap;
+  pointer-events:none;
+  backdrop-filter:blur(10px);
+}
+
 
 /* ── AD BANNER ── */
 .ad-click-label {
@@ -593,25 +617,21 @@ const db = firebase.firestore();
 // ── DEMO MODE ──
 (function(){
   const p = new URLSearchParams(window.location.search);
-  // Si viene con ?admin=vaygo2026 guarda la sesión
   if(p.get('admin') === 'vaygo2026'){
-    sessionStorage.setItem('vaygo_admin', 'true');
+    try{ localStorage.setItem('vaygo_admin','vaygo2026'); }catch(e){}
   }
-  const isAdmin = sessionStorage.getItem('vaygo_admin') === 'true';
+  var isAdmin = false;
+  try{ isAdmin = localStorage.getItem('vaygo_admin') === 'vaygo2026'; }catch(e){}
   if(!isAdmin){
     function activateDemo(){
-      const ov = document.getElementById('demoOverlay');
-      const bd = document.getElementById('demoBadge');
-      if(ov) ov.style.display = 'block';
-      if(bd) bd.style.display = 'block';
+      const bl = document.getElementById('demoBlock');
+      if(bl) bl.style.display = 'block';
     }
-    if(document.readyState === 'loading'){
-      document.addEventListener('DOMContentLoaded', activateDemo);
-    } else {
-      activateDemo();
-    }
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', activateDemo);
+    else activateDemo();
   }
 })();
+
 
 // Load user count from Firebase
 async function loadUserCount() {
@@ -756,6 +776,11 @@ window.addEventListener('load', loadUserCount);
       </button>
 
     </div>
+  </div>
+
+  <!-- DEMO BLOCK -->
+  <div id="demoBlock" class="demo-block" style="display:none;">
+    <div class="demo-badge">🔒 Coming Soon · Cozumel 2026</div>
   </div>
 
   <!-- ── BOTTOM NAV ── -->
@@ -1227,8 +1252,6 @@ document.getElementById('adBanner').addEventListener('touchend', () => {
 }, {passive:true});
 </script>
 
-<div id="demoOverlay" class="demo-overlay" style="display:none;"></div>
-<div id="demoBadge" class="demo-badge" style="display:none;">🔒 Coming Soon · Cozumel 2026</div>
 <script src="admin-float.js"></script>
 </body>
 </html>
