@@ -181,7 +181,8 @@ const fbApp = initializeApp({
 const db = getFirestore(fbApp);
 
 let pendingCode = '';
-let pendingCodeData = null; /* Store full code data to avoid re-reading after update */
+let pendingCodeData = null;
+let pendingCollection = 'codes'; /* Store full code data to avoid re-reading after update */
 let currentVenue = '';
 let currentStaff = '';
 
@@ -252,19 +253,27 @@ window.validateCode = async function(raw) {
     code = raw.replace(/\s/g,'').toUpperCase();
     prize = null; restName = null;
   }
-  if(!code.match(/^VYG-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) return showResult('invalid', { code });
+
+  // Detect collection: VYG- = codes, VPR- = vp_rewards
+  const isVPR = code.startsWith('VPR-');
+  const isVYG = code.startsWith('VYG-');
+  if(!isVPR && !isVYG) return showResult('invalid', { code });
+  if(isVPR && !code.match(/^VPR-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) return showResult('invalid', { code });
+  if(isVYG && !code.match(/^VYG-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) return showResult('invalid', { code });
+
+  const colName = isVPR ? 'vp_rewards' : 'codes';
+  const badgeLabel = isVPR ? '🎁 VAYGO POINTS REWARD' : '🎰 SPIN & WIN';
 
   document.getElementById('loadingMsg').style.display = 'block';
   document.getElementById('resultBox').style.display = 'none';
 
-  // Timeout for slow internet connections
   const timeout = new Promise((_, reject) =>
     setTimeout(() => reject(new Error('timeout')), 8000)
   );
 
   try {
     const snap = await Promise.race([
-      getDoc(doc(db, 'codes', code)),
+      getDoc(doc(db, colName, code)),
       timeout
     ]);
     document.getElementById('loadingMsg').style.display = 'none';
@@ -272,10 +281,10 @@ window.validateCode = async function(raw) {
 
     const data = snap.data();
     prize = prize || data.prize || '—';
-    restName = restName || data.restName || '—';
+    restName = restName || data.restName || data.venueName || '—';
 
-    if(data.restName && data.restName.toLowerCase() !== currentVenue.toLowerCase())
-      return showResult('wrongvenue', { code, codeVenue: data.restName });
+    if(restName && restName.toLowerCase() !== currentVenue.toLowerCase())
+      return showResult('wrongvenue', { code, codeVenue: restName });
 
     if(data.used === true) {
       let validTime = '—';
@@ -290,8 +299,9 @@ window.validateCode = async function(raw) {
     }
 
     pendingCode = code;
-    pendingCodeData = data; /* Save full data now, before update */
-    showResult('valid', { code, prize, restName, expiresStr: data.expiresStr || 'hoy' });
+    pendingCodeData = data;
+    pendingCollection = colName;
+    showResult('valid', { code, prize, restName, expiresStr: data.expiresStr || 'hoy', badge: badgeLabel });
 
   } catch(e) {
     document.getElementById('loadingMsg').style.display = 'none';
@@ -311,7 +321,7 @@ window.confirmUsed = async function() {
 
   try {
     /* 1 — Mark code as used */
-    await updateDoc(doc(db, 'codes', pendingCode), {
+    await updateDoc(doc(db, pendingCollection, pendingCode), {
       used: true,
       validatedAt: serverTimestamp(),
       validatedBy: currentVenue,
@@ -334,7 +344,7 @@ window.confirmUsed = async function() {
           if(isDirect && !firstCouponPaid){
             amount = 17;
             type = 'direct';
-            await updateDoc(doc(db, 'codes', pendingCode), { vendorFirstPaid: '1' });
+            await updateDoc(doc(db, pendingCollection, pendingCode), { vendorFirstPaid: '1' });
           }
           const earningData = {
             vendorId: ref,
@@ -392,7 +402,7 @@ function showResult(type, data) {
   document.getElementById('detailCard').style.display = 'none';
 
   const cfgs = {
-    valid:      {icon:'✅',color:'#d4f56a',border:'rgba(212,245,106,0.4)',title:'¡CÓDIGO VÁLIDO!',sub:`Premio: <strong style="color:#d4f56a">${data.prize}</strong>`,btn:true},
+    valid:      {icon:'✅',color:data.badge?'#FFD700':'#d4f56a',border:data.badge?'rgba(255,215,0,0.4)':'rgba(212,245,106,0.4)',title:'¡CÓDIGO VÁLIDO!',sub:`${data.badge?`<div style="font-size:10px;color:rgba(255,215,0,0.6);letter-spacing:2px;margin-bottom:6px;">${data.badge}</div>`:''}Premio: <strong style="color:${data.badge?'#FFD700':'#d4f56a'}">${data.prize}</strong>`,btn:true},
     used:       {icon:'❌',color:'#FFD700',border:'rgba(255,215,0,0.4)',title:'YA FUE CANJEADO',sub:`Validado el <strong>${data.time}</strong><br><span style="font-size:11px">Por: ${data.validatedStaff}</span>`,btn:false},
     wrongvenue: {icon:'⚠️',color:'#FFD700',border:'rgba(255,215,0,0.4)',title:'VENUE INCORRECTO',sub:`Este código es para:<br><strong style="color:#FFD700">${data.codeVenue}</strong><br>No puedes canjearlo aquí.`,btn:false},
     expired:    {icon:'⏰',color:'#FFD700',border:'rgba(255,215,0,0.4)',title:'CÓDIGO EXPIRADO',sub:'Este código ya venció.',btn:false},

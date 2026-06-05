@@ -395,24 +395,91 @@ function getVPPrize(){
   return null;
 }
 
-function openGiftBox(){
+async function openGiftBox(){
   const prize=getVPPrize();
   if(!prize)return;
+  const pts=parseInt(localStorage.getItem('vaygo_points')||'0',10);
+  const milestone=pts>=900?900:pts>=600?600:300;
+
   localStorage.setItem('vaygo_gift_opened',new Date().toISOString().slice(0,10));
   document.getElementById('vpUnlockBtn').style.display='none';
-  // Show surprise toast
-  const toast=document.createElement('div');
-  toast.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.8);z-index:9999;background:#050e04;border:2px solid #FFD700;border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 0 60px rgba(255,215,0,0.3);opacity:0;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;max-width:300px;width:90%;';
-  toast.innerHTML=`
-    <div style="font-size:40px;margin-bottom:8px;">🎁</div>
-    <div style="font-family:'Anton',sans-serif;font-size:13px;color:rgba(255,215,0,0.7);letter-spacing:3px;margin-bottom:6px;">YOUR SURPRISE</div>
-    <div style="font-family:'Anton',sans-serif;font-size:26px;color:#FFD700;letter-spacing:2px;line-height:1.2;">${prize}</div>
-    <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:10px;font-family:'DM Sans',sans-serif;">Show this to the staff at ${REST_NAME}</div>
-  `;
-  document.body.appendChild(toast);
-  requestAnimationFrame(()=>{toast.style.opacity='1';toast.style.transform='translate(-50%,-50%) scale(1)';});
+
+  // Generate unique reward code (VPR = VP Reward)
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const s=n=>Array.from({length:n},()=>c[Math.floor(Math.random()*c.length)]).join('');
+  const rewardCode='VPR-'+s(4)+'-'+s(4);
+  const deviceId=localStorage.getItem('vaygo_device_id')||(()=>{const id='dev_'+Date.now()+'_'+Math.random().toString(36).slice(2);localStorage.setItem('vaygo_device_id',id);return id;})();
+  const expires=getExpiry();
+
+  // Save to Firebase vp_rewards collection
+  try{
+    await db.collection('vp_rewards').doc(rewardCode).set({
+      code:        rewardCode,
+      venueId:     REST_ID,
+      venueName:   REST_NAME,
+      prize:       prize,
+      milestone:   milestone,
+      category:    VENUE_CAT,
+      deviceId:    deviceId,
+      redeemedAt:  firebase.firestore.FieldValue.serverTimestamp(),
+      expiresAt:   expires.toISOString(),
+      used:        false,
+    });
+  }catch(e){console.error('vp_rewards save error',e);}
+
+  // Show inline as a gold coupon (reuse inlineCoupon styles but gold)
   doConfetti();
-  setTimeout(()=>{toast.style.opacity='0';toast.style.transform='translate(-50%,-50%) scale(0.8)';setTimeout(()=>toast.remove(),400);},4000);
+  showVPRewardCoupon(rewardCode, prize, expires.toISOString());
+}
+
+function showVPRewardCoupon(code, prize, expiresISO){
+  const t=new Date(expiresISO).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+
+  // Remove existing if any
+  const old=document.getElementById('vpRewardCoupon');
+  if(old)old.remove();
+
+  const el=document.createElement('div');
+  el.id='vpRewardCoupon';
+  el.style.cssText='width:100%;margin-top:14px;background:#050e04;border:2px solid #FFD700;border-radius:20px;padding:20px 16px;text-align:center;box-shadow:0 0 40px rgba(255,215,0,0.2);';
+  el.innerHTML=`
+    <div style="font-size:10px;color:rgba(255,215,0,0.7);text-transform:uppercase;letter-spacing:3px;margin-bottom:6px;font-family:'DM Sans',sans-serif;">🎁 YOUR SURPRISE REWARD</div>
+    <div style="font-family:'Anton',sans-serif;font-size:42px;line-height:1;color:#FFD700;margin-bottom:4px;text-shadow:0 0 20px rgba(255,215,0,0.4);">${prize}</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:12px;font-family:'DM Sans',sans-serif;">${REST_NAME}</div>
+    <div style="background:#0a1a08;border-radius:8px;padding:6px 14px;font-family:monospace;font-size:15px;font-weight:700;color:#FFD700;letter-spacing:2px;margin-bottom:6px;display:inline-block;border:1px solid rgba(255,215,0,0.25);">${code}</div>
+    <div style="font-size:11px;color:#FFD700;font-weight:700;margin-bottom:12px;font-family:'DM Sans',sans-serif;">Valid until: ${t} today</div>
+    <div id="vpRewardQR" style="display:flex;justify-content:center;margin:0 auto 10px;"></div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:10px;font-family:'DM Sans',sans-serif;">Show this QR to the staff to redeem</div>
+    <div style="background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.2);border-radius:8px;padding:8px;font-size:11px;color:rgba(255,255,255,0.6);font-family:'DM Sans',sans-serif;">⚠️ Min purchase: <strong style="color:#FFD700;">$20 USD</strong></div>
+  `;
+
+  // Insert after VP bar
+  const vpBar=document.getElementById('vpBarWrap');
+  vpBar.insertAdjacentElement('afterend',el);
+
+  // Generate QR
+  setTimeout(()=>{
+    const qrDiv=document.getElementById('vpRewardQR');
+    if(qrDiv){
+      new QRCode(qrDiv,{text:code,width:180,height:180,colorDark:'#000',colorLight:'#fff'});
+      setTimeout(()=>{const img=qrDiv.querySelector('img');if(img){img.style.padding='8px';img.style.background='#fff';img.style.borderRadius='8px';img.style.display='block';}},100);
+    }
+  },200);
+
+  // Scroll into view
+  setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),300);
+
+  // Listen for validation (same as regular coupon)
+  const unsub=db.collection('vp_rewards').doc(code).onSnapshot(snap=>{
+    if(!snap.exists)return;
+    if(snap.data().used===true){
+      unsub();
+      el.style.transition='opacity 0.6s ease';
+      el.style.opacity='0';
+      setTimeout(()=>el.remove(),650);
+      showVPToast();
+    }
+  });
 }
 
 vpLoadPoints();
