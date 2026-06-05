@@ -335,7 +335,7 @@ function renderMonth(){
 }
 
 function generateQR(vendorId){
-  const url = `https://vaygowebapp-ynao.vercel.app/app.html?ref=${vendorId}&direct=1`;
+  const url = `https://www.vaygo.travel/app.html?ref=${vendorId}&direct=1`;
   document.getElementById('qrUrl').textContent = url;
   document.getElementById('qrCode').innerHTML = '';
   new QRCode(document.getElementById('qrCode'), {
@@ -348,7 +348,7 @@ function generateQR(vendorId){
 }
 
 function openClientQR(){
-  window.open(`https://vaygowebapp-ynao.vercel.app/vendor-qr.html?id=${currentVendor.id}`, '_blank');
+  window.open(`https://www.vaygo.travel/vendor-qr.html?id=${currentVendor.id}`, '_blank');
 }
 </script>
 </body>
