@@ -68,7 +68,7 @@
 
     .cards-wrap {
       position: absolute;
-      top: 48%;
+      top: 34%;
       left: 0; right: 0;
       z-index: 10;
       display: flex;
@@ -217,109 +217,6 @@
     @media (max-width: 430px) {
       .app { width: 100%; border-radius: 0; }
     }
-
-    /* ── VAYGO POINTS BAR ── */
-    .vp-bar-wrap {
-      position: absolute;
-      top: 28%;
-      left: 0; right: 0;
-      z-index: 10;
-      padding: 0 28px;
-    }
-    .vp-bar {
-      background: rgba(10,18,10,0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(212,245,106,0.15);
-      border-radius: 14px;
-      padding: 10px 14px;
-    }
-    .vp-bar.unlocked {
-      border-color: rgba(255,215,0,0.35);
-    }
-    .vp-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 7px;
-    }
-    .vp-label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-family: 'Anton', sans-serif;
-      font-size: 11px;
-      letter-spacing: 2px;
-      color: #d4f56a;
-    }
-    .vp-pts {
-      font-family: 'Anton', sans-serif;
-      font-size: 12px;
-      color: #d4f56a;
-      letter-spacing: 1px;
-    }
-    .vp-pts span {
-      font-size: 10px;
-      color: rgba(212,245,106,0.35);
-    }
-    .vp-track {
-      background: rgba(255,255,255,0.06);
-      border-radius: 50px;
-      height: 7px;
-      overflow: hidden;
-      position: relative;
-    }
-    .vp-fill {
-      position: absolute;
-      top: 0; left: 0;
-      height: 100%;
-      border-radius: 50px;
-      background: linear-gradient(90deg, #5a8000, #8fc20a, #d4f56a);
-      transition: width 0.6s ease;
-    }
-    .vp-mark {
-      position: absolute;
-      top: 0;
-      width: 1px;
-      height: 100%;
-      background: rgba(255,255,255,0.15);
-    }
-    .vp-bottom {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 5px;
-    }
-    .vp-milestone {
-      font-size: 9px;
-      color: rgba(212,245,106,0.3);
-      letter-spacing: 1px;
-    }
-    .vp-milestone.done {
-      color: #d4f56a;
-    }
-    .vp-unlock-btn {
-      width: 100%;
-      margin-top: 8px;
-      padding: 7px;
-      background: linear-gradient(180deg, rgba(255,220,60,1.0) 0%, rgba(220,130,0,1.0) 100%);
-      border: 1.5px solid rgba(255,240,120,0.8);
-      border-radius: 50px;
-      color: #1a0a00;
-      font-family: 'Anton', sans-serif;
-      font-size: 11px;
-      letter-spacing: 2px;
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      box-shadow: 0 3px 0 #7a4f00;
-      animation: unlockPulse 2s ease-in-out infinite;
-    }
-    @keyframes unlockPulse {
-      0%,100%{ box-shadow: 0 3px 0 #7a4f00, 0 0 10px rgba(255,215,0,0.2); }
-      50%{ box-shadow: 0 3px 0 #7a4f00, 0 0 20px rgba(255,215,0,0.5); }
-    }
   </style>
 </head>
 <body>
@@ -342,29 +239,6 @@
       <div class="h-divider"><div class="h-diamond"></div></div>
       <div class="h-tagline">Explore &nbsp;–&nbsp; Play &nbsp;–&nbsp; Win</div>
     </div>
-
-
-    <!-- VAYGO POINTS BAR — DESACTIVADO (movida a slot2.html)
-    <div class="vp-bar-wrap" id="vpBarWrap">
-      <div class="vp-bar" id="vpBar">
-        <div class="vp-top">
-          <div class="vp-label">⭐ VAYGO POINTS</div>
-          <div class="vp-pts" id="vpPts">0 <span>/ 900 pts</span></div>
-        </div>
-        <div class="vp-track">
-          <div class="vp-fill" id="vpFill" style="width:0%"></div>
-          <div class="vp-mark" style="left:33.3%"></div>
-          <div class="vp-mark" style="left:66.6%"></div>
-        </div>
-        <div class="vp-bottom">
-          <span class="vp-milestone" id="vm1">🎁 300</span>
-          <span class="vp-milestone" id="vm2">🎁 600</span>
-          <span class="vp-milestone" id="vm3">🏆 900</span>
-        </div>
-        <button class="vp-unlock-btn" id="vpUnlockBtn" onclick="openGiftBox()">🎁 OPEN YOUR SURPRISE</button>
-      </div>
-    </div>
-    FIN DESACTIVADO -->
 
     <div class="cards-wrap">
       <div class="cards-inner">
@@ -486,83 +360,6 @@ function closeWinnerSheet(){
 
 
 
-<script>
-/* ── VAYGO POINTS BAR ── */
-(function(){
-  const PRIZES = { 300: '15% OFF', 600: '20% OFF', 900: '25% OFF' };
-  const CATEGORY = 'restaurant';
-
-  function updateBar(pts) {
-    const pct = Math.min((pts / 900) * 100, 100);
-    document.getElementById('vpFill').style.width = pct + '%';
-    document.getElementById('vpPts').innerHTML = pts + ' <span>/ 900 pts</span>';
-
-    // Update milestones
-    document.getElementById('vm1').className = 'vp-milestone' + (pts >= 300 ? ' done' : '');
-    document.getElementById('vm1').textContent = (pts >= 300 ? '✅' : '🎁') + ' 300';
-    document.getElementById('vm2').className = 'vp-milestone' + (pts >= 600 ? ' done' : '');
-    document.getElementById('vm2').textContent = (pts >= 600 ? '✅' : '🎁') + ' 600';
-    document.getElementById('vm3').className = 'vp-milestone' + (pts >= 900 ? ' done' : '');
-    document.getElementById('vm3').textContent = (pts >= 900 ? '✅' : '🏆') + ' 900';
-
-    // Check if prize available and not yet claimed
-    const milestone = pts >= 900 ? 900 : pts >= 600 ? 600 : pts >= 300 ? 300 : 0;
-    if (milestone > 0) {
-      const claimed = localStorage.getItem('vp_claimed_' + milestone);
-      if (!claimed) {
-        document.getElementById('vpUnlockBtn').style.display = 'flex';
-        document.getElementById('vpBar').classList.add('unlocked');
-        document.getElementById('vpFill').style.background = 'linear-gradient(90deg,#c47f00,#f0a500,#FFD700)';
-        document.getElementById('vpPts').style.color = '#FFD700';
-        document.getElementById('vpLabel') && (document.getElementById('vpLabel').style.color = '#FFD700');
-      }
-    }
-  }
-
-  function openGiftBox() {
-    const pts = parseInt(localStorage.getItem('vaygo_points') || '0');
-    const milestone = pts >= 900 ? 900 : pts >= 600 ? 600 : pts >= 300 ? 300 : 0;
-    if (!milestone) return;
-
-    const prize = PRIZES[milestone];
-    localStorage.setItem('vp_claimed_' + milestone, '1');
-    document.getElementById('vpUnlockBtn').style.display = 'none';
-
-    // Show gift box sheet
-    const sheet = document.createElement('div');
-    sheet.style.cssText = 'position:fixed;inset:0;z-index:600;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0.9);';
-    sheet.innerHTML = `
-      <div style="background:#0a0800;border:2px solid rgba(255,215,0,0.4);border-radius:24px 24px 0 0;padding:32px 24px 48px;width:100%;max-width:390px;text-align:center;">
-        <div style="font-size:56px;margin-bottom:16px;">🎁</div>
-        <div style="font-family:'Anton',sans-serif;font-size:10px;letter-spacing:4px;color:rgba(255,215,0,0.6);margin-bottom:8px;">VAYGO POINTS · ${milestone} PTS</div>
-        <div style="font-family:'Anton',sans-serif;font-size:28px;color:#FFD700;letter-spacing:2px;margin-bottom:8px;">${prize}</div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:28px;line-height:1.6;">Show this to your server or guide to redeem your reward!</div>
-        <button onclick="this.closest('[style*=fixed]').remove()" style="width:100%;padding:14px;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);border:none;border-radius:12px;color:#0a1a00;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 0 #2d4000;">GOT IT!</button>
-      </div>
-    `;
-    document.body.appendChild(sheet);
-  }
-
-  // Load points from Firebase or localStorage
-  window.loadVaygoPoints = function(user) {
-    if (user) {
-      db.collection('users').doc(user.uid).get().then(snap => {
-        const pts = snap.exists ? (snap.data().points || 0) : 0;
-        localStorage.setItem('vaygo_points', pts);
-        updateBar(pts);
-      }).catch(() => {
-        updateBar(parseInt(localStorage.getItem('vaygo_points') || '0'));
-      });
-    } else {
-      updateBar(parseInt(localStorage.getItem('vaygo_points') || '0'));
-    }
-  };
-
-  document.addEventListener('DOMContentLoaded', () => {
-    updateBar(parseInt(localStorage.getItem('vaygo_points') || '0'));
-  });
-})();
-</script>
 <script src="admin-float.js"></script>
 </body>
 </html>
