@@ -242,7 +242,7 @@ function goBackToVenue(){
   </div>
 
   <!-- COUNTDOWN -->
-  <div class="countdown-wrap">
+  <div class="countdown-wrap" style="display:none!important;">
     <div class="cd-label" id="cdLabel">Next Raffle</div>
     <div class="cd-units">
       <div class="cd-unit"><div class="cd-num" id="cdDays">00</div><div class="cd-unit-lbl">days</div></div>
@@ -257,7 +257,7 @@ function goBackToVenue(){
   </div>
 
   <!-- SURPRISE RAFFLE -->
-  <div class="raffle-banner">
+  <div class="raffle-banner" style="display:none!important;">
     <div class="rb-top">
       <div>
         <div class="rb-title">SURPRISE RAFFLE</div>
@@ -277,6 +277,7 @@ function goBackToVenue(){
     </div>
   </div>
 
+  <!-- WINNER SHEET DISABLED
   <!-- WINNER SHEET (bottom sheet, non-blocking) -->
   <div id="winnerSheet" style="display:none;position:fixed;inset:0;z-index:500;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0.88);">
     <div style="background:#050e04;border:2px solid #FFD700;border-radius:24px 24px 0 0;padding:28px 22px 44px;width:100%;max-width:390px;text-align:center;box-shadow:0 0 40px rgba(255,215,0,0.2);">
@@ -317,8 +318,8 @@ function goBackToVenue(){
       <div class="pb-guest-top">
         <div class="pb-icon">⭐</div>
         <div class="pb-text">
-          <div class="pb-title">Collect raffle tickets</div>
-          <div class="pb-sub">Login to join the raffle · Or just spin and get your coupon</div>
+          <div class="pb-title" style="display:none!important;">Collect raffle tickets</div>
+          <div class="pb-sub" style="display:none!important;">Login to join the raffle · Or just spin and get your coupon</div>
         </div>
       </div>
       <div class="pb-btns">
@@ -363,7 +364,7 @@ function goBackToVenue(){
       <div class="auth-title">VAYGO REWARDS</div>
       <div class="auth-sub">Sign up free and collect tickets in every city you visit</div>
       <div class="auth-perks">
-        <div class="auth-perk"><div class="auth-perk-text">Monthly surprise raffle</div></div>
+        <div class="auth-perk" style="display:none!important;"><div class="auth-perk-text">Monthly surprise raffle</div></div>
         <div class="auth-perk"><div class="auth-perk-text">From a cap to a hotel night</div></div>
         <div class="auth-perk"><div class="auth-perk-text">Valid across Riviera Maya</div></div>
         <div class="auth-perk"><div class="auth-perk-text">Use coupon at venue = 1 ticket</div></div>
@@ -377,7 +378,7 @@ function goBackToVenue(){
     <div class="auth-step" id="authStep2">
       <div class="auth-title">YOU'RE IN! 🎉</div>
       <div style="text-align:center;font-size:52px;margin:16px 0;">⭐</div>
-      <div class="auth-sub">Your account is active. Every coupon you validate earns you a raffle ticket!</div>
+      <div class="auth-sub" style="display:none!important;">Your account is active. Every coupon you validate earns you a raffle ticket!</div>
       <button class="auth-btn" onclick="closeAuthModal()">← BACK TO SPIN</button>
     </div>
   </div>
@@ -531,7 +532,7 @@ let winnerData = null;
 
 function showWinnerModal(data){
   winnerData = data;
-  /* Show WINNER button in raffle banner */
+  /* RAFFLE DISABLED - Show WINNER button in raffle banner
   document.getElementById('btnWinner').style.display = 'block';
 }
 
@@ -621,7 +622,7 @@ async function addTicketForCoupon(uid){
       [`monthlyTickets.${month}`]:firebase.firestore.FieldValue.increment(1),
       cities:firebase.firestore.FieldValue.arrayUnion(venueCity)
     });
-    await db.collection('raffle_tickets').add({uid,email:currentUser.email,displayName:userData?.displayName||currentUser.email.split('@')[0],month,venue:REST_ID,venueName:REST_NAME,city:venueCity,earnedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    /* RAFFLE DISABLED: await db.collection('raffle_tickets').add({uid,email:currentUser.email,displayName:userData?.displayName||currentUser.email.split('@')[0],month,venue:REST_ID,venueName:REST_NAME,city:venueCity,earnedAt:firebase.firestore.FieldValue.serverTimestamp()}); */
     if(!userData)userData={};
     userData.totalPoints=(userData.totalPoints||0)+1;
     if(!userData.monthlyTickets)userData.monthlyTickets={};
