@@ -217,9 +217,35 @@ const VENUE_CONFIGS={
 const _vp=(new URLSearchParams(window.location.search)).get('venue')||'lobster';
 const _vc=VENUE_CONFIGS[_vp]||VENUE_CONFIGS['lobster'];
 const REST_ID=_vc.id,REST_NAME=_vc.name,MIN_PURCHASE="$20 USD";
-const PRIZES = _vp === '10experiences'
-  ? [{label:"5% OFF",color:"#d4f56a"},{label:"10% OFF",color:"#a8d400"},{label:"15% OFF",color:"#78b000"}]
+// Venue categories
+const CAT_EAT   = ['lobster','10experiences','monina','azulmadera','guidos'];
+const CAT_DRINK = ['buccanos','aquiyahora'];
+const CAT_COFFEE= ['aquiyahora'];
+const CAT_EXPLORE=['snorkel','carruaje','deep'];
+const CAT_SHOP  = []; // future
+
+function getVenueCategory(vp){
+  if(CAT_SHOP.includes(vp))    return 'shop';
+  if(CAT_EXPLORE.includes(vp)) return 'explore';
+  if(CAT_DRINK.includes(vp))   return 'drink';
+  if(CAT_EAT.includes(vp))     return 'eat';
+  return 'eat'; // default
+}
+const VENUE_CAT = getVenueCategory(_vp);
+
+// Slot prizes by category
+const PRIZES = (VENUE_CAT === 'shop' || VENUE_CAT === 'explore')
+  ? [{label:"10% OFF",color:"#d4f56a"},{label:"15% OFF",color:"#a8d400"},{label:"20% OFF",color:"#78b000"}]
   : [{label:"10% OFF",color:"#d4f56a"},{label:"15% OFF",color:"#a8d400"},{label:"20% OFF",color:"#78b000"}];
+
+// Milestone (VAYGO POINTS) prizes by category
+const VP_PRIZES = {
+  eat:     {300:"25% OFF",  600:"25% OFF",  900:"25% OFF"},
+  drink:   {300:"25% OFF",  600:"25% OFF",  900:"25% OFF"},
+  coffee:  {300:"25% OFF",  600:"25% OFF",  900:"25% OFF"},
+  explore: {300:"25% OFF",  600:"25% OFF",  900:"30% OFF"},
+  shop:    {300:"Pequeño souvenir", 600:"Imán", 900:"Llavero"},
+};
 
 function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const s=n=>Array.from({length:n},()=>c[Math.floor(Math.random()*c.length)]).join('');return'VYG-'+s(4)+'-'+s(4);}
 function getExpiry(){const n=new Date(),e=new Date(n);e.setHours(23,59,59,0);if(e<=n)e.setDate(e.getDate()+1);return e;}
@@ -231,7 +257,19 @@ async function saveAndShowQR(prize){
   const gameKey=REST_ID+'_game_'+today;
   try{
     const snap=await db.collection('codes').where('gameKey','==',gameKey).limit(1).get();
-    if(!snap.empty){const d=snap.docs[0].data();showQR(d.code,d.prize,d.expiresAt);vpLoadPoints();return;}
+    if(!snap.empty){const d=snap.docs[0].data();showQR(d.code,d.prize,d.expiresAt);vpLoadPoints();
+updateVPMilestoneLabels();
+
+function updateVPMilestoneLabels(){
+  const prizes=VP_PRIZES[VENUE_CAT]||VP_PRIZES.eat;
+  document.getElementById('vm1').textContent='🎁 300';
+  document.getElementById('vm2').textContent='🎁 600';
+  document.getElementById('vm3').textContent='🏆 900';
+  // Add tooltip-style title
+  document.getElementById('vm1').title=prizes[300];
+  document.getElementById('vm2').title=prizes[600];
+  document.getElementById('vm3').title=prizes[900];
+}return;}
   }catch(e){}
   const code=genCode(),expires=getExpiry();
   try{
@@ -348,13 +386,48 @@ function vpAddPoints(){
   }catch(e){}
 }
 
+function getVPPrize(){
+  const pts=parseInt(localStorage.getItem('vaygo_points')||'0',10);
+  const prizes=VP_PRIZES[VENUE_CAT]||VP_PRIZES.eat;
+  if(pts>=900) return prizes[900];
+  if(pts>=600) return prizes[600];
+  if(pts>=300) return prizes[300];
+  return null;
+}
+
 function openGiftBox(){
+  const prize=getVPPrize();
+  if(!prize)return;
   localStorage.setItem('vaygo_gift_opened',new Date().toISOString().slice(0,10));
   document.getElementById('vpUnlockBtn').style.display='none';
-  alert('🎁 Your surprise is coming! Show this to VAYGO staff.');
+  // Show surprise toast
+  const toast=document.createElement('div');
+  toast.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.8);z-index:9999;background:#050e04;border:2px solid #FFD700;border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 0 60px rgba(255,215,0,0.3);opacity:0;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;max-width:300px;width:90%;';
+  toast.innerHTML=`
+    <div style="font-size:40px;margin-bottom:8px;">🎁</div>
+    <div style="font-family:'Anton',sans-serif;font-size:13px;color:rgba(255,215,0,0.7);letter-spacing:3px;margin-bottom:6px;">YOUR SURPRISE</div>
+    <div style="font-family:'Anton',sans-serif;font-size:26px;color:#FFD700;letter-spacing:2px;line-height:1.2;">${prize}</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:10px;font-family:'DM Sans',sans-serif;">Show this to the staff at ${REST_NAME}</div>
+  `;
+  document.body.appendChild(toast);
+  requestAnimationFrame(()=>{toast.style.opacity='1';toast.style.transform='translate(-50%,-50%) scale(1)';});
+  doConfetti();
+  setTimeout(()=>{toast.style.opacity='0';toast.style.transform='translate(-50%,-50%) scale(0.8)';setTimeout(()=>toast.remove(),400);},4000);
 }
 
 vpLoadPoints();
+updateVPMilestoneLabels();
+
+function updateVPMilestoneLabels(){
+  const prizes=VP_PRIZES[VENUE_CAT]||VP_PRIZES.eat;
+  document.getElementById('vm1').textContent='🎁 300';
+  document.getElementById('vm2').textContent='🎁 600';
+  document.getElementById('vm3').textContent='🏆 900';
+  // Add tooltip-style title
+  document.getElementById('vm1').title=prizes[300];
+  document.getElementById('vm2').title=prizes[600];
+  document.getElementById('vm3').title=prizes[900];
+}
 
 function goBackToVenue(){
   const vm={lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html',snorkel:'snorkel.html','10experiences':'10experiences.html',monina:'monina.html',aquiyahora:'aquiyahora.html',carruaje:'carruaje.html',deep:'deep.html'};
@@ -569,9 +642,7 @@ FIN DESACTIVADO -->
 FIN DESACTIVADO -->
 
 <script>
-ITEMS = _vp === '10experiences'
-  ? [{pct:"5%",color:"#d4f56a"},{pct:"10%",color:"#a8d400"},{pct:"15%",color:"#5a8000"}]
-  : [{pct:"10%",color:"#d4f56a"},{pct:"15%",color:"#a8d400"},{pct:"20%",color:"#5a8000"}];
+ITEMS = [{pct:"10%",color:"#d4f56a"},{pct:"15%",color:"#a8d400"},{pct:"20%",color:"#5a8000"}];
 const ITEM_H=110;
 let spinning=false,done=false;
 
