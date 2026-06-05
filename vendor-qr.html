@@ -104,13 +104,13 @@ html,body{
 
     <div class="scan-label">Scan & Get</div>
     <div class="scan-title">FREE DISCOUNTS</div>
-    <div class="scan-sub">Scan the QR, spin the slot and unlock exclusive discounts at the best venues in Cozumel</div>
+    <div class="scan-sub">Scan the QR, spin the slot and unlock exclusive discounts at the best venues in Cozumel. Collect points and win surprise gifts!</div>
 
     <div class="prizes-row">
-      <div class="prize-pill">VAYGO Cap</div>
-      <div class="prize-pill">Dinner for 2</div>
-      <div class="prize-pill">Ocean Tour</div>
-      <div class="prize-pill top">Hotel Night ⭐</div>
+      <div class="prize-pill">Restaurants</div>
+      <div class="prize-pill">Tours</div>
+      <div class="prize-pill">Diving</div>
+      <div class="prize-pill top">& More ⭐</div>
     </div>
 
     <button class="btn-share" onclick="shareQR()">SHARE MY QR</button>
@@ -152,7 +152,7 @@ async function init(){
       return;
     }
     /* Generate QR */
-    qrUrl = `https://vaygowebapp-ynao.vercel.app/app.html?ref=${vendorId}&direct=1`;
+    qrUrl = `https://www.vaygo.travel/app.html?ref=${vendorId}&direct=1`;
     new QRCode(document.getElementById('qrCode'), {
       text: qrUrl,
       width: 220,
