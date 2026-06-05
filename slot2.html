@@ -158,6 +158,34 @@ html,body{width:100%;height:100%;background:#060E1C;display:flex;align-items:cen
 .wm-divider{width:60px;height:2px;background:rgba(255,215,0,0.3);margin:16px auto;}
 .wm-congrats{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:24px;}
 .wm-btn{width:100%;padding:14px;background:linear-gradient(180deg,#FFD700 0%,#f0a500 50%,#c47f00 100%);border:none;border-radius:12px;color:#1a0a00;font-family:'Anton',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 0 #7a4f00;}
+
+    /* ── VAYGO POINTS BAR ── */
+    .vp-bar-wrap { width:100%; margin-top:14px; }
+    .vp-bar { background: rgba(255,255,255,0.05); border: 1px solid rgba(212,245,106,0.2); border-radius: 14px; padding: 12px 14px 10px; }
+    .vp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .vp-label { font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #d4f56a; font-family:'DM Sans',sans-serif; }
+    .vp-pts { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); font-family:'DM Sans',sans-serif; }
+    .vp-pts span { color: rgba(255,255,255,0.3); }
+    .vp-track { position: relative; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-bottom: 6px; }
+    .vp-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg,#8fc20a,#d4f56a); transition: width 0.6s ease; }
+    .vp-mark { position: absolute; top: -3px; width: 2px; height: 12px; background: rgba(255,255,255,0.2); border-radius: 1px; transform: translateX(-50%); }
+    .vp-bottom { display: flex; justify-content: space-between; }
+    .vp-milestone { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 1px; font-family:'DM Sans',sans-serif; }
+    .vp-milestone.reached { color: #d4f56a; }
+    .vp-unlock-btn { display: none; width: 100%; margin-top: 10px; padding: 10px; background: linear-gradient(180deg,#FFD700 0%,#f0a500 50%,#c47f00 100%); border: none; border-radius: 10px; color: #1a0a00; font-family: 'Anton', sans-serif; font-size: 14px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 3px 0 #7a4f00; }
+
+    /* ── INLINE COUPON (below VP bar) ── */
+    #inlineCoupon { display:none; width:100%; margin-top:14px; background:#050e04; border:2px solid #d4f56a; border-radius:20px; padding:20px 16px; text-align:center; box-shadow:0 0 40px rgba(212,245,106,0.15); }
+    .ic-your-prize { font-size:10px; color:#d4f56a; text-transform:uppercase; letter-spacing:3px; margin-bottom:6px; font-family:'DM Sans',sans-serif; }
+    .ic-prize-val { font-family:'Anton',sans-serif; font-size:52px; line-height:1; color:#fff; margin-bottom:4px; }
+    .ic-rest-name { font-size:12px; color:rgba(255,255,255,0.45); margin-bottom:12px; font-family:'DM Sans',sans-serif; }
+    .ic-code-pill { background:#0a1a08; border-radius:8px; padding:6px 14px; font-family:monospace; font-size:15px; font-weight:700; color:#d4f56a; letter-spacing:2px; margin-bottom:6px; display:inline-block; border:1px solid rgba(212,245,106,0.2); }
+    .ic-valid-txt { font-size:11px; color:#d4f56a; font-weight:700; margin-bottom:12px; font-family:'DM Sans',sans-serif; }
+    .ic-qr-wrap { display:flex; justify-content:center; margin:0 auto 10px; }
+    .ic-hint { font-size:11px; color:rgba(255,255,255,0.35); margin-bottom:10px; font-family:'DM Sans',sans-serif; }
+    .ic-min-box { background:rgba(212,245,106,0.05); border:1px solid rgba(212,245,106,0.2); border-radius:8px; padding:8px; font-size:11px; color:rgba(255,255,255,0.6); font-family:'DM Sans',sans-serif; }
+    .ic-min-box strong { color:#d4f56a; }
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -203,7 +231,7 @@ async function saveAndShowQR(prize){
   const gameKey=REST_ID+'_game_'+today;
   try{
     const snap=await db.collection('codes').where('gameKey','==',gameKey).limit(1).get();
-    if(!snap.empty){const d=snap.docs[0].data();showQR(d.code,d.prize,d.expiresAt);return;}
+    if(!snap.empty){const d=snap.docs[0].data();showQR(d.code,d.prize,d.expiresAt);vpLoadPoints();return;}
   }catch(e){}
   const code=genCode(),expires=getExpiry();
   try{
@@ -212,17 +240,121 @@ async function saveAndShowQR(prize){
   showQR(code,prizeLabel,expires.toISOString());
 }
 
+let _couponListener=null;
+
 function showQR(code,prize,expiresISO){
   const t=new Date(expiresISO).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  // Fill inline coupon
+  document.getElementById('ic-prize').textContent=prize;
+  document.getElementById('ic-rest').textContent=REST_NAME;
+  document.getElementById('ic-code-txt').textContent=code;
+  document.getElementById('ic-valid').textContent='Valid until: '+t+' today';
+  const qrDiv=document.getElementById('ic-canvas');qrDiv.innerHTML='';
+  new QRCode(qrDiv,{text:code,width:200,height:200,colorDark:'#000',colorLight:'#fff'});
+  setTimeout(()=>{const img=qrDiv.querySelector('img');if(img){img.style.padding='10px';img.style.background='#fff';img.style.borderRadius='10px';img.style.display='block';}},100);
+  document.getElementById('inlineCoupon').style.display='block';
+  // Scroll coupon into view smoothly
+  setTimeout(()=>document.getElementById('inlineCoupon').scrollIntoView({behavior:'smooth',block:'nearest'}),200);
+  // Also fill legacy qrModal fields in case anything reads them
   document.getElementById('qr-prize').textContent=prize;
   document.getElementById('qr-rest').textContent=REST_NAME;
   document.getElementById('qr-code-txt').textContent=code;
   document.getElementById('qr-valid').textContent='Valid until: '+t+' today';
-  const qrDiv=document.getElementById('qr-canvas');qrDiv.innerHTML='';
-  new QRCode(qrDiv,{text:code,width:220,height:220,colorDark:'#000',colorLight:'#fff'});
-  setTimeout(()=>{const img=qrDiv.querySelector('img');if(img){img.style.padding='10px';img.style.background='#fff';img.style.borderRadius='10px';img.style.display='block';}},100);
-  document.getElementById('qrModal').classList.add('show');
+
+  // ── LISTEN for validation by staff ──
+  if(_couponListener) _couponListener(); // unsub previous
+  _couponListener = db.collection('codes').doc(code).onSnapshot(snap=>{
+    if(!snap.exists) return;
+    const d=snap.data();
+    if(d.used===true){
+      if(_couponListener){_couponListener();_couponListener=null;}
+      onCouponValidated();
+    }
+  });
 }
+
+function onCouponValidated(){
+  // Hide coupon
+  const couponEl=document.getElementById('inlineCoupon');
+  couponEl.style.transition='opacity 0.6s ease';
+  couponEl.style.opacity='0';
+  setTimeout(()=>{couponEl.style.display='none';couponEl.style.opacity='1';},650);
+
+  // Add 100 points
+  vpAddPoints();
+
+  // Show celebration toast
+  showVPToast();
+}
+
+function showVPToast(){
+  const existing=document.getElementById('vpToast');
+  if(existing) existing.remove();
+  const toast=document.createElement('div');
+  toast.id='vpToast';
+  toast.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.8);z-index:9999;background:#050e04;border:2px solid #d4f56a;border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 0 60px rgba(212,245,106,0.3);opacity:0;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;';
+  toast.innerHTML=`
+    <div style="font-size:40px;margin-bottom:8px;">⭐</div>
+    <div style="font-family:'Anton',sans-serif;font-size:28px;color:#d4f56a;letter-spacing:3px;line-height:1;">+100 PTS</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-top:6px;font-family:'DM Sans',sans-serif;">¡Cupón validado!</div>
+  `;
+  document.body.appendChild(toast);
+  requestAnimationFrame(()=>{
+    toast.style.opacity='1';
+    toast.style.transform='translate(-50%,-50%) scale(1)';
+  });
+  doConfetti();
+  setTimeout(()=>{
+    toast.style.opacity='0';
+    toast.style.transform='translate(-50%,-50%) scale(0.8)';
+    setTimeout(()=>toast.remove(),400);
+  },2800);
+}
+
+
+/* ── VAYGO POINTS LOGIC ── */
+function vpLoadPoints(){
+  try{
+    const pts=parseInt(localStorage.getItem('vaygo_points')||'0',10);
+    updateVPBar(pts);
+  }catch(e){}
+}
+
+function updateVPBar(pts){
+  document.getElementById('vpPts').innerHTML=pts+' <span>/ 900 pts</span>';
+  document.getElementById('vpFill').style.width=Math.min(pts/900*100,100)+'%';
+  ['vm1','vm2','vm3'].forEach((id,i)=>{
+    const threshold=(i+1)*300;
+    document.getElementById(id).classList.toggle('reached',pts>=threshold);
+  });
+  // Show unlock button if milestone reached and no gift opened today
+  const milestones=[300,600,900];
+  const reached=milestones.filter(m=>pts>=m);
+  const lastGift=localStorage.getItem('vaygo_gift_opened');
+  if(reached.length>0 && lastGift!==new Date().toISOString().slice(0,10)){
+    document.getElementById('vpUnlockBtn').style.display='block';
+  }
+}
+
+function vpAddPoints(){
+  try{
+    const current=parseInt(localStorage.getItem('vaygo_points')||'0',10);
+    const catKey='vaygo_cat_'+REST_ID;
+    if(localStorage.getItem(catKey)) return; // already earned for this venue
+    const newPts=Math.min(current+100,900);
+    localStorage.setItem('vaygo_points',newPts);
+    localStorage.setItem(catKey,'1');
+    updateVPBar(newPts);
+  }catch(e){}
+}
+
+function openGiftBox(){
+  localStorage.setItem('vaygo_gift_opened',new Date().toISOString().slice(0,10));
+  document.getElementById('vpUnlockBtn').style.display='none';
+  alert('🎁 Your surprise is coming! Show this to VAYGO staff.');
+}
+
+vpLoadPoints();
 
 function goBackToVenue(){
   const vm={lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html',snorkel:'snorkel.html','10experiences':'10experiences.html',monina:'monina.html',aquiyahora:'aquiyahora.html',carruaje:'carruaje.html',deep:'deep.html'};
@@ -312,7 +444,7 @@ function goBackToVenue(){
     </div>
   </div>
 
-  <!-- POINTS / AUTH -->
+  <!-- POINTS / AUTH — DESACTIVADO (sin login por ahora)
   <div class="points-banner" id="pointsBanner">
     <div id="pbGuest">
       <div class="pb-guest-top">
@@ -338,6 +470,7 @@ function goBackToVenue(){
       </div>
     </div>
   </div>
+  FIN DESACTIVADO -->
 
   <!-- SLOT MACHINE -->
   <div class="machine">
@@ -352,11 +485,45 @@ function goBackToVenue(){
       <div class="stat-box"><span class="stat-lbl">Win</span><span class="stat-val" id="winVal">—</span></div>
     </div>
     <button class="spin-btn" id="spinBtn" onclick="spin()">SPIN NOW</button>
+
+  <!-- VAYGO POINTS BAR -->
+  <div class="vp-bar-wrap" id="vpBarWrap">
+    <div class="vp-bar">
+      <div class="vp-top">
+        <div class="vp-label">⭐ VAYGO POINTS</div>
+        <div class="vp-pts" id="vpPts">0 <span>/ 900 pts</span></div>
+      </div>
+      <div class="vp-track">
+        <div class="vp-fill" id="vpFill" style="width:0%"></div>
+        <div class="vp-mark" style="left:33.3%"></div>
+        <div class="vp-mark" style="left:66.6%"></div>
+      </div>
+      <div class="vp-bottom">
+        <span class="vp-milestone" id="vm1">🎁 300</span>
+        <span class="vp-milestone" id="vm2">🎁 600</span>
+        <span class="vp-milestone" id="vm3">🏆 900</span>
+      </div>
+      <button class="vp-unlock-btn" id="vpUnlockBtn" onclick="openGiftBox()">🎁 OPEN YOUR SURPRISE</button>
+    </div>
+  </div>
+
+  <!-- INLINE COUPON -->
+  <div id="inlineCoupon">
+    <div class="ic-your-prize">🎉 YOUR PRIZE</div>
+    <div class="ic-prize-val" id="ic-prize"></div>
+    <div class="ic-rest-name" id="ic-rest"></div>
+    <div class="ic-code-pill" id="ic-code-txt"></div>
+    <div class="ic-valid-txt" id="ic-valid"></div>
+    <div class="ic-qr-wrap" id="ic-canvas"></div>
+    <div class="ic-hint">Show this QR to the staff to redeem</div>
+    <div class="ic-min-box">⚠️ Min purchase: <strong>$20 USD</strong></div>
+  </div>
+
   </div>
 
 </div>
 
-<!-- AUTH MODAL -->
+<!-- AUTH MODAL — DESACTIVADO
 <div id="authModal">
   <div class="auth-sheet">
     <div class="auth-handle"></div>
@@ -383,8 +550,9 @@ function goBackToVenue(){
     </div>
   </div>
 </div>
+FIN DESACTIVADO -->
 
-<!-- QR MODAL -->
+<!-- QR MODAL — DESACTIVADO (reemplazado por cupón inline)
 <div id="qrModal">
   <div class="qr-box">
     <div class="qr-your-prize">🎉 YOUR PRIZE</div>
@@ -398,6 +566,7 @@ function goBackToVenue(){
     <button class="qr-back-btn" onclick="goBackToVenue()">← BACK TO VENUE</button>
   </div>
 </div>
+FIN DESACTIVADO -->
 
 <script>
 ITEMS = _vp === '10experiences'
