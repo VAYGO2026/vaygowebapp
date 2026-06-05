@@ -70,37 +70,37 @@
       </div>
       <div class="vadm-links">
 
-        <a class="vadm-link" href="https://vaygowebapp-ynao.vercel.app/admin-tombola.html" style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);">
+        <a class="vadm-link" href="./admin-tombola.html" style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);">
           <div class="vadm-icon" style="background:rgba(255,215,0,0.12);">🎰</div>
           <div><div class="vadm-name">Tómbola</div><div class="vadm-desc">Admin rifa y sorteos</div></div>
           <div class="vadm-arrow" style="color:rgba(255,215,0,0.5);">›</div>
         </a>
 
-        <a class="vadm-link" href="https://vaygowebapp-ynao.vercel.app/validar.html" style="background:rgba(212,245,106,0.06);border:1px solid rgba(212,245,106,0.2);">
+        <a class="vadm-link" href="./validar.html" style="background:rgba(212,245,106,0.06);border:1px solid rgba(212,245,106,0.2);">
           <div class="vadm-icon" style="background:rgba(212,245,106,0.12);">📱</div>
           <div><div class="vadm-name">Validador Cupones</div><div class="vadm-desc">Escaneo QR meseros</div></div>
           <div class="vadm-arrow" style="color:rgba(212,245,106,0.5);">›</div>
         </a>
 
-        <a class="vadm-link" href="https://vaygowebapp-ynao.vercel.app/venues.html" style="background:rgba(100,180,255,0.06);border:1px solid rgba(100,180,255,0.2);">
+        <a class="vadm-link" href="./venues.html" style="background:rgba(100,180,255,0.06);border:1px solid rgba(100,180,255,0.2);">
           <div class="vadm-icon" style="background:rgba(100,180,255,0.12);">💼</div>
           <div><div class="vadm-name">Cotización Paquetes</div><div class="vadm-desc">Venues y planes</div></div>
           <div class="vadm-arrow" style="color:rgba(100,180,255,0.5);">›</div>
         </a>
 
-        <a class="vadm-link" href="https://vaygowebapp-ynao.vercel.app/vendedores.html" style="background:rgba(255,120,80,0.06);border:1px solid rgba(255,120,80,0.2);">
+        <a class="vadm-link" href="./vendedores.html" style="background:rgba(255,120,80,0.06);border:1px solid rgba(255,120,80,0.2);">
           <div class="vadm-icon" style="background:rgba(255,120,80,0.12);">🏪</div>
           <div><div class="vadm-name">Admin Negocios</div><div class="vadm-desc">Administración y pagos</div></div>
           <div class="vadm-arrow" style="color:rgba(255,120,80,0.5);">›</div>
         </a>
 
-        <a class="vadm-link" href="https://vaygowebapp-ynao.vercel.app/admin-vendors.html" style="background:rgba(180,100,255,0.06);border:1px solid rgba(180,100,255,0.2);">
+        <a class="vadm-link" href="./admin-vendors.html" style="background:rgba(180,100,255,0.06);border:1px solid rgba(180,100,255,0.2);">
           <div class="vadm-icon" style="background:rgba(180,100,255,0.12);">👥</div>
           <div><div class="vadm-name">Admin Vendedores</div><div class="vadm-desc">Comisiones y escaneos</div></div>
           <div class="vadm-arrow" style="color:rgba(180,100,255,0.5);">›</div>
         </a>
 
-        <a class="vadm-link" href="https://vaygowebapp-ynao.vercel.app/vendor-panel.html" style="background:rgba(80,255,180,0.06);border:1px solid rgba(80,255,180,0.2);">
+        <a class="vadm-link" href="./vendor-panel.html" style="background:rgba(80,255,180,0.06);border:1px solid rgba(80,255,180,0.2);">
           <div class="vadm-icon" style="background:rgba(80,255,180,0.12);">📊</div>
           <div><div class="vadm-name">Panel Vendedor</div><div class="vadm-desc">Stats y QR vendedor</div></div>
           <div class="vadm-arrow" style="color:rgba(80,255,180,0.5);">›</div>
