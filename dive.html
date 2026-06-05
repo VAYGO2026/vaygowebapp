@@ -153,7 +153,7 @@
     /* ── Cards wrapper ── */
     .cards-wrap {
       position: absolute;
-      top: 34%;
+      top: 48%;
       left: 0;
       right: 0;
       z-index: 10;
@@ -345,6 +345,28 @@
       <div class="h-script" style="font-size:36px;white-space:nowrap;">Dive Into Paradise</div>
       <div class="h-divider"><div class="h-diamond"></div></div>
       <div class="h-tagline">Explore &nbsp;–&nbsp; Play &nbsp;–&nbsp; Win</div>
+    </div>
+
+
+    <!-- VAYGO POINTS BAR -->
+    <div class="vp-bar-wrap" id="vpBarWrap">
+      <div class="vp-bar" id="vpBar">
+        <div class="vp-top">
+          <div class="vp-label">⭐ VAYGO POINTS</div>
+          <div class="vp-pts" id="vpPts">0 <span>/ 900 pts</span></div>
+        </div>
+        <div class="vp-track">
+          <div class="vp-fill" id="vpFill" style="width:0%"></div>
+          <div class="vp-mark" style="left:33.3%"></div>
+          <div class="vp-mark" style="left:66.6%"></div>
+        </div>
+        <div class="vp-bottom">
+          <span class="vp-milestone" id="vm1">🎁 300</span>
+          <span class="vp-milestone" id="vm2">🎁 600</span>
+          <span class="vp-milestone" id="vm3">🏆 900</span>
+        </div>
+        <button class="vp-unlock-btn" id="vpUnlockBtn" onclick="openGiftBox()">🎁 OPEN YOUR SURPRISE</button>
+      </div>
     </div>
 
     <div class="cards-wrap">
