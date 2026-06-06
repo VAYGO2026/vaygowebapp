@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VAYGO — Únete como Venue</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain: "vaygo-app.firebaseapp.com",
+  projectId: "vaygo-app",
+  storageBucket: "vaygo-app.firebasestorage.app",
+  messagingSenderId: "499741267414",
+  appId: "1:499741267414:web:e69cd43156adaea11bc077"
+});
+const db = firebase.firestore();
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #060E1C;
+  --bg2: #060D18;
+  --card: rgba(212,245,106,0.03);
+  --border: rgba(212,245,106,0.08);
+  --lime: #d4f56a;
+  --lime2: #8fc20a;
+  --lime3: #5a8000;
+  --dark-text: #0a1a00;
+  --white: #FFFFFF;
+  --gray: rgba(255,255,255,0.45);
+  --lgray: rgba(255,255,255,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--white);overflow-x:hidden;min-height:100vh;}
+
+/* NOISE */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.35;}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 18px 5%;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(3,8,15,0.85); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 5px; color: var(--white); text-decoration: none; }
+.nav-logo em { color: var(--lime); font-style: normal; }
+.nav-tag { font-size: 11px; color: var(--gray); letter-spacing: 1.5px; text-transform: uppercase; }
+
+/* HERO */
+.hero { padding: 140px 5% 80px; text-align: center; position: relative; overflow: hidden; }
+.hero-mesh { position: absolute; inset: 0; pointer-events: none; }
+.hero-mesh::before { content: ''; position: absolute; width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(212,245,106,0.06) 0%, transparent 65%); top: 50%; left: 50%; transform: translate(-50%,-60%); }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(212,245,106,0.08); border: 1px solid rgba(212,245,106,0.25); border-radius: 100px; padding: 7px 18px; font-size: 10px; font-weight: 700; color: var(--lime); letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 28px; animation: fadeUp .5s ease both; }
+.hero-eyebrow span { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); animation: blink 1.5s ease-in-out infinite; }
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 8vw, 96px); line-height: .95; letter-spacing: 2px; margin-bottom: 20px; animation: fadeUp .6s ease both .1s; }
+.hero-title .accent { color: var(--lime); }
+.hero-sub { font-size: clamp(14px, 1.5vw, 16px); color: var(--gray); line-height: 1.8; max-width: 480px; margin: 0 auto 44px; animation: fadeUp .6s ease both .2s; }
+.hero-stats { display: flex; justify-content: center; gap: 0; flex-wrap: wrap; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); animation: fadeUp .6s ease both .3s; }
+.hstat { padding: 24px 40px; border-right: 1px solid var(--border); text-align: center; }
+.hstat:last-child { border-right: none; }
+.hstat-num { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 2px; color: var(--lime); }
+.hstat-lbl { font-size: 10px; color: var(--gray); margin-top: 2px; letter-spacing: 1.5px; text-transform: uppercase; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* HOW IT WORKS */
+.how { background: var(--bg2); padding: 100px 5%; }
+.section-inner { max-width: 900px; margin: 0 auto; }
+.section-eyebrow { font-size: 10px; font-weight: 700; color: var(--lime); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 12px; }
+.section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 4.5vw, 60px); letter-spacing: 2px; line-height: 1.05; margin-bottom: 12px; }
+.section-title .accent { color: var(--lime); }
+.steps-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 56px; }
+.step { background: var(--card); border: 1px solid var(--border); border-radius: 0; padding: 32px 24px; transition: background .3s; }
+.step:first-child { border-radius: 18px 0 0 18px; }
+.step:last-child  { border-radius: 0 18px 18px 0; }
+.step:hover { background: rgba(255,255,255,0.04); }
+.step-n { font-family: 'Bebas Neue', sans-serif; font-size: 56px; letter-spacing: 2px; color: rgba(212,245,106,0.1); line-height: 1; margin-bottom: 12px; }
+.step-ico { font-size: 28px; margin-bottom: 12px; display: block; }
+.step-t { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+.step-b { font-size: 12px; color: var(--gray); line-height: 1.7; }
+
+/* PLANS */
+.plans { padding: 100px 5%; background: var(--bg); }
+.plans-header { text-align: center; margin-bottom: 60px; }
+.plans-badge { display: inline-block; background: rgba(212,245,106,0.08); border: 1px solid rgba(212,245,106,0.3); border-radius: 100px; padding: 6px 18px; font-size: 10px; font-weight: 700; color: var(--lime2); letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 16px; }
+.plans-grid { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 560px; margin: 0 auto; }
+.plan-card { background: var(--card); border: 1px solid var(--border); border-radius: 22px; padding: 36px 32px; position: relative; overflow: hidden; transition: border-color .3s, transform .3s; cursor: pointer; }
+.plan-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, rgba(212,245,106,0.4), transparent); transform: scaleX(0); transition: transform .3s; }
+.plan-card:hover { border-color: rgba(212,245,106,0.3); transform: translateY(-3px); }
+.plan-card:hover::before { transform: scaleX(1); }
+.plan-card.selected { border-color: var(--lime2); background: rgba(212,245,106,0.06); }
+.plan-card.selected::before { transform: scaleX(1); background: linear-gradient(90deg, transparent, var(--lime2), transparent); }
+.plan-badge-top { position: absolute; top: 16px; right: 16px; background: rgba(212,245,106,0.12); border: 1px solid rgba(212,245,106,0.3); border-radius: 100px; padding: 3px 10px; font-size: 9px; font-weight: 700; color: var(--lime); letter-spacing: 1.5px; }
+.plan-icon { font-size: 32px; margin-bottom: 14px; display: block; }
+.plan-name { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: var(--white); margin-bottom: 4px; }
+.plan-desc { font-size: 12px; color: var(--gray); margin-bottom: 20px; }
+.plan-price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+.plan-old { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: rgba(255,255,255,0.2); text-decoration: line-through; }
+.plan-price { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 1px; color: var(--lime2); line-height: 1; }
+.plan-period { font-size: 12px; color: var(--gray); margin-bottom: 4px; }
+.plan-save { font-size: 11px; color: var(--lime); font-weight: 600; margin-bottom: 20px; }
+.plan-feats { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.plan-feats li { display: flex; align-items: center; gap: 10px; font-size: 13px; color: rgba(255,255,255,0.7); }
+.plan-feats li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--lime); flex-shrink: 0; }
+.plan-select-btn { width: 100%; padding: 13px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--gray); font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all .2s; }
+.plan-select-btn:hover, .plan-card.selected .plan-select-btn { background: linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%); border-color: transparent; color: var(--dark-text); }
+
+/* FORM */
+.form-section { padding: 100px 5%; background: var(--bg2); }
+.form-wrap { max-width: 680px; margin: 0 auto; }
+.form-selected-plan { display: flex; align-items: center; justify-content: space-between; background: rgba(212,245,106,0.06); border: 1px solid rgba(212,245,106,0.2); border-radius: 14px; padding: 18px 24px; margin-bottom: 40px; }
+.fsp-label { font-size: 10px; color: var(--gray); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+.fsp-name { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: var(--white); }
+.fsp-price { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1px; color: var(--lime2); }
+.fsp-change { font-size: 11px; color: var(--lime); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; background: none; border: none; cursor: pointer; text-decoration: underline; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 1.5px; text-transform: uppercase; }
+.form-input, .form-select { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color .2s, background .2s; -webkit-appearance: none; appearance: none; }
+.form-input::placeholder { color: rgba(255,255,255,0.2); }
+.form-input:focus, .form-select:focus { border-color: rgba(212,245,106,0.4); background: rgba(212,245,106,0.04); }
+.form-select { cursor: pointer; }
+.form-select option { background: #060E1C; color: #fff; }
+.divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 36px 0; }
+.payment-box { background: rgba(212,245,106,0.03); border: 1px solid rgba(212,245,106,0.12); border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+.payment-box-label { font-size: 10px; font-weight: 700; color: var(--lime); letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 10px; }
+.payment-box-text { font-size: 13px; color: var(--gray); line-height: 1.7; }
+.payment-icons { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.picon { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.6); letter-spacing: .5px; }
+.submit-btn { width: 100%; padding: 20px; background: linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%); border: none; border-radius: 14px; color: var(--dark-text); font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; cursor: pointer; box-shadow: 0 10px 40px rgba(212,245,106,0.2); transition: transform .2s, box-shadow .2s, opacity .2s; }
+.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 16px 50px rgba(212,245,106,0.3); }
+.submit-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.form-terms { text-align: center; margin-top: 14px; font-size: 11px; color: rgba(255,255,255,0.25); line-height: 1.6; }
+.form-terms a { color: rgba(212,245,106,0.5); text-decoration: none; }
+
+/* SUCCESS */
+.success-screen { display: none; min-height: 100vh; align-items: center; justify-content: center; padding: 80px 5%; text-align: center; flex-direction: column; }
+.success-screen.show { display: flex; }
+.success-icon { font-size: 72px; margin-bottom: 24px; }
+.success-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(42px, 6vw, 72px); letter-spacing: 3px; color: var(--lime); margin-bottom: 12px; }
+.success-sub { font-size: 16px; color: var(--gray); max-width: 460px; line-height: 1.8; margin-bottom: 48px; }
+.success-steps { display: flex; flex-direction: column; gap: 12px; max-width: 420px; margin: 0 auto 48px; text-align: left; }
+.ss-step { display: flex; gap: 16px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; }
+.ss-n { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--lime); line-height: 1; flex-shrink: 0; }
+.ss-text { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.6; padding-top: 2px; }
+
+/* FOOTER */
+.grad-bar { height: 2px; background: linear-gradient(90deg, transparent, var(--lime), var(--lime2), transparent); }
+footer { padding: 32px 5%; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; background: var(--bg2); }
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--white); }
+.footer-logo em { color: var(--lime); font-style: normal; }
+.footer-text { font-size: 11px; color: var(--gray); letter-spacing: .5px; }
+.footer-links { display: flex; gap: 20px; }
+.footer-links a { font-size: 11px; color: var(--gray); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; transition: color .2s; }
+.footer-links a:hover { color: var(--white); }
+
+/* LOADING */
+.loading-overlay { display: none; position: fixed; inset: 0; background: rgba(6,14,28,0.92); backdrop-filter: blur(8px); z-index: 600; align-items: center; justify-content: center; flex-direction: column; gap: 20px; }
+.loading-overlay.show { display: flex; }
+.loading-spinner { width: 48px; height: 48px; border: 2px solid rgba(212,245,106,0.1); border-top-color: var(--lime); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: var(--lime); }
+
+/* REVEAL */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── CONTRACT MODAL ── */
+.contract-overlay {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(3,8,15,0.97); backdrop-filter: blur(16px);
+  align-items: flex-start; justify-content: center;
+  padding: 20px; overflow-y: auto;
+}
+.contract-overlay.show { display: flex; }
+
+.contract-modal {
+  background: #0b1628;
+  border: 1px solid rgba(212,245,106,0.2);
+  border-radius: 24px;
+  width: 100%; max-width: 780px;
+  margin: auto;
+  display: flex; flex-direction: column;
+  box-shadow: 0 40px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
+  overflow: hidden;
+}
+
+.contract-header {
+  padding: 28px 36px 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.2);
+}
+.contract-header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.contract-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 4px; color: var(--white); }
+.contract-logo em { color: var(--lime); font-style: normal; }
+.contract-date { font-size: 11px; color: var(--gray); letter-spacing: 1px; }
+.contract-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(22px,3vw,34px); letter-spacing: 2px; color: var(--lime); margin-bottom: 4px; }
+.contract-subtitle { font-size: 12px; color: var(--gray); }
+
+.contract-body { padding: 32px 36px; }
+
+.contract-scroll-notice {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(212,245,106,0.06); border: 1px solid rgba(212,245,106,0.15);
+  border-radius: 10px; padding: 12px 16px;
+  font-size: 12px; color: var(--lime); margin-bottom: 28px; letter-spacing: .3px;
+}
+
+.clause { margin-bottom: 32px; }
+.clause-num { font-size: 10px; font-weight: 700; color: var(--lime2); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; }
+.clause-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--white); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.clause-text { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.85; }
+.clause-text p { margin-bottom: 10px; }
+.clause-text ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.clause-text ul li { display: flex; gap: 12px; align-items: flex-start; }
+.clause-text ul li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--lime2); flex-shrink: 0; margin-top: 8px; }
+.clause-text strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+
+.contract-footer {
+  padding: 28px 36px;
+  border-top: 1px solid var(--border);
+  background: rgba(0,0,0,0.25);
+}
+
+.contract-parties {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;
+}
+.party-box { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; }
+.party-label { font-size: 10px; font-weight: 700; color: var(--gray); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+.party-name { font-size: 13px; color: var(--white); font-weight: 600; }
+.party-name.empty { color: var(--gray); font-style: italic; font-weight: 400; }
+
+.sig-block { margin-bottom: 20px; }
+.sig-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; display: block; }
+.sig-input { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color .2s, background .2s; }
+.sig-input::placeholder { color: rgba(255,255,255,0.2); }
+.sig-input:focus { border-color: rgba(212,245,106,0.4); background: rgba(212,245,106,0.04); }
+.sig-note { font-size: 11px; color: var(--gray); margin-top: 6px; line-height: 1.5; }
+
+.contract-accept-btn {
+  width: 100%; padding: 18px;
+  background: linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);
+  border: none; border-radius: 12px;
+  color: var(--dark-text); font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px; letter-spacing: 3px; cursor: pointer;
+  box-shadow: 0 8px 30px rgba(212,245,106,0.2);
+  transition: transform .2s, box-shadow .2s, opacity .2s; margin-bottom: 10px;
+}
+.contract-accept-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(212,245,106,0.3); }
+.contract-accept-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+.contract-cancel-btn {
+  width: 100%; padding: 12px; background: transparent;
+  border: 1px solid var(--border); border-radius: 10px; color: var(--gray);
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+.contract-cancel-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--white); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .steps-row { grid-template-columns: repeat(2, 1fr); }
+  .step:first-child { border-radius: 18px 0 0 0; }
+  .step:last-child  { border-radius: 0 0 18px 0; }
+  .plans-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-group.full { grid-column: auto; }
+  .hstat { padding: 20px 24px; }
+  footer { flex-direction: column; text-align: center; }
+  .footer-links { justify-content: center; }
+  .contract-parties { grid-template-columns: 1fr; }
+  .contract-header, .contract-body, .contract-footer { padding: 20px; }
+}
+@media (max-width: 480px) {
+  .steps-row { grid-template-columns: 1fr; }
+  .step { border-radius: 18px !important; }
+  .hero-stats { flex-direction: column; }
+  .hstat { border-right: none; border-bottom: 1px solid var(--border); }
+  .hstat:last-child { border-bottom: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Procesando pago…</div>
+</div>
+
+<!-- CONTRACT MODAL -->
+<div class="contract-overlay" id="contractOverlay">
+  <div class="contract-modal">
+
+    <div class="contract-header">
+      <div class="contract-header-top">
+        <div class="contract-logo">VAY<em>GO</em></div>
+        <div class="contract-date" id="contractDate"></div>
+      </div>
+      <div class="contract-title">CONTRATO DE AFILIACIÓN VAYGO</div>
+      <div class="contract-subtitle">Para Locatarios — Lectura y aceptación digital obligatoria</div>
+    </div>
+
+    <div class="contract-body">
+
+      <div class="contract-scroll-notice">
+        📋 Lee el contrato completo antes de firmar. Desplázate hacia abajo para continuar.
+      </div>
+
+      <!-- CLÁUSULA 1 -->
+      <div class="clause">
+        <div class="clause-num">Cláusula 1</div>
+        <div class="clause-title">Cumplimiento de Promociones y Beneficios</div>
+        <div class="clause-text">
+          <p>El <strong>LOCATARIO</strong> acepta y reconoce que todas las promociones, descuentos, beneficios y recompensas publicadas dentro de la plataforma VAYGO son vinculantes durante el período de vigencia establecido.</p>
+          <p>Todo cupón digital emitido por la plataforma y validado mediante el sistema de escaneo de VAYGO deberá ser aceptado por el LOCATARIO conforme a los términos publicados en la plataforma.</p>
+          <p>El LOCATARIO no podrá negar, limitar, modificar o rechazar una promoción válida obtenida por un usuario, salvo en los casos expresamente autorizados y publicados previamente dentro de la plataforma.</p>
+          <p><strong>La negativa injustificada a aceptar un cupón válido constituirá un incumplimiento contractual.</strong></p>
+        </div>
+      </div>
+
+      <!-- CLÁUSULA 2 -->
+      <div class="clause">
+        <div class="clause-num">Cláusula 2</div>
+        <div class="clause-title">Consecuencias del Incumplimiento</div>
+        <div class="clause-text">
+          <p>En caso de que el LOCATARIO rechace de forma injustificada una promoción válida emitida por VAYGO, la plataforma podrá:</p>
+          <ul>
+            <li>Suspender temporalmente la publicación del establecimiento.</li>
+            <li>Ocultar la promoción activa hasta que la situación sea aclarada.</li>
+            <li>Cancelar la membresía del LOCATARIO sin derecho a reembolso en casos de reincidencia.</li>
+            <li>Compensar al usuario afectado mediante promociones equivalentes o beneficios alternativos.</li>
+          </ul>
+          <p style="margin-top:12px;">La determinación de incumplimiento será evaluada por VAYGO mediante evidencia documental, capturas de pantalla, registros de validación y cualquier otro elemento que permita verificar los hechos.</p>
+        </div>
+      </div>
+
+      <!-- CLÁUSULA 3 -->
+      <div class="clause">
+        <div class="clause-num">Cláusula 3</div>
+        <div class="clause-title">Uso Único de Cupones y Prevención de Fraude</div>
+        <div class="clause-text">
+          <p>Todo cupón emitido por VAYGO es de <strong>uso único</strong>. Una vez escaneado y validado por el establecimiento, el sistema lo marcará automáticamente como utilizado, quedando deshabilitado para cualquier uso posterior.</p>
+          <p>Los usuarios que intenten reutilizar cupones, alterar códigos QR o realizar actividades fraudulentas podrán ser suspendidos o eliminados de la plataforma de manera permanente.</p>
+        </div>
+      </div>
+
+      <!-- CLÁUSULA 4 -->
+      <div class="clause">
+        <div class="clause-num">Cláusula 4</div>
+        <div class="clause-title">Responsabilidad de Capacitación del Personal</div>
+        <div class="clause-text">
+          <p>El <strong>LOCATARIO</strong> se compromete a informar y capacitar a su personal sobre las promociones activas publicadas with VAYGO, siendo <strong>responsable de cualquier negativa derivada del desconocimiento</strong> de dichas promociones por parte de sus empleados, meseros, gerentes o cualquier representante del establecimiento.</p>
+          <p>VAYGO pondrá a disposición del LOCATARIO los materiales necesarios para facilitar dicha capacitación. La falta de capacitación interna no exime al LOCATARIO de las responsabilidades establecidas en este contrato.</p>
+        </div>
+      </div>
+
+    </div><!-- /contract-body -->
+
+    <div class="contract-footer">
+      <div class="contract-parties">
+        <div class="party-box">
+          <div class="party-label">VAYGO — Plataforma</div>
+          <div class="party-name">VAYGO · Cozumel, México</div>
+        </div>
+        <div class="party-box">
+          <div class="party-label">Locatario — Venue</div>
+          <div class="party-name empty" id="partyVenueName">Pendiente de firma</div>
+        </div>
+      </div>
+
+      <div class="sig-block">
+        <label class="sig-label" for="sigName">Firma Digital — Escribe tu nombre completo *</label>
+        <input type="text" class="sig-input" id="sigName" placeholder="Nombre completo del responsable del venue" oninput="checkSignature()"/>
+        <div class="sig-note">Al escribir tu nombre completo confirmas que has leído, entendido y aceptas todos los términos del presente Contrato de Afiliación VAYGO. Esta firma digital tiene la misma validez que una firma manuscrita.</div>
+      </div>
+
+      <button class="contract-accept-btn" id="contractAcceptBtn" disabled onclick="acceptContract()">
+        ACEPTO Y FIRMO EL CONTRATO →
+      </button>
+      <button class="contract-cancel-btn" onclick="closeContract()">
+        Back — Revisar mis datos
+      </button>
+    </div>
+
+  </div>
+</div><!-- /contract-overlay -->
+
+<!-- NAV -->
+<nav>
+  <a href="https://vaygowebapp-ynao.vercel.app" class="nav-logo">VAY<em>GO</em></a>
+  <span class="nav-tag">Cozumel · Riviera Maya</span>
+</nav>
+
+<!-- MAIN -->
+<div id="mainContent">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-mesh"></div>
+    <div class="hero-eyebrow"><span></span>Venue Registrations · Lanzamiento 2026</div>
+    <h1 class="hero-title">LLEVA MÁS<br/>CLIENTES A<br/><span class="accent">TU MESA</span></h1>
+    <p class="hero-sub">Únete a VAYGO y conecta tu negocio con cientos de turistas que ya están buscando la mejor experiencia en Cozumel.</p>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num">32+</div><div class="hstat-lbl">Venues Activos</div></div>
+      <div class="hstat"><div class="hstat-num">8</div><div class="hstat-lbl">Categorys</div></div>
+      <div class="hstat"><div class="hstat-num">4</div><div class="hstat-lbl">Locaciones por Category</div></div>
+      <div class="hstat"><div class="hstat-num">24h</div><div class="hstat-lbl">Para Estar Activo</div></div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how">
+    <div class="section-inner">
+      <div class="reveal">
+        <div class="section-eyebrow">Así funciona</div>
+        <h2 class="section-title">De la App<br/><span class="accent">A Tu Mesa</span></h2>
+      </div>
+      <div class="steps-row reveal">
+        <div class="step">
+          <div class="step-n">01</div>
+          <span class="step-ico">📱</span>
+          <div class="step-t">Escanea el QR</div>
+          <p class="step-b">El turista escanea VAYGO en el muelle, hotel o punto de alto tráfico. Sin descargar nada.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">02</div>
+          <span class="step-ico">🍴</span>
+          <div class="step-t">Elige Category</div>
+          <p class="step-b">Selecciona EAT, DRINK, SHOP o TOURS según lo que busca ese día.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">03</div>
+          <span class="step-ico">🎰</span>
+          <div class="step-t">Gira el Slot</div>
+          <p class="step-b">Obtiene un descuento o experiencia exclusiva para tu venue específico.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">04</div>
+          <span class="step-ico">🏆</span>
+          <div class="step-t">Llega y Consume</div>
+          <p class="step-b">El turista llega con su código. Tu staff lo valida en segundos. Cliente nuevo. Listo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANS -->
+  <section class="plans" id="planes">
+    <div class="section-inner">
+      <div class="plans-header reveal">
+        <div class="plans-badge">🔥 Precio de Lanzamiento — Tiempo Limitado</div>
+        <div class="section-eyebrow">Planes y Precios</div>
+        <h2 class="section-title">Elige Tu<br/><span class="accent">Presencia</span></h2>
+        <p style="font-size:14px;color:var(--gray);margin-top:10px;">Suscripción mensual. Sin contratos. Cancela cuando quieras.</p>
+      </div>
+      <div class="plans-grid reveal" id="plansGrid">
+
+        <!-- PLAN 1: CATEGORÍA -->
+        <div class="plan-card" data-plan="categoria" data-name="Category" data-price="$3,000 MXN/mes (preventa)" onclick="selectPlan(this)">
+          <div class="plan-badge-top">🔥 PREVENTA</div>
+          <span class="plan-icon">🗂️</span>
+          <div class="plan-name">CATEGORÍA</div>
+          <div class="plan-desc">Precio por categoría · Elige la tuya</div>
+          <div class="plan-price-row"><span class="plan-old">$5,000</span><span class="plan-price">$3,000</span></div>
+          <div class="plan-period">MXN / suscripción mensual</div>
+          <div class="plan-save">🔥 Preventa: 3 meses a $3,000 &nbsp;·&nbsp; A partir del 4º mes: $5,000/mes</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+            <span style="background:rgba(212,245,106,0.07);border:1px solid rgba(212,245,106,0.15);border-radius:100px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(212,245,106,0.7);letter-spacing:.5px;">EAT</span>
+            <span style="background:rgba(212,245,106,0.07);border:1px solid rgba(212,245,106,0.15);border-radius:100px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(212,245,106,0.7);letter-spacing:.5px;">DRINK</span>
+            <span style="background:rgba(212,245,106,0.07);border:1px solid rgba(212,245,106,0.15);border-radius:100px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(212,245,106,0.7);letter-spacing:.5px;">TOURS</span>
+            <span style="background:rgba(212,245,106,0.07);border:1px solid rgba(212,245,106,0.15);border-radius:100px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(212,245,106,0.7);letter-spacing:.5px;">EXPLORE</span>
+            <span style="background:rgba(212,245,106,0.07);border:1px solid rgba(212,245,106,0.15);border-radius:100px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(212,245,106,0.7);letter-spacing:.5px;">DIVE</span>
+            <span style="background:rgba(212,245,106,0.07);border:1px solid rgba(212,245,106,0.15);border-radius:100px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(212,245,106,0.7);letter-spacing:.5px;">COFFEE</span>
+            <span style="background:rgba(212,245,106,0.07);border:1px solid rgba(212,245,106,0.15);border-radius:100px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(212,245,106,0.7);letter-spacing:.5px;">SHOP</span>
+            <span style="background:rgba(212,245,106,0.07);border:1px solid rgba(212,245,106,0.15);border-radius:100px;padding:3px 10px;font-size:10px;font-weight:700;color:rgba(212,245,106,0.7);letter-spacing:.5px;">RENT</span>
+          </div>
+          <ul class="plan-feats">
+            <li>Foto, Maps, web e Instagram</li>
+            <li>Menú y ubicación en tu tarjeta</li>
+            <li>Publicidad en el Instagram oficial de VAYGO</li>
+            <li>Descuento exclusivo en el Slot Machine</li>
+            <li>Estadísticas mensuales de visitas y canjes</li>
+            <li>App validador gratuita para tu staff</li>
+            <li style="color:rgba(212,245,106,0.85);">Banner rotativo gratuito: las 32 venues de VAYGO rotan simultáneamente en ese espacio</li>
+          </ul>
+          <button class="plan-select-btn">Elegir Category</button>
+        </div>
+
+        <!-- PLAN 2: BANNER PUBLICITARIO -->
+        <div class="plan-card" data-plan="banner" data-name="Banner Publicitario" data-price="$5,000 MXN/mes" onclick="selectPlan(this)">
+          <div class="plan-badge-top" style="background:rgba(255,200,50,0.12);border-color:rgba(255,200,50,0.3);color:#ffc832;">SOLO 6 ESPACIOS</div>
+          <span class="plan-icon">📣</span>
+          <div class="plan-name">BANNER</div>
+          <div class="plan-desc">Publicidad en pantalla principal · debajo de categorías</div>
+          <div class="plan-price-row"><span class="plan-price" style="color:#ffc832;">$5,000</span></div>
+          <div class="plan-period">MXN / suscripción mensual</div>
+          <div class="plan-save" style="color:rgba(255,200,50,0.8);">Solo 6 espacios de paga disponibles</div>
+          <ul class="plan-feats">
+            <li>Banner grande en pantalla principal de la app</li>
+            <li>Posición debajo de los botones de categorías</li>
+            <li>Clic directo a tu sitio web</li>
+            <li>Máxima exposición al abrir la app</li>
+            <li>Solo 6 anunciantes en total</li>
+            <li>Publicidad en el Instagram oficial de VAYGO</li>
+          </ul>
+          <button class="plan-select-btn" style="border-color:rgba(255,200,50,0.2);">Elegir Banner</button>
+        </div>
+
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUBSCRIPTION POLICY -->
+  <section style="background:var(--bg2);padding:0 5% 80px;">
+    <div style="max-width:860px;margin:0 auto;">
+      <div class="reveal" style="background:rgba(212,245,106,0.03);border:1px solid rgba(212,245,106,0.12);border-radius:20px;padding:36px 40px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+          <span style="font-size:22px;">⚠️</span>
+          <div>
+            <div class="section-eyebrow" style="margin-bottom:0;">Política de Suscripción</div>
+            <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--white);margin-top:2px;">Términos de Renovación y Continuidad</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
+          <div style="background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:14px;padding:20px;">
+            <div style="font-size:20px;margin-bottom:10px;">📅</div>
+            <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:6px;">Fecha límite de pago</div>
+            <div style="font-size:12px;color:var(--gray);line-height:1.7;">El pago de suscripción debe realizarse <strong style="color:rgba(255,255,255,0.8);">mínimo 5 días antes</strong> del cierre de cada mes para garantizar la continuidad de tu publicación.</div>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:14px;padding:20px;">
+            <div style="font-size:20px;margin-bottom:10px;">🔴</div>
+            <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:6px;">Baja automática por falta de pago</div>
+            <div style="font-size:12px;color:var(--gray);line-height:1.7;">Si no se registra el pago en tiempo, <strong style="color:rgba(255,255,255,0.8);">tu publicación será desactivada automáticamente</strong> hasta que se realice el pago correspondiente.</div>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border:1px solid rgba(212,245,106,0.15);border-radius:14px;padding:20px;">
+            <div style="font-size:20px;margin-bottom:10px;">🟡</div>
+            <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:6px;">Lista de espera</div>
+            <div style="font-size:12px;color:var(--gray);line-height:1.7;">Los espacios disponibles son <strong style="color:rgba(255,255,255,0.8);">limitados y muy demandados</strong>. Si existe una lista de espera activa y no se renueva a tiempo, el espacio podrá ser asignado a otro venue.</div>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:14px;padding:20px;">
+            <div style="font-size:20px;margin-bottom:10px;">✅</div>
+            <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:6px;">Reactivación</div>
+            <div style="font-size:12px;color:var(--gray);line-height:1.7;">Si tu espacio fue tomado por otro venue, podrás <strong style="color:rgba(255,255,255,0.8);">unirte a la lista de espera</strong> para recuperar tu posición cuando quede disponible.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORM -->
+  <section class="form-section" id="registro">
+    <div class="form-wrap">
+      <div class="reveal">
+        <div class="section-eyebrow">Registro</div>
+        <h2 class="section-title" style="margin-bottom:8px;">Activa Tu Venue<br/><span class="accent">Hoy</span></h2>
+        <p style="font-size:14px;color:var(--gray);line-height:1.7;margin-bottom:40px;">Llena tus datos, revisa y firma el contrato de afiliación, y en menos de 24 horas tu venue estará activo with VAYGO.</p>
+      </div>
+
+      <div class="form-selected-plan reveal">
+        <div>
+          <div class="fsp-label">Plan seleccionado</div>
+          <div class="fsp-name" id="selectedPlanName">—</div>
+          <div class="fsp-price" id="selectedPlanPrice" style="color:var(--gray);font-family:'DM Sans',sans-serif;font-size:13px;">Elige un plan arriba</div>
+        </div>
+        <button class="fsp-change" onclick="document.getElementById('planes').scrollIntoView({behavior:'smooth'})">Cambiar</button>
+      </div>
+
+      <div class="form-grid reveal">
+        <div class="form-group">
+          <label class="form-label">Nombre del Venue *</label>
+          <input type="text" class="form-input" id="fVenue" placeholder="Ej: La Cocina de Juan" oninput="syncVenueName()"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category *</label>
+          <select class="form-select" id="fCategoria">
+            <option value="">Selecciona…</option>
+            <option value="eat">🍴 EAT — Restaurants</option>
+            <option value="drink">🍹 DRINK — Bares y cocteles</option>
+            <option value="shop">🛍️ SHOP — Tiendas</option>
+            <option value="tours">🗺️ TOURS — Experiencias</option>
+            <option value="coffee">☕ COFFEE — Cafés</option>
+            <option value="dive">🤿 DIVE — Buceo</option>
+            <option value="rent">🚗 RENT — Rentals</option>
+            <option value="beach">🏖️ BEACH CLUB</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nombre de Contacto *</label>
+          <input type="text" class="form-input" id="fContacto" placeholder="Tu nombre completo"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">WhatsApp *</label>
+          <input type="tel" class="form-input" id="fWhatsapp" placeholder="+52 987 000 0000"/>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Email *</label>
+          <input type="email" class="form-input" id="fEmail" placeholder="correo@tuvenue.com"/>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Dirección del Venue</label>
+          <input type="text" class="form-input" id="fDireccion" placeholder="Av. Rafael Melgar #100, Cozumel"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sitio Web (opcional)</label>
+          <input type="url" class="form-input" id="fWeb" placeholder="https://tuvenue.com"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Instagram (optional)</label>
+          <input type="text" class="form-input" id="fInsta" placeholder="@tuvenue"/>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Plan *</label>
+          <select class="form-select" id="fPlan" onchange="onPlanSelectChange(this)">
+            <option value="">Select a plan…</option>
+            <option value="categoria">🗂️ Category — $3,000 MXN/mes 🔥 (preventa, regular $5,000)</option>
+            <option value="banner">📣 Banner Publicitario — $5,000 MXN/mes · Solo 6 espacios</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider reveal"></div>
+
+      <div class="payment-box reveal">
+        <div class="payment-box-label">Pago Seguro con MercadoPago</div>
+        <div class="payment-box-text">Al confirmar se mostrará el Contrato de Afiliación VAYGO para tu revisión y firma digital. Una vez firmado, serás redirigido a MercadoPago para activar tu suscripción mensual de forma segura.</div>
+        <div class="payment-icons">
+          <span class="picon">Visa</span><span class="picon">Mastercard</span>
+          <span class="picon">AMEX</span><span class="picon">OXXO</span>
+          <span class="picon">Transferencia</span>
+        </div>
+      </div>
+
+      <button class="submit-btn reveal" id="submitBtn" onclick="handleSubmit()">
+        REVISAR CONTRATO Y PAGAR →
+      </button>
+
+      <p class="form-terms reveal">
+        Al continuar revisarás y firmarás el <a href="#" onclick="handleSubmit();return false;">Contrato de Afiliación VAYGO</a> antes de proceder al pago.<br/>
+        Suscripción mensual recurrente. Puedes cancelar en cualquier momento.
+      </p>
+    </div>
+  </section>
+
+</div><!-- /mainContent -->
+
+<!-- SUCCESS -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">🎉</div>
+  <h2 class="success-title">¡BIENVENIDO<br/>A VAYGO!</h2>
+  <p class="success-sub">Tu contrato fue firmado y tu pago procesado exitosamente. En menos de 24 horas tu venue estará activo en la app.</p>
+  <div class="success-steps">
+    <div class="ss-step"><div class="ss-n">1</div><div class="ss-text">Recibirás un WhatsApp de confirmación con los próximos pasos.</div></div>
+    <div class="ss-step"><div class="ss-n">2</div><div class="ss-text">Nos mandas tu foto y datos finales del venue.</div></div>
+    <div class="ss-step"><div class="ss-n">3</div><div class="ss-text">En 24 hrs tu tarjeta aparece with VAYGO activa para todos los usuarios.</div></div>
+    <div class="ss-step"><div class="ss-n">4</div><div class="ss-text">¡Los clientes empiezan a llegar a tu mesa! 🚀</div></div>
+  </div>
+  <a href="https://vaygowebapp-ynao.vercel.app" style="display:inline-block;padding:16px 40px;background:linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);border-radius:12px;color:#0a1a00;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;text-decoration:none;">VER LA APP →</a>
+</div>
+
+<!-- FOOTER -->
+<div class="grad-bar"></div>
+<footer>
+  <div class="footer-logo">VAY<em>GO</em></div>
+  <div class="footer-text">© 2026 VAYGO · Cozumel, México · Todos los derechos reservados</div>
+  <div class="footer-links">
+    <a href="https://vaygowebapp-ynao.vercel.app">App</a>
+    <a href="https://wa.me/529871412188" target="_blank">WhatsApp</a>
+    <a href="https://instagram.com/vaygo.mx" target="_blank">Instagram</a>
+  </div>
+</footer>
+
+<script>
+// ── Firebase availability check ──
+const LIMIT_CAT    = 4;   // max venues per category
+const LIMIT_BANNER = 6;   // max banner spots
+
+async function checkAvailability() {
+  const cat  = document.getElementById('fCategoria').value;
+  const plan = document.getElementById('fPlan').value;
+  const box  = document.getElementById('availBox');
+  if (!cat && !plan) { box.style.display='none'; return; }
+
+  box.style.display = 'block';
+  box.style.background = 'rgba(255,255,255,0.04)';
+  box.style.border = '1px solid rgba(255,255,255,0.08)';
+  box.style.color = 'rgba(255,255,255,0.5)';
+  box.textContent = 'Verificando disponibilidad…';
+
+  try {
+    if (plan === 'banner') {
+      // Count active+trial banner venues
+      const snap = await db.collection('venues')
+        .where('plan', 'in', ['banner','banner_top','banner_std'])
+        .get();
+      const count = snap.docs.filter(d => {
+        const s = d.data().status;
+        return s === 'active' || s === 'trial';
+      }).length;
+      const free = LIMIT_BANNER - count;
+      if (free <= 0) {
+        box.style.background = 'rgba(255,45,122,0.08)';
+        box.style.border = '1px solid rgba(255,45,122,0.3)';
+        box.style.color = '#FF6B8A';
+        box.innerHTML = '🚫 Los 6 espacios de Banner están ocupados. Puedes unirte a la lista de espera.';
+      } else {
+        box.style.background = 'rgba(212,245,106,0.06)';
+        box.style.border = '1px solid rgba(212,245,106,0.2)';
+        box.style.color = '#d4f56a';
+        box.innerHTML = '✅ Espacios disponibles en Banner: <strong>' + free + ' de ' + LIMIT_BANNER + '</strong>';
+      }
+    } else if (plan === 'categoria' && cat) {
+      const snap = await db.collection('venues')
+        .where('cat', '==', cat)
+        .get();
+      const count = snap.docs.filter(d => {
+        const s = d.data().status;
+        return s === 'active' || s === 'trial';
+      }).length;
+      const free = LIMIT_CAT - count;
+      if (free <= 0) {
+        box.style.background = 'rgba(255,45,122,0.08)';
+        box.style.border = '1px solid rgba(255,45,122,0.3)';
+        box.style.color = '#FF6B8A';
+        box.innerHTML = '🚫 La categoría <strong>' + cat + '</strong> está llena (4/4). Elige otra categoría o únete a la lista de espera.';
+      } else {
+        box.style.background = 'rgba(212,245,106,0.06)';
+        box.style.border = '1px solid rgba(212,245,106,0.2)';
+        box.style.color = '#d4f56a';
+        box.innerHTML = '✅ Espacios disponibles en <strong>' + cat + '</strong>: <strong>' + free + ' de ' + LIMIT_CAT + '</strong>';
+      }
+    } else {
+      box.style.display = 'none';
+    }
+  } catch(e) {
+    box.style.display = 'none';
+    console.error('Firebase check error:', e);
+  }
+}
+
+// ── Plan data ──
+const planData = {
+  'categoria': { name: 'Category',          price: '$3,000 MXN/mes (preventa)', mp: 'https://mpago.la/2BbcJWW' },
+  'banner':    { name: 'Banner Publicitario', price: '$5,000 MXN/mes',            mp: 'https://mpago.la/2NRvxWB' },
+};
+let selectedPlanKey = '';
+
+// Set today's date in contract
+const d = new Date();
+document.getElementById('contractDate').textContent =
+  d.toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
+
+function syncVenueName() {
+  const v = document.getElementById('fVenue').value.trim();
+  const el = document.getElementById('partyVenueName');
+  el.textContent = v || 'Pendiente de firma';
+  el.className = 'party-name' + (v ? '' : ' empty');
+}
+
+function selectPlan(card) {
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  selectedPlanKey = card.dataset.plan;
+  updatePlanDisplay(selectedPlanKey);
+  document.getElementById('fPlan').value = selectedPlanKey;
+  checkAvailability();
+  setTimeout(() => document.getElementById('registro').scrollIntoView({ behavior: 'smooth' }), 200);
+}
+
+function onPlanSelectChange(sel) {
+  const key = sel.value; if (!key) return;
+  selectedPlanKey = key;
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.toggle('selected', c.dataset.plan === key));
+  updatePlanDisplay(key);
+  checkAvailability();
+}
+
+function updatePlanDisplay(key) {
+  const d = planData[key];
+  document.getElementById('selectedPlanName').textContent = d.name;
+  const p = document.getElementById('selectedPlanPrice');
+  p.textContent = d.price;
+  p.style.cssText = "font-family:'Bebas Neue',sans-serif;font-size:28px;color:#8fc20a;";
+}
+
+async function handleSubmit() {
+  const venue    = document.getElementById('fVenue').value.trim();
+  const cat      = document.getElementById('fCategoria').value;
+  const contacto = document.getElementById('fContacto').value.trim();
+  const wa       = document.getElementById('fWhatsapp').value.trim();
+  const email    = document.getElementById('fEmail').value.trim();
+  const plan     = document.getElementById('fPlan').value;
+
+  if (!venue || !cat || !contacto || !wa || !email || !plan) {
+    const btn = document.getElementById('submitBtn');
+    btn.style.background = 'linear-gradient(180deg,#ff4444 0%,#cc0000 100%)';
+    btn.textContent = 'COMPLETA LOS CAMPOS REQUERIDOS';
+    setTimeout(() => { btn.style.background = ''; btn.textContent = 'REVISAR CONTRATO Y PAGAR →'; }, 2500);
+    return;
+  }
+
+  // Check availability before showing contract
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = 'VERIFICANDO DISPONIBILIDAD…';
+  btn.disabled = true;
+
+  try {
+    let available = true;
+    let blockedMsg = '';
+
+    if (plan === 'banner') {
+      const snap = await db.collection('venues')
+        .where('plan', 'in', ['banner','banner_top','banner_std']).get();
+      const count = snap.docs.filter(d => {
+        const s = d.data().status; return s==='active'||s==='trial';
+      }).length;
+      if (count >= LIMIT_BANNER) {
+        available = false;
+        blockedMsg = 'Los 6 espacios de Banner ya están ocupados. Por favor contáctanos para unirte a la lista de espera.';
+      }
+    } else if (plan === 'categoria') {
+      const snap = await db.collection('venues').where('cat','==',cat).get();
+      const count = snap.docs.filter(d => {
+        const s = d.data().status; return s==='active'||s==='trial';
+      }).length;
+      if (count >= LIMIT_CAT) {
+        available = false;
+        blockedMsg = 'La categoría ' + cat + ' ya está llena (4/4). Por favor elige otra categoría o contáctanos.';
+      }
+    }
+
+    if (!available) {
+      btn.style.background = 'linear-gradient(180deg,#ff4444 0%,#cc0000 100%)';
+      btn.textContent = blockedMsg;
+      btn.disabled = false;
+      setTimeout(() => {
+        btn.style.background = '';
+        btn.textContent = 'REVISAR CONTRATO Y PAGAR →';
+      }, 5000);
+      return;
+    }
+  } catch(e) {
+    console.error('Availability check failed:', e);
+  }
+
+  btn.textContent = 'REVISAR CONTRATO Y PAGAR →';
+  btn.disabled = false;
+
+  syncVenueName();
+  document.getElementById('sigName').value = '';
+  document.getElementById('contractAcceptBtn').disabled = true;
+  document.getElementById('contractOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function checkSignature() {
+  const val = document.getElementById('sigName').value.trim();
+  document.getElementById('contractAcceptBtn').disabled = val.length < 4;
+}
+
+function closeContract() {
+  document.getElementById('contractOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+async function acceptContract() {
+  const sig = document.getElementById('sigName').value.trim();
+  if (sig.length < 4) return;
+
+  const venue    = document.getElementById('fVenue').value.trim();
+  const cat      = document.getElementById('fCategoria').value;
+  const contacto = document.getElementById('fContacto').value.trim();
+  const wa       = document.getElementById('fWhatsapp').value.trim();
+  const email    = document.getElementById('fEmail').value.trim();
+  const plan     = document.getElementById('fPlan').value;
+  const web      = document.getElementById('fWeb').value.trim();
+  const insta    = document.getElementById('fInsta').value.trim();
+  const dir      = document.getElementById('fDireccion').value.trim();
+
+  // Save to Firebase as pending
+  try {
+    await db.collection('venues').add({
+      name:      venue,
+      cat:       cat,
+      plan:      plan,
+      phone:     wa,
+      email:     email,
+      contacto:  contacto,
+      web:       web,
+      instagram: insta,
+      direccion: dir,
+      firma:     sig,
+      start:     new Date().toISOString().split('T')[0],
+      status:    'trial',
+      source:    'registro_web'
+    });
+  } catch(e) {
+    console.error('Firebase save error:', e);
+  }
+
+  // Notify via WhatsApp
+  const planName = planData[plan]?.name || plan;
+  const planPrice = planData[plan]?.price || '';
+  const msg = encodeURIComponent(
+    '🔔 *NUEVO REGISTRO VAYGO*\n\n' +
+    '📍 Venue: *' + venue + '*\n' +
+    '🗂 Category: *' + cat + '*\n' +
+    '📋 Plan: *' + planName + '* — ' + planPrice + '\n' +
+    '👤 Contacto: ' + contacto + '\n' +
+    '📱 WhatsApp: ' + wa + '\n' +
+    '📧 Email: ' + email + '\n' +
+    '✍️ Firmó contrato como: ' + sig + '\n\n' +
+    '⚡ Pendiente de activar en el panel de admin.'
+  );
+  window.open('https://wa.me/529871412188?text=' + msg, '_blank');
+
+  closeContract();
+  document.getElementById('loadingOverlay').classList.add('show');
+  setTimeout(() => {
+    window.location.href = planData[plan]?.mp || 'https://mpago.la/22PyKV9';
+  }, 1500);
+}
+
+// Success screen
+if (window.location.search.includes('success') || window.location.hash === '#success') {
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('successScreen').classList.add('show');
+}
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
