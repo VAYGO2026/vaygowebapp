@@ -410,8 +410,9 @@ function updateVPBar(pts){
 async function vpAddPoints(){
   try{
     const deviceId = getDeviceId();
-    const catKey='vaygo_cat_'+REST_ID;
-    if(localStorage.getItem(catKey)) return; // already earned for this venue today
+    // catKey check removed for testing - re-enable in production
+    // const catKey='vaygo_cat_'+REST_ID;
+    // if(localStorage.getItem(catKey)) return;
     
     // Get current points from Firebase
     const snap = await db.collection('vp_points').doc(deviceId).get();
@@ -426,7 +427,7 @@ async function vpAddPoints(){
     }, {merge: true});
     
     // Mark this venue as earned
-    localStorage.setItem(catKey,'1');
+    // localStorage.setItem(catKey,'1'); // disabled for testing
     localStorage.setItem('vaygo_points', newPts);
     updateVPBar(newPts);
   }catch(e){
@@ -437,7 +438,7 @@ async function vpAddPoints(){
       if(localStorage.getItem(catKey)) return;
       const newPts=Math.min(current+100,900);
       localStorage.setItem('vaygo_points',newPts);
-      localStorage.setItem(catKey,'1');
+      // localStorage.setItem(catKey,'1'); // disabled for testing
       updateVPBar(newPts);
     }catch(e2){}
   }
