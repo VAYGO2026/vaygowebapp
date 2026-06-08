@@ -366,13 +366,13 @@ window.confirmUsed = async function() {
           const pointsSnap = await getDoc(pointsRef);
           if(pointsSnap.exists()) {
             await updateDoc(pointsRef, {
-              totalPoints: increment(10),
+              totalPoints: increment(100),
               lastUpdated: serverTimestamp()
             });
           } else {
             await setDoc(pointsRef, {
               deviceId: _deviceId,
-              totalPoints: 10,
+              totalPoints: 100,
               lastUpdated: serverTimestamp()
             });
           }
