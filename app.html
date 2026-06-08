@@ -622,14 +622,7 @@ const db = firebase.firestore();
   }
   var isAdmin = false;
   try{ isAdmin = localStorage.getItem('vaygo_admin') === 'vaygo2026'; }catch(e){}
-  if(!isAdmin){
-    function activateDemo(){
-      const bl = document.getElementById('demoBlock');
-      if(bl) bl.style.display = 'block';
-    }
-    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', activateDemo);
-    else activateDemo();
-  }
+  // Lock handled by Firebase settings
 })();
 
 
@@ -1172,5 +1165,37 @@ document.getElementById('adBanner').addEventListener('touchend', () => {
 </script>
 
 <script src="admin-float.js"></script>
+
+  <!-- ── COMING SOON SCREEN ── -->
+  <div id="vaygoComingSoon" style="display:none;position:fixed;inset:0;z-index:99998;background:#060E1C;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;">
+    <div style="font-family:'Anton',sans-serif;font-size:52px;color:#d4f56a;letter-spacing:6px;text-shadow:0 0 40px rgba(212,245,106,0.4);margin-bottom:8px;">VAYGO</div>
+    <div style="font-family:'Righteous',sans-serif;font-size:11px;letter-spacing:5px;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:48px;">EXPLORE · PLAY · WIN</div>
+    <div style="width:60px;height:1px;background:rgba(212,245,106,0.2);margin:0 auto 48px;"></div>
+    <div style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;color:#fff;margin-bottom:12px;">Coming Soon</div>
+    <div style="font-family:'Righteous',sans-serif;font-size:13px;letter-spacing:3px;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:40px;">Próximamente</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.3);line-height:1.8;">Cozumel's first gamified travel app.<br/>Stay tuned 🌴</div>
+    <div style="margin-top:48px;">
+      <a href="https://www.instagram.com/vaygo.travel/" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:50px;background:rgba(212,245,106,0.08);border:1px solid rgba(212,245,106,0.2);text-decoration:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:800;color:#d4f56a;letter-spacing:1px;">
+        📸 Follow @vaygo.travel
+      </a>
+    </div>
+  </div>
+
+  <script>
+  // Check lock state from Firebase
+  (function(){
+    var isAdmin = false;
+    try{ isAdmin = localStorage.getItem('vaygo_admin') === 'vaygo2026'; }catch(e){}
+    if(isAdmin) return; // Admin always sees the app
+    if(typeof firebase === 'undefined') return;
+    firebase.firestore().collection('settings').doc('app').get().then(function(snap){
+      if(snap.exists && snap.data().locked === true){
+        var el = document.getElementById('vaygoComingSoon');
+        if(el) el.style.display = 'flex';
+      }
+    }).catch(function(){});
+  })();
+  </script>
+
 </body>
 </html>

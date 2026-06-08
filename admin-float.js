@@ -6,6 +6,9 @@
   }
   if(localStorage.getItem('vaygo_admin') !== 'vaygo2026') return;
 
+  // Firebase must already be loaded in the page
+  const db = firebase.firestore();
+
   const style = document.createElement('style');
   style.textContent = `
     #vaygo-admin-fab{
@@ -23,6 +26,30 @@
       50%{box-shadow:0 4px 0 #2d4000,0 0 24px rgba(212,245,106,0.8);}
     }
     #vaygo-admin-fab:active{transform:scale(0.92);}
+
+    #vaygo-lock-fab{
+      position:fixed;top:70px;right:14px;z-index:9999;
+      width:48px;height:48px;border-radius:50%;
+      background:rgba(0,0,0,0.7);
+      border:2px solid rgba(255,255,255,0.2);
+      cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      font-size:20px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.4);
+      transition:all 0.2s;
+    }
+    #vaygo-lock-fab.locked{
+      background:rgba(255,60,60,0.2);
+      border-color:rgba(255,60,60,0.6);
+      box-shadow:0 4px 12px rgba(255,60,60,0.3);
+    }
+    #vaygo-lock-fab.unlocked{
+      background:rgba(212,245,106,0.15);
+      border-color:rgba(212,245,106,0.5);
+      box-shadow:0 4px 12px rgba(212,245,106,0.2);
+    }
+    #vaygo-lock-fab:active{transform:scale(0.92);}
+
     #vaygo-admin-panel{
       position:fixed;inset:0;z-index:99999;
       background:rgba(0,0,0,0.97);
@@ -50,33 +77,62 @@
   `;
   document.head.appendChild(style);
 
+  // ── ADM BUTTON ──
   const fab = document.createElement('button');
   fab.id = 'vaygo-admin-fab';
   fab.textContent = 'ADM';
   fab.onclick = openPanel;
   document.body.appendChild(fab);
 
+  // ── LOCK BUTTON ──
+  const lockFab = document.createElement('button');
+  lockFab.id = 'vaygo-lock-fab';
+  lockFab.title = 'Lock / Unlock App';
+  document.body.appendChild(lockFab);
+
+  // Load current lock state from Firebase
+  async function loadLockState(){
+    try {
+      const snap = await db.collection('settings').doc('app').get();
+      const locked = snap.exists ? snap.data().locked === true : false;
+      updateLockBtn(locked);
+    } catch(e){ updateLockBtn(false); }
+  }
+
+  function updateLockBtn(locked){
+    lockFab.textContent = locked ? '🔒' : '🔓';
+    lockFab.className = locked ? 'locked' : 'unlocked';
+    lockFab.title = locked ? 'App BLOQUEADA — click para desbloquear' : 'App ABIERTA — click para bloquear';
+  }
+
+  lockFab.onclick = async function(){
+    try {
+      const snap = await db.collection('settings').doc('app').get();
+      const current = snap.exists ? snap.data().locked === true : false;
+      const newState = !current;
+      await db.collection('settings').doc('app').set({ locked: newState }, { merge: true });
+      updateLockBtn(newState);
+      alert(newState ? '🔒 App BLOQUEADA — los clientes ven "Coming Soon"' : '🔓 App DESBLOQUEADA — los clientes pueden entrar');
+    } catch(e){ alert('Error: ' + e.message); }
+  };
+
+  loadLockState();
+
+  // ── PANEL ──
   const items = [
     {
       icon:'🎰', name:'Tómbola', desc:'Admin rifa y sorteos',
-      href:'./admin-tombola.html',
-      color:'255,215,0',
-      shares:[
-        {label:'📤 Compartir', url:'https://www.vaygo.travel/admin-tombola.html', msg:'🎰 VAYGO Tómbola — Admin rifa y sorteos'}
-      ]
+      href:'./admin-tombola.html', color:'255,215,0',
+      shares:[{label:'📤 Compartir', url:'https://www.vaygo.travel/admin-tombola.html', msg:'🎰 VAYGO Tómbola — Admin rifa y sorteos'}]
     },
     {
       icon:'📱', name:'Validador Cupones', desc:'Escaneo QR meseros',
-      href:'./validar.html',
-      color:'212,245,106',
-      shares:[
-        {label:'📤 Compartir', url:'https://www.vaygo.travel/validar.html', msg:'📱 VAYGO Validador de Cupones'}
-      ]
+      href:'./validar.html', color:'212,245,106',
+      shares:[{label:'📤 Compartir', url:'https://www.vaygo.travel/validar.html', msg:'📱 VAYGO Validador de Cupones'}]
     },
     {
       icon:'💼', name:'Cotización Paquetes', desc:'Venues y planes',
-      href:'./venues.html',
-      color:'100,180,255',
+      href:'./venues.html', color:'100,180,255',
       shares:[
         {label:'📤 Español', url:'https://www.vaygo.travel/venues.html', msg:'💼 VAYGO — Lleva más turistas a tu negocio en Cozumel: https://www.vaygo.travel/venues.html'},
         {label:'📤 English', url:'https://www.vaygo.travel/venuesingles.html', msg:'💼 VAYGO — Bring more tourists to your business in Cozumel: https://www.vaygo.travel/venuesingles.html'}
@@ -84,44 +140,33 @@
     },
     {
       icon:'🏪', name:'Admin Negocios', desc:'Administración y pagos',
-      href:'./vendedores.html',
-      color:'255,120,80',
-      shares:[
-        {label:'📤 Compartir', url:'https://www.vaygo.travel/vendedores.html', msg:'🏪 VAYGO Admin Negocios'}
-      ]
+      href:'./vendedores.html', color:'255,120,80',
+      shares:[{label:'📤 Compartir', url:'https://www.vaygo.travel/vendedores.html', msg:'🏪 VAYGO Admin Negocios'}]
     },
     {
       icon:'👥', name:'Admin Vendedores', desc:'Comisiones y escaneos',
-      href:'./admin-vendors.html',
-      color:'180,100,255',
-      shares:[
-        {label:'📤 Compartir', url:'https://www.vaygo.travel/admin-vendors.html', msg:'👥 VAYGO Admin Vendedores'}
-      ]
+      href:'./admin-vendors.html', color:'180,100,255',
+      shares:[{label:'📤 Compartir', url:'https://www.vaygo.travel/admin-vendors.html', msg:'👥 VAYGO Admin Vendedores'}]
     },
     {
       icon:'📊', name:'Panel Vendedor', desc:'Stats y QR vendedor',
-      href:'./vendor-panel.html',
-      color:'80,255,180',
-      shares:[
-        {label:'📤 Compartir', url:'https://www.vaygo.travel/vendor-panel.html', msg:'📊 VAYGO Panel Vendedor'}
-      ]
+      href:'./vendor-panel.html', color:'80,255,180',
+      shares:[{label:'📤 Compartir', url:'https://www.vaygo.travel/vendor-panel.html', msg:'📊 VAYGO Panel Vendedor'}]
     },
   ];
 
   function shareWA(msg, url){
-    const text = encodeURIComponent(msg + '\n' + url);
-    window.open('https://wa.me/?text=' + text, '_blank');
+    window.open('https://wa.me/?text=' + encodeURIComponent(msg + '\n' + url), '_blank');
   }
 
   let linksHTML = '';
   items.forEach((item, i) => {
-    const shareButtons = item.shares.map(s =>
-      `<button class="vadm-share-btn" onclick="vaygoShare(${i},${item.shares.indexOf(s)})"
+    const shareButtons = item.shares.map((s, si) =>
+      `<button class="vadm-share-btn" onclick="vaygoShare(${i},${si})"
         style="background:rgba(${item.color},0.12);color:rgba(${item.color},0.9);border:1px solid rgba(${item.color},0.25);">
         ${s.label}
       </button>`
     ).join('');
-
     linksHTML += `
       <div class="vadm-item" style="background:rgba(${item.color},0.06);border:1px solid rgba(${item.color},0.2);">
         <a class="vadm-link" href="${item.href}">
@@ -150,7 +195,6 @@
   `;
   document.body.appendChild(panel);
 
-  // Expose share data globally
   window._vadmItems = items;
   window.vaygoShare = function(itemIdx, shareIdx){
     const s = window._vadmItems[itemIdx].shares[shareIdx];
@@ -158,7 +202,6 @@
   };
 
   document.getElementById('vadmClose').onclick = closePanel;
-
   function openPanel(){ panel.classList.add('open'); }
   function closePanel(){ panel.classList.remove('open'); }
 
