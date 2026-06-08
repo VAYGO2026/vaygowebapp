@@ -331,20 +331,17 @@ function showQR(code,prize,expiresISO){
   // ── POLL for validation by staff every 3 seconds ──
   if(_couponListener){ clearInterval(_couponListener); _couponListener=null; }
   let _validated = false;
-  _couponListener = setInterval(async ()=>{
+  _couponListener = setInterval(()=>{
     if(_validated) return;
-    try{
-      const snap = await db.collection('codes').doc(code).get();
-      const exists = typeof snap.exists === 'function' ? snap.exists() : snap.exists;
-      if(!exists) return;
+    db.collection('codes').doc(code).get().then(snap=>{
       const d = snap.data();
-      if(d.used === true){
+      if(d && d.used === true){
         _validated = true;
         clearInterval(_couponListener); _couponListener=null;
         markCouponRedeemed();
         setTimeout(()=>{ showVPToast(); }, 300);
       }
-    }catch(e){ console.log('poll error', e); }
+    });
   }, 3000);
 }
 
