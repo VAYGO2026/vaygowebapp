@@ -257,7 +257,7 @@ async function saveAndShowQR(prize){
   const gameKey=REST_ID+'_game_'+today;
   try{
     const snap=await db.collection('codes').where('gameKey','==',gameKey).limit(1).get();
-    if(!snap.empty){const d=snap.docs[0].data();showQR(d.code,d.prize,d.expiresAt);if(document.readyState==='loading'){
+    if(!snap.empty){const d=snap.docs[0].data();if(d.used===true){return;}showQR(d.code,d.prize,d.expiresAt);if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',()=>{vpLoadPoints();updateVPMilestoneLabels();});
 }else{
   vpLoadPoints();updateVPMilestoneLabels();
