@@ -168,7 +168,7 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, serverTimestamp, addDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, setDoc, collection, getDocs, serverTimestamp, addDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const fbApp = initializeApp({
   apiKey: "AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
@@ -357,7 +357,33 @@ window.confirmUsed = async function() {
       } catch(e){ console.log('vendor commission error',e); }
     }, 100);
 
-    /* 3 — Show success */
+    /* 3 — Sumar puntos VAYGO al cliente */
+    const _deviceId = pendingCodeData && pendingCodeData._clientDeviceId;
+    if(_deviceId) {
+      setTimeout(async () => {
+        try {
+          const pointsRef = doc(db, 'vp_points', _deviceId);
+          const pointsSnap = await getDoc(pointsRef);
+          if(pointsSnap.exists()) {
+            await updateDoc(pointsRef, {
+              totalPoints: increment(10),
+              lastUpdated: serverTimestamp()
+            });
+          } else {
+            await setDoc(pointsRef, {
+              deviceId: _deviceId,
+              totalPoints: 10,
+              lastUpdated: serverTimestamp()
+            });
+          }
+          updateDoc(doc(db, pendingCollection, pendingCode), {
+            pointsAwarded: true
+          }).catch(() => {});
+        } catch(e) { console.log('points error', e); }
+      }, 200);
+    }
+
+    /* 4 — Show success */
     document.getElementById('rIcon').textContent = '🎉';
     document.getElementById('rTitle').textContent = '¡DESCUENTO APLICADO!';
     document.getElementById('rTitle').style.color = '#d4f56a';
