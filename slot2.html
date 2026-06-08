@@ -307,19 +307,19 @@ function showQR(code,prize,expiresISO){
   if(_couponListener) _couponListener(); // unsub previous
     // POLLING: award points when staff validates
   _couponListener = db.collection('codes').doc(code).onSnapshot(snap=>{
-    if(snap.exists){
-      const d = snap.data();
-      if(d.used && !d.pointsAwarded){
-        // Staff validated — award points to whoever is watching this coupon
+    if(!snap.exists) return;
+    const d = snap.data();
+    if(d.used === true){
+      // Award points if not already awarded
+      if(!d.pointsAwarded){
         vpAddPoints();
         db.collection('codes').doc(code).update({pointsAwarded: true}).catch(()=>{});
       }
-    }
-    if(!snap.exists) return;
-    const d=snap.data();
-    if(d.used===true){
-      if(_couponListener){_couponListener();_couponListener=null;}
-      onCouponValidated();
+      // Then hide coupon and show validated screen
+      setTimeout(()=>{
+        if(_couponListener){_couponListener();_couponListener=null;}
+        onCouponValidated();
+      }, 1500);
     }
   });
 }
