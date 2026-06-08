@@ -383,6 +383,7 @@ window.confirmUsed = async function() {
     document.getElementById('resultBox').style.borderColor = 'rgba(212,245,106,0.4)';
     pendingCode = '';
     pendingCodeData = null;
+    pendingCollection = 'codes';
     loadStats(currentVenue);
   } catch(e) {
     btn.textContent = '✅ CONFIRMAR — APLICAR DESCUENTO';
