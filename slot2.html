@@ -396,7 +396,6 @@ async function vpLoadPoints(){
     const deviceId = getDeviceId();
     const snap = await db.collection('vp_points').doc(deviceId).get();
     const pts = snap.exists ? (snap.data().points||0) : 0;
-    // Also sync to localStorage as backup
     localStorage.setItem('vaygo_points', pts);
     updateVPBar(pts);
     // Listen for realtime updates
@@ -405,8 +404,19 @@ async function vpLoadPoints(){
       localStorage.setItem('vaygo_points', p);
       updateVPBar(p);
     });
+    // Check for pending VPR reward not yet validated
+    db.collection('vp_rewards')
+      .where('deviceId','==',deviceId)
+      .where('used','==',false)
+      .limit(1)
+      .get()
+      .then(rSnap=>{
+        if(!rSnap.empty){
+          const r = rSnap.docs[0].data();
+          showVPRewardCoupon(r.code, r.prize, r.expiresAt);
+        }
+      }).catch(()=>{});
   }catch(e){
-    // Fallback to localStorage
     const pts=parseInt(localStorage.getItem('vaygo_points')||'0',10);
     updateVPBar(pts);
   }
