@@ -358,7 +358,7 @@ window.confirmUsed = async function() {
     }, 100);
 
     /* 3 — Sumar puntos VAYGO al cliente */
-    const _deviceId = pendingCodeData && pendingCodeData._clientDeviceId;
+    const _deviceId = pendingCodeData && (pendingCodeData._clientDeviceId || pendingCodeData.deviceId);
     if(_deviceId) {
       setTimeout(async () => {
         try {
