@@ -310,6 +310,7 @@ function showQR(code,prize,expiresISO){
   if(_couponListener) _couponListener(); // unsub previous
     // POLLING: award points when staff validates
   _couponListener = db.collection('codes').doc(code).onSnapshot(snap=>{
+    console.log('onSnapshot fired, code:', code, 'exists:', snap.exists, 'used:', snap.exists ? snap.data().used : 'N/A');
     if(!snap.exists) return;
     const d = snap.data();
     if(d.used === true){
