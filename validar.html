@@ -328,54 +328,50 @@ window.confirmUsed = async function() {
       validatedStaff: currentStaff
     });
 
-    /* 2 — Vendor commission using saved data (before update) */
-    try {
-      const codeData = pendingCodeData;
-      const ref = codeData && codeData.vendorId ? codeData.vendorId : null;
-      const isDirect = codeData && codeData.vendorDirect === '1';
-      const firstCouponPaid = codeData && codeData.vendorFirstPaid === '1';
+    /* 2 — Vendor commission (non-blocking - runs in background) */
+    const _saveVendorCommission = async () => {
+      try {
+        const codeData = pendingCodeData;
+        const ref = codeData && codeData.vendorId ? codeData.vendorId : null;
+        const isDirect = codeData && codeData.vendorDirect === '1';
+        const firstCouponPaid = codeData && codeData.vendorFirstPaid === '1';
+        if(!ref) return;
 
-      if(ref){
         const vendorSnap = await getDoc(doc(db, 'vendors', ref));
-        if(vendorSnap.exists() && vendorSnap.data().status === 'active'){
-          const month = new Date().toISOString().slice(0,7);
-          let amount = 15;
-          let type = 'indirect';
-          if(isDirect && !firstCouponPaid){
-            amount = 17;
-            type = 'direct';
-            await updateDoc(doc(db, pendingCollection, pendingCode), { vendorFirstPaid: '1' });
-          }
-          const earningData = {
-            vendorId: ref,
-            code: pendingCode,
-            venue: currentVenue,
-            amount,
-            type,
-            month,
-            earnedAt: serverTimestamp()
-          };
-          await addDoc(collection(db, 'vendor_earnings'), earningData);
+        if(!vendorSnap.exists() || vendorSnap.data().status !== 'active') return;
 
-          /* También guardar en el doc del vendedor para que vendor-panel pueda leerlo sin permisos de admin */
-          const earningForVendor = {
-            code: pendingCode,
-            venue: currentVenue,
-            amount,
-            type,
-            month,
-            earnedAt: new Date().toISOString()
-          };
-          await updateDoc(doc(db, 'vendors', ref), {
-            earnings: arrayUnion(earningForVendor),
-            [`monthly.${month}.total`]: increment(amount),
-            [`monthly.${month}.coupons`]: increment(1),
-            [`monthly.${month}.direct`]: type === 'direct' ? increment(1) : increment(0),
-            [`monthly.${month}.indirect`]: type === 'indirect' ? increment(1) : increment(0),
-          });
+        const month = new Date().toISOString().slice(0,7);
+        let amount = 15;
+        let type = 'indirect';
+        if(isDirect && !firstCouponPaid){
+          amount = 17;
+          type = 'direct';
+          updateDoc(doc(db, pendingCollection, pendingCode), { vendorFirstPaid: '1' }).catch(()=>{});
         }
-      }
-    } catch(e){ console.log('vendor commission error', e); }
+
+        // Save to vendor_earnings collection
+        addDoc(collection(db, 'vendor_earnings'), {
+          vendorId: ref, code: pendingCode, venue: currentVenue,
+          amount, type, month, earnedAt: serverTimestamp()
+        }).catch(()=>{});
+
+        // Save to vendor doc
+        const earningForVendor = {
+          code: pendingCode, venue: currentVenue,
+          amount, type, month, earnedAt: new Date().toISOString()
+        };
+        const vendorData = vendorSnap.data();
+        const existingEarnings = Array.isArray(vendorData.earnings) ? vendorData.earnings : [];
+        updateDoc(doc(db, 'vendors', ref), {
+          earnings: [...existingEarnings, earningForVendor],
+          [`monthly.${month}.total`]: increment(amount),
+          [`monthly.${month}.coupons`]: increment(1),
+          [`monthly.${month}.direct`]: type === 'direct' ? increment(1) : increment(0),
+          [`monthly.${month}.indirect`]: type === 'indirect' ? increment(1) : increment(0),
+        }).catch(()=>{});
+      } catch(e){ console.log('vendor commission error', e); }
+    };
+    _saveVendorCommission(); // fire and forget - don't await
 
     /* 3 — Show success */
     document.getElementById('rIcon').textContent = '🎉';
