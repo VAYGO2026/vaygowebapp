@@ -317,6 +317,7 @@ function showQR(code,prize,expiresISO){
   // ── POLL for validation by staff every 3 seconds ──
   if(_couponListener){ clearInterval(_couponListener); _couponListener=null; }
   let _validated = false;
+  alert('Polling started for: ' + code);
   _couponListener = setInterval(async ()=>{
     if(_validated) return;
     try{
