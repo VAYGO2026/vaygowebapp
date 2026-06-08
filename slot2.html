@@ -314,49 +314,30 @@ function showQR(code,prize,expiresISO){
   document.getElementById('qr-code-txt').textContent=code;
   document.getElementById('qr-valid').textContent='Valid until: '+t+' today';
 
-  // ── LISTEN for validation by staff ──
-  if(_couponListener) _couponListener(); // unsub previous
-    // POLLING: award points when staff validates
+  // ── POLL for validation by staff every 3 seconds ──
+  if(_couponListener){ clearInterval(_couponListener); _couponListener=null; }
   let _validated = false;
-  _couponListener = db.collection('codes').doc(code).onSnapshot(snap=>{
-    const _exists = typeof snap.exists === 'function' ? snap.exists() : snap.exists;
-    if(!_exists) return;
-    const d = snap.data();
-    if(d.used === true && !_validated){
-      _validated = true;
-      // Unsubscribe immediately so no more snapshots
-      if(_couponListener){_couponListener();_couponListener=null;}
-      // Hide coupon aggressively
-      const ic = document.getElementById('inlineCoupon');
-      alert('validated! ic exists: ' + (ic ? 'YES' : 'NO') + ' display: ' + (ic ? ic.style.display : 'N/A'));
-      if(ic){
-        ic.style.setProperty('display','none','important');
-        ic.style.setProperty('visibility','hidden','important');
-        ic.style.setProperty('height','0','important');
-        ic.style.setProperty('overflow','hidden','important');
-        ic.setAttribute('data-validated','true');
+  _couponListener = setInterval(async ()=>{
+    if(_validated) return;
+    try{
+      const snap = await db.collection('codes').doc(code).get();
+      if(!snap.exists) return;
+      const d = snap.data();
+      if(d.used === true){
+        _validated = true;
+        clearInterval(_couponListener); _couponListener=null;
+        // Hide coupon
+        const ic = document.getElementById('inlineCoupon');
+        if(ic){
+          ic.style.setProperty('display','none','important');
+          ic.style.setProperty('visibility','hidden','important');
+          ic.setAttribute('data-validated','true');
+        }
+        // Show toast
+        setTimeout(()=>{ showVPToast(); }, 300);
       }
-      if(!d.pointsAwarded){
-        // Update Firebase vp_points directly
-        const deviceId = d.deviceId || ('dev_'+Date.now());
-        db.collection('vp_points').doc(deviceId).get().then(pSnap=>{
-          const current = pSnap.exists ? (pSnap.data().points||0) : 0;
-          const newPts = Math.min(current+100, 900);
-          db.collection('vp_points').doc(deviceId).set({
-            points: newPts,
-            lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-            deviceId: deviceId
-          }, {merge:true}).then(()=>{
-            updateVPBar(newPts);
-            try{ localStorage.setItem('vaygo_points', newPts); }catch(e){}
-          }).catch(e=>console.log('vp_points write error',e));
-        }).catch(e=>console.log('vp_points read error',e));
-        db.collection('codes').doc(code).update({pointsAwarded: true}).catch(()=>{});
-      }
-      // Show celebration after short delay
-      setTimeout(()=>{ showVPToast(); }, 500);
-    }
-  });
+    }catch(e){}
+  }, 3000);
 }
 
 function onCouponValidated(){
