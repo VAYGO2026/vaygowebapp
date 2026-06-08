@@ -454,6 +454,10 @@ window.resetAll = function() {
   document.getElementById('manualInput').value = '';
   pendingCode = '';
   pendingCodeData = null;
+  const btn = document.getElementById('confirmBtn');
+  btn.textContent = '✅ CONFIRMAR — APLICAR DESCUENTO';
+  btn.disabled = false;
+  btn.style.display = 'none';
 };
 
 window.validateManual = function() {
