@@ -328,6 +328,7 @@ function showQR(code,prize,expiresISO){
       if(_couponListener){_couponListener();_couponListener=null;}
       // Hide coupon aggressively
       const ic = document.getElementById('inlineCoupon');
+      alert('validated! ic exists: ' + (ic ? 'YES' : 'NO') + ' display: ' + (ic ? ic.style.display : 'N/A'));
       if(ic){
         ic.style.setProperty('display','none','important');
         ic.style.setProperty('visibility','hidden','important');
