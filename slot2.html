@@ -844,10 +844,8 @@ async function checkAlreadyPlayed(){
       done=true;
       document.getElementById('spinBtn').disabled=true;
       document.getElementById('spinBtn').textContent='COME BACK TOMORROW';
-      showQR(d.code,d.prize,d.expiresAt);
-      // If already used, mark immediately
-      if(d.used===true){
-        setTimeout(()=>markCouponRedeemed(),500);
+      if(d.used !== true){
+        showQR(d.code,d.prize,d.expiresAt);
       }
     }
   }catch(e){}

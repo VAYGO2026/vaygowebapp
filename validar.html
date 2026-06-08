@@ -359,11 +359,12 @@ window.confirmUsed = async function() {
       } catch(e){ console.log('vendor commission error',e); }
     }, 100);
 
-    /* 3 — Sumar puntos VAYGO al cliente */
+    /* 3 — Sumar puntos VAYGO al cliente (solo cupones VYG, no VPR) */
     const _deviceId = pendingCodeData && (pendingCodeData._clientDeviceId || pendingCodeData.deviceId);
     const _pointsCode = pendingCode;
     const _pointsCol = pendingCollection;
-    if(_deviceId) {
+    const _isVPR = pendingCode.startsWith('VPR-');
+    if(_deviceId && !_isVPR) {
       setTimeout(async () => {
         try {
           const pointsRef = doc(db, 'vp_points', _deviceId);
