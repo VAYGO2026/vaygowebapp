@@ -309,15 +309,18 @@ function showQR(code,prize,expiresISO){
   // ── LISTEN for validation by staff ──
   if(_couponListener) _couponListener(); // unsub previous
     // POLLING: award points when staff validates
+  let _validated = false;
   _couponListener = db.collection('codes').doc(code).onSnapshot(snap=>{
     const _exists = typeof snap.exists === 'function' ? snap.exists() : snap.exists;
     if(!_exists) return;
     const d = snap.data();
-    console.log('onSnapshot fired, code:', code, 'used:', d.used);
-    if(d.used === true){
-      // Hide coupon
+    if(d.used === true && !_validated){
+      _validated = true;
+      // Unsubscribe immediately so no more snapshots
+      if(_couponListener){_couponListener();_couponListener=null;}
+      // Hide coupon right away
       const ic = document.getElementById('inlineCoupon');
-      if(ic){ ic.style.opacity='0'; setTimeout(()=>{ ic.style.display='none'; ic.style.opacity='1'; }, 600); }
+      if(ic){ ic.style.display='none'; }
       if(!d.pointsAwarded){
         // Update Firebase vp_points directly
         const deviceId = d.deviceId || ('dev_'+Date.now());
@@ -329,17 +332,14 @@ function showQR(code,prize,expiresISO){
             lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
             deviceId: deviceId
           }, {merge:true}).then(()=>{
-            // Update bar directly on this device too
             updateVPBar(newPts);
             try{ localStorage.setItem('vaygo_points', newPts); }catch(e){}
           }).catch(e=>console.log('vp_points write error',e));
         }).catch(e=>console.log('vp_points read error',e));
         db.collection('codes').doc(code).update({pointsAwarded: true}).catch(()=>{});
       }
-      setTimeout(()=>{
-        if(_couponListener){_couponListener();_couponListener=null;}
-        onCouponValidated();
-      }, 2000);
+      // Show celebration after short delay
+      setTimeout(()=>{ showVPToast(); }, 500);
     }
   });
 }
