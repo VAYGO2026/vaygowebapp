@@ -292,6 +292,20 @@ function updateVPMilestoneLabels(){
 
 let _couponListener=null;
 
+function markCouponRedeemed(){
+  const ic = document.getElementById('inlineCoupon');
+  if(!ic) return;
+  ic.style.position = 'relative';
+  ic.style.opacity = '0.5';
+  ic.style.border = '2px solid #ff4444';
+  if(ic.querySelector('.redeemed-overlay')) return;
+  const overlay = document.createElement('div');
+  overlay.className = 'redeemed-overlay';
+  overlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);border-radius:18px;z-index:10;';
+  overlay.innerHTML = '<div style="font-family:Anton,sans-serif;font-size:48px;color:#ff4444;letter-spacing:4px;text-shadow:0 0 20px rgba(255,68,68,0.8);">✓ REDEEMED</div><div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:6px;">Discount applied</div>';
+  ic.appendChild(overlay);
+}
+
 function showQR(code,prize,expiresISO){
   const t=new Date(expiresISO).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
   // Fill inline coupon
@@ -317,7 +331,6 @@ function showQR(code,prize,expiresISO){
   // ── POLL for validation by staff every 3 seconds ──
   if(_couponListener){ clearInterval(_couponListener); _couponListener=null; }
   let _validated = false;
-  alert('Polling started for: ' + code);
   _couponListener = setInterval(async ()=>{
     if(_validated) return;
     try{
@@ -327,19 +340,7 @@ function showQR(code,prize,expiresISO){
       if(d.used === true){
         _validated = true;
         clearInterval(_couponListener); _couponListener=null;
-        // Mark coupon as used visually
-        const ic = document.getElementById('inlineCoupon');
-        if(ic){
-          ic.style.position = 'relative';
-          ic.style.opacity = '0.5';
-          ic.style.border = '2px solid #ff4444';
-          // Add USADO overlay
-          const overlay = document.createElement('div');
-          overlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);border-radius:18px;z-index:10;';
-          overlay.innerHTML = '<div style="font-family:Anton,sans-serif;font-size:48px;color:#ff4444;letter-spacing:4px;text-shadow:0 0 20px rgba(255,68,68,0.8);">✓ REDEEMED</div><div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:6px;">Discount applied</div>';
-          ic.appendChild(overlay);
-        }
-        // Show toast
+        markCouponRedeemed();
         setTimeout(()=>{ showVPToast(); }, 300);
       }
     }catch(e){}
@@ -836,6 +837,10 @@ async function checkAlreadyPlayed(){
       document.getElementById('spinBtn').disabled=true;
       document.getElementById('spinBtn').textContent='COME BACK TOMORROW';
       showQR(d.code,d.prize,d.expiresAt);
+      // If already used, mark immediately
+      if(d.used===true){
+        setTimeout(()=>markCouponRedeemed(),500);
+      }
     }
   }catch(e){}
 }
