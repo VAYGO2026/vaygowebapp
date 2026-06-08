@@ -364,11 +364,31 @@ function showVPToast(){
 
 
 /* ── VAYGO POINTS LOGIC ── */
-function vpLoadPoints(){
+function getDeviceId(){
+  let id = localStorage.getItem('vaygo_device_id');
+  if(!id){ id='dev_'+Date.now()+'_'+Math.random().toString(36).slice(2); localStorage.setItem('vaygo_device_id',id); }
+  return id;
+}
+
+async function vpLoadPoints(){
   try{
+    const deviceId = getDeviceId();
+    const snap = await db.collection('vp_points').doc(deviceId).get();
+    const pts = snap.exists ? (snap.data().points||0) : 0;
+    // Also sync to localStorage as backup
+    localStorage.setItem('vaygo_points', pts);
+    updateVPBar(pts);
+    // Listen for realtime updates
+    db.collection('vp_points').doc(deviceId).onSnapshot(snap=>{
+      const p = snap.exists ? (snap.data().points||0) : 0;
+      localStorage.setItem('vaygo_points', p);
+      updateVPBar(p);
+    });
+  }catch(e){
+    // Fallback to localStorage
     const pts=parseInt(localStorage.getItem('vaygo_points')||'0',10);
     updateVPBar(pts);
-  }catch(e){}
+  }
 }
 
 function updateVPBar(pts){
@@ -387,16 +407,40 @@ function updateVPBar(pts){
   }
 }
 
-function vpAddPoints(){
+async function vpAddPoints(){
   try{
-    const current=parseInt(localStorage.getItem('vaygo_points')||'0',10);
+    const deviceId = getDeviceId();
     const catKey='vaygo_cat_'+REST_ID;
-    if(localStorage.getItem(catKey)) return; // already earned for this venue
-    const newPts=Math.min(current+100,900);
-    localStorage.setItem('vaygo_points',newPts);
+    if(localStorage.getItem(catKey)) return; // already earned for this venue today
+    
+    // Get current points from Firebase
+    const snap = await db.collection('vp_points').doc(deviceId).get();
+    const current = snap.exists ? (snap.data().points||0) : 0;
+    const newPts = Math.min(current+100, 900);
+    
+    // Save to Firebase
+    await db.collection('vp_points').doc(deviceId).set({
+      points: newPts,
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+      deviceId: deviceId
+    }, {merge: true});
+    
+    // Mark this venue as earned
     localStorage.setItem(catKey,'1');
+    localStorage.setItem('vaygo_points', newPts);
     updateVPBar(newPts);
-  }catch(e){}
+  }catch(e){
+    // Fallback to localStorage
+    try{
+      const current=parseInt(localStorage.getItem('vaygo_points')||'0',10);
+      const catKey='vaygo_cat_'+REST_ID;
+      if(localStorage.getItem(catKey)) return;
+      const newPts=Math.min(current+100,900);
+      localStorage.setItem('vaygo_points',newPts);
+      localStorage.setItem(catKey,'1');
+      updateVPBar(newPts);
+    }catch(e2){}
+  }
 }
 
 function getVPPrize(){
@@ -415,6 +459,16 @@ async function openGiftBox(){
   const milestone=pts>=900?900:pts>=600?600:300;
 
   localStorage.setItem('vaygo_gift_opened',new Date().toISOString().slice(0,10));
+  // Reset points in Firebase if at 900
+  try{
+    const deviceId = getDeviceId();
+    const snap = await db.collection('vp_points').doc(deviceId).get();
+    const pts = snap.exists ? (snap.data().points||0) : 0;
+    if(pts>=900){
+      await db.collection('vp_points').doc(deviceId).set({points:0, lastUpdated: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
+      localStorage.setItem('vaygo_points','0');
+    }
+  }catch(e){}
   document.getElementById('vpUnlockBtn').style.display='none';
 
   // Generate unique reward code (VPR = VP Reward)
