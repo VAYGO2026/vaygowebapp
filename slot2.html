@@ -429,12 +429,38 @@ function updateVPBar(pts){
     const threshold=(i+1)*300;
     document.getElementById(id).classList.toggle('reached',pts>=threshold);
   });
-  // Show unlock button if milestone reached and no gift opened today
+  // Show unlock button if milestone reached
   const milestones=[300,600,900];
   const reached=milestones.filter(m=>pts>=m);
-  const lastGift=localStorage.getItem('vaygo_gift_opened');
-  if(reached.length>0 && lastGift!==new Date().toISOString().slice(0,10)){
-    document.getElementById('vpUnlockBtn').style.display='block';
+  if(reached.length>0){
+    const today=new Date().toISOString().slice(0,10);
+    const deviceId=getDeviceId();
+    // Check Firebase for existing unused reward today
+    db.collection('vp_rewards')
+      .where('deviceId','==',deviceId)
+      .where('used','==',false)
+      .limit(1)
+      .get()
+      .then(rSnap=>{
+        if(rSnap.empty){
+          // No pending reward — check if already used one today
+          db.collection('vp_rewards')
+            .where('deviceId','==',deviceId)
+            .where('redeemedAt','>=',new Date(today))
+            .limit(1)
+            .get()
+            .then(usedSnap=>{
+              if(usedSnap.empty){
+                document.getElementById('vpUnlockBtn').style.display='block';
+              }
+            }).catch(()=>{
+              document.getElementById('vpUnlockBtn').style.display='block';
+            });
+        }
+        // If there's a pending reward, showVPRewardCoupon handles it
+      }).catch(()=>{
+        document.getElementById('vpUnlockBtn').style.display='block';
+      });
   }
 }
 
