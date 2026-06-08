@@ -359,6 +359,8 @@ window.confirmUsed = async function() {
 
     /* 3 — Sumar puntos VAYGO al cliente */
     const _deviceId = pendingCodeData && (pendingCodeData._clientDeviceId || pendingCodeData.deviceId);
+    const _pointsCode = pendingCode;
+    const _pointsCol = pendingCollection;
     if(_deviceId) {
       setTimeout(async () => {
         try {
@@ -366,17 +368,17 @@ window.confirmUsed = async function() {
           const pointsSnap = await getDoc(pointsRef);
           if(pointsSnap.exists()) {
             await updateDoc(pointsRef, {
-              totalPoints: increment(100),
+              points: increment(100),
               lastUpdated: serverTimestamp()
             });
           } else {
             await setDoc(pointsRef, {
               deviceId: _deviceId,
-              totalPoints: 100,
+              points: 100,
               lastUpdated: serverTimestamp()
             });
           }
-          updateDoc(doc(db, pendingCollection, pendingCode), {
+          updateDoc(doc(db, _pointsCol, _pointsCode), {
             pointsAwarded: true
           }).catch(() => {});
         } catch(e) { console.log('points error', e); }
