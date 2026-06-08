@@ -257,8 +257,11 @@ async function saveAndShowQR(prize){
   const gameKey=REST_ID+'_game_'+today;
   try{
     const snap=await db.collection('codes').where('gameKey','==',gameKey).limit(1).get();
-    if(!snap.empty){const d=snap.docs[0].data();showQR(d.code,d.prize,d.expiresAt);vpLoadPoints();
-updateVPMilestoneLabels();
+    if(!snap.empty){const d=snap.docs[0].data();showQR(d.code,d.prize,d.expiresAt);if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',()=>{vpLoadPoints();updateVPMilestoneLabels();});
+}else{
+  vpLoadPoints();updateVPMilestoneLabels();
+}
 
 function updateVPMilestoneLabels(){
   const prizes=VP_PRIZES[VENUE_CAT]||VP_PRIZES.eat;
@@ -307,12 +310,9 @@ function showQR(code,prize,expiresISO){
     if(snap.exists){
       const d = snap.data();
       if(d.used && !d.pointsAwarded){
-        // Staff validated — now award points
-        const deviceId = localStorage.getItem('vaygo_device_id');
-        if(d.deviceId && d.deviceId === deviceId){
-          vpAddPoints();
-          db.collection('codes').doc(code).update({pointsAwarded: true});
-        }
+        // Staff validated — award points to whoever is watching this coupon
+        vpAddPoints();
+        db.collection('codes').doc(code).update({pointsAwarded: true}).catch(()=>{});
       }
     }
     if(!snap.exists) return;
@@ -495,8 +495,11 @@ function showVPRewardCoupon(code, prize, expiresISO){
   });
 }
 
-vpLoadPoints();
-updateVPMilestoneLabels();
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',()=>{vpLoadPoints();updateVPMilestoneLabels();});
+}else{
+  vpLoadPoints();updateVPMilestoneLabels();
+}
 
 function updateVPMilestoneLabels(){
   const prizes=VP_PRIZES[VENUE_CAT]||VP_PRIZES.eat;
