@@ -328,50 +328,34 @@ window.confirmUsed = async function() {
       validatedStaff: currentStaff
     });
 
-    /* 2 — Vendor commission (non-blocking - runs in background) */
-    const _saveVendorCommission = async () => {
+    /* 2 — Vendor commission - non-blocking, runs in background */
+    const _pCode = pendingCode;
+    const _pCol = pendingCollection;
+    const _pData = pendingCodeData;
+    setTimeout(async ()=>{
       try {
-        const codeData = pendingCodeData;
-        const ref = codeData && codeData.vendorId ? codeData.vendorId : null;
-        const isDirect = codeData && codeData.vendorDirect === '1';
-        const firstCouponPaid = codeData && codeData.vendorFirstPaid === '1';
+        const ref = _pData && _pData.vendorId ? _pData.vendorId : null;
         if(!ref) return;
-
+        const isDirect = _pData.vendorDirect === '1';
+        const firstCouponPaid = _pData.vendorFirstPaid === '1';
         const vendorSnap = await getDoc(doc(db, 'vendors', ref));
         if(!vendorSnap.exists() || vendorSnap.data().status !== 'active') return;
-
         const month = new Date().toISOString().slice(0,7);
-        let amount = 15;
-        let type = 'indirect';
-        if(isDirect && !firstCouponPaid){
-          amount = 17;
-          type = 'direct';
-          updateDoc(doc(db, pendingCollection, pendingCode), { vendorFirstPaid: '1' }).catch(()=>{});
-        }
-
-        // Save to vendor_earnings collection
-        addDoc(collection(db, 'vendor_earnings'), {
-          vendorId: ref, code: pendingCode, venue: currentVenue,
-          amount, type, month, earnedAt: serverTimestamp()
+        let amount = 15, type = 'indirect';
+        if(isDirect && !firstCouponPaid){ amount=17; type='direct'; updateDoc(doc(db,_pCol,_pCode),{vendorFirstPaid:'1'}).catch(()=>{}); }
+        addDoc(collection(db,'vendor_earnings'),{vendorId:ref,code:_pCode,venue:currentVenue,amount,type,month,earnedAt:serverTimestamp()}).catch(()=>{});
+        const vData = vendorSnap.data();
+        const existing = Array.isArray(vData.earnings) ? vData.earnings : [];
+        const earningForVendor = {code:_pCode,venue:currentVenue,amount,type,month,earnedAt:new Date().toISOString()};
+        updateDoc(doc(db,'vendors',ref),{
+          earnings:[...existing,earningForVendor],
+          [`monthly.${month}.total`]:increment(amount),
+          [`monthly.${month}.coupons`]:increment(1),
+          [`monthly.${month}.direct`]:type==='direct'?increment(1):increment(0),
+          [`monthly.${month}.indirect`]:type==='indirect'?increment(1):increment(0),
         }).catch(()=>{});
-
-        // Save to vendor doc
-        const earningForVendor = {
-          code: pendingCode, venue: currentVenue,
-          amount, type, month, earnedAt: new Date().toISOString()
-        };
-        const vendorData = vendorSnap.data();
-        const existingEarnings = Array.isArray(vendorData.earnings) ? vendorData.earnings : [];
-        updateDoc(doc(db, 'vendors', ref), {
-          earnings: [...existingEarnings, earningForVendor],
-          [`monthly.${month}.total`]: increment(amount),
-          [`monthly.${month}.coupons`]: increment(1),
-          [`monthly.${month}.direct`]: type === 'direct' ? increment(1) : increment(0),
-          [`monthly.${month}.indirect`]: type === 'indirect' ? increment(1) : increment(0),
-        }).catch(()=>{});
-      } catch(e){ console.log('vendor commission error', e); }
-    };
-    _saveVendorCommission(); // fire and forget - don't await
+      } catch(e){ console.log('vendor commission error',e); }
+    }, 100);
 
     /* 3 — Show success */
     document.getElementById('rIcon').textContent = '🎉';
