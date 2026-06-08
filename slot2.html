@@ -265,7 +265,7 @@ async function saveAndShowQR(prize){
   const gameKey=REST_ID+'_game_'+today;
   try{
     const snap=await db.collection('codes').where('gameKey','==',gameKey).limit(1).get();
-    if(!snap.empty){const d=snap.docs[0].data();if(d.used===true){return;}showQR(d.code,d.prize,d.expiresAt);if(document.readyState==='loading'){
+    if(!snap.empty){const d=snap.docs[0].data();showQR(d.code,d.prize,d.expiresAt);if(d.used===true){setTimeout(()=>{const ic=document.getElementById('inlineCoupon');if(ic){ic.style.position='relative';ic.style.opacity='0.5';ic.style.border='2px solid #ff4444';const ov=document.createElement('div');ov.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);border-radius:18px;z-index:10;';ov.innerHTML='<div style="font-family:Anton,sans-serif;font-size:48px;color:#ff4444;letter-spacing:4px;text-shadow:0 0 20px rgba(255,68,68,0.8);">✓ REDEEMED</div><div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:6px;">Discount applied</div>';ic.appendChild(ov);}},500);}if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',()=>{vpLoadPoints();updateVPMilestoneLabels();});
 }else{
   vpLoadPoints();updateVPMilestoneLabels();
@@ -326,12 +326,17 @@ function showQR(code,prize,expiresISO){
       if(d.used === true){
         _validated = true;
         clearInterval(_couponListener); _couponListener=null;
-        // Hide coupon
+        // Mark coupon as used visually
         const ic = document.getElementById('inlineCoupon');
         if(ic){
-          ic.style.setProperty('display','none','important');
-          ic.style.setProperty('visibility','hidden','important');
-          ic.setAttribute('data-validated','true');
+          ic.style.position = 'relative';
+          ic.style.opacity = '0.5';
+          ic.style.border = '2px solid #ff4444';
+          // Add USADO overlay
+          const overlay = document.createElement('div');
+          overlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);border-radius:18px;z-index:10;';
+          overlay.innerHTML = '<div style="font-family:Anton,sans-serif;font-size:48px;color:#ff4444;letter-spacing:4px;text-shadow:0 0 20px rgba(255,68,68,0.8);">✓ REDEEMED</div><div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:6px;">Discount applied</div>';
+          ic.appendChild(overlay);
         }
         // Show toast
         setTimeout(()=>{ showVPToast(); }, 300);
