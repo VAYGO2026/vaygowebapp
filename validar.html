@@ -320,19 +320,15 @@ window.confirmUsed = async function() {
   btn.disabled = true;
 
   try {
-    /* 1 — Mark code as used */
-    const saveTimeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('save_timeout')), 10000)
-    );
-    await Promise.race([
-      updateDoc(doc(db, pendingCollection, pendingCode), {
-        used: true,
-        validatedAt: serverTimestamp(),
-        validatedBy: currentVenue,
-        validatedStaff: currentStaff
-      }),
-      saveTimeout
-    ]);
+    /* 1 — Mark code as used (fire and don't wait) */
+    const _saveCode = pendingCode;
+    const _saveCol = pendingCollection;
+    updateDoc(doc(db, _saveCol, _saveCode), {
+      used: true,
+      validatedAt: serverTimestamp(),
+      validatedBy: currentVenue,
+      validatedStaff: currentStaff
+    }).catch(e => console.log('save error', e));
 
     /* 2 — Vendor commission - non-blocking, runs in background */
     const _pCode = pendingCode;
