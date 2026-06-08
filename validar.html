@@ -321,12 +321,18 @@ window.confirmUsed = async function() {
 
   try {
     /* 1 — Mark code as used */
-    await updateDoc(doc(db, pendingCollection, pendingCode), {
-      used: true,
-      validatedAt: serverTimestamp(),
-      validatedBy: currentVenue,
-      validatedStaff: currentStaff
-    });
+    const saveTimeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('save_timeout')), 10000)
+    );
+    await Promise.race([
+      updateDoc(doc(db, pendingCollection, pendingCode), {
+        used: true,
+        validatedAt: serverTimestamp(),
+        validatedBy: currentVenue,
+        validatedStaff: currentStaff
+      }),
+      saveTimeout
+    ]);
 
     /* 2 — Vendor commission - non-blocking, runs in background */
     const _pCode = pendingCode;
@@ -400,7 +406,11 @@ window.confirmUsed = async function() {
   } catch(e) {
     btn.textContent = '✅ CONFIRMAR — APLICAR DESCUENTO';
     btn.disabled = false;
-    alert('Error al guardar. Verifica tu conexión.');
+    if(e.message === 'save_timeout') {
+      alert('Conexión lenta. Intenta de nuevo o verifica el internet.');
+    } else {
+      alert('Error: ' + e.message);
+    }
   }
 };
 
