@@ -461,11 +461,11 @@ async function openGiftBox(){
   localStorage.setItem('vaygo_gift_opened',new Date().toISOString().slice(0,10));
   // Reset points in Firebase if at 900
   try{
-    const deviceId = getDeviceId();
-    const snap = await db.collection('vp_points').doc(deviceId).get();
-    const pts = snap.exists ? (snap.data().points||0) : 0;
-    if(pts>=900){
-      await db.collection('vp_points').doc(deviceId).set({points:0, lastUpdated: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
+    const giftDeviceId = getDeviceId();
+    const giftSnap = await db.collection('vp_points').doc(giftDeviceId).get();
+    const giftPts = giftSnap.exists ? (giftSnap.data().points||0) : 0;
+    if(giftPts>=900){
+      await db.collection('vp_points').doc(giftDeviceId).set({points:0, lastUpdated: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
       localStorage.setItem('vaygo_points','0');
     }
   }catch(e){}
@@ -911,6 +911,7 @@ function showWinnerModal(data){
   winnerData = data;
   /* RAFFLE DISABLED - Show WINNER button in raffle banner
   document.getElementById('btnWinner').style.display = 'block';
+  */
 }
 
 function openWinnerSheet(){
