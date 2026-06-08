@@ -1182,18 +1182,27 @@ document.getElementById('adBanner').addEventListener('touchend', () => {
   </div>
 
   <script>
-  // Check lock state from Firebase
+  // Check lock state from Firebase - realtime listener
   (function(){
     var isAdmin = false;
     try{ isAdmin = localStorage.getItem('vaygo_admin') === 'vaygo2026'; }catch(e){}
-    if(isAdmin) return; // Admin always sees the app
-    if(typeof firebase === 'undefined') return;
-    firebase.firestore().collection('settings').doc('app').get().then(function(snap){
-      if(snap.exists && snap.data().locked === true){
-        var el = document.getElementById('vaygoComingSoon');
-        if(el) el.style.display = 'flex';
+    if(isAdmin) return;
+
+    function checkLock(){
+      if(typeof firebase === 'undefined'){
+        setTimeout(checkLock, 500);
+        return;
       }
-    }).catch(function(){});
+      // Use realtime listener so it updates instantly when admin toggles
+      firebase.firestore().collection('settings').doc('app').onSnapshot(function(snap){
+        var locked = snap.exists && snap.data().locked === true;
+        var el = document.getElementById('vaygoComingSoon');
+        if(el) el.style.display = locked ? 'flex' : 'none';
+      }, function(err){
+        console.log('Lock check error:', err);
+      });
+    }
+    checkLock();
   })();
   </script>
 
