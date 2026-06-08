@@ -335,7 +335,8 @@ function showQR(code,prize,expiresISO){
     if(_validated) return;
     try{
       const snap = await db.collection('codes').doc(code).get();
-      if(!snap.exists) return;
+      const exists = typeof snap.exists === 'function' ? snap.exists() : snap.exists;
+      if(!exists) return;
       const d = snap.data();
       if(d.used === true){
         _validated = true;
@@ -343,7 +344,7 @@ function showQR(code,prize,expiresISO){
         markCouponRedeemed();
         setTimeout(()=>{ showVPToast(); }, 300);
       }
-    }catch(e){}
+    }catch(e){ console.log('poll error', e); }
   }, 3000);
 }
 
