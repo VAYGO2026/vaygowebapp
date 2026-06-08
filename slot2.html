@@ -294,6 +294,9 @@ function showQR(code,prize,expiresISO){
   const qrDiv=document.getElementById('ic-canvas');qrDiv.innerHTML='';
   new QRCode(qrDiv,{text:code,width:200,height:200,colorDark:'#000',colorLight:'#fff'});
   setTimeout(()=>{const img=qrDiv.querySelector('img');if(img){img.style.padding='10px';img.style.background='#fff';img.style.borderRadius='10px';img.style.display='block';}},100);
+  // Hide previous coupon before showing new one
+  document.getElementById('inlineCoupon').style.display='none';
+  document.getElementById('inlineCoupon').style.opacity='1';
   document.getElementById('inlineCoupon').style.display='block';
   // Scroll coupon into view smoothly
   setTimeout(()=>document.getElementById('inlineCoupon').scrollIntoView({behavior:'smooth',block:'nearest'}),200);
@@ -310,6 +313,8 @@ function showQR(code,prize,expiresISO){
     if(!snap.exists) return;
     const d = snap.data();
     if(d.used === true){
+      // Hide coupon immediately if already used (e.g. on page reload)
+      document.getElementById('inlineCoupon').style.display='none';
       if(!d.pointsAwarded){
         // Update Firebase vp_points directly
         const deviceId = d.deviceId || ('dev_'+Date.now());
