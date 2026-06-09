@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Coffee — VAYGO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Righteous&family=Pacifico&family=Inter:wght@400;500;600;700&family=Anton&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #060E1C;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Contenedor principal — igual que .app en app.html ── */
+    .app {
+      width: 390px;
+      height: 100dvh;
+      max-height: 844px;
+      border-radius: 32px;
+      overflow: hidden;
+      position: relative;
+      background: url('./fondo-coffee.webp') center center / cover no-repeat;
+    }
+
+    /* Overlay oscuro con vignette */
+    .app::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom,
+          rgba(5, 12, 5, 0.55) 0%,
+          rgba(5, 12, 5, 0.10) 28%,
+          rgba(5, 12, 5, 0.05) 48%,
+          rgba(5, 12, 5, 0.20) 65%,
+          rgba(5, 12, 5, 0.60) 82%,
+          rgba(5, 12, 5, 0.88) 100%
+        );
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Vignette lateral */
+    .app::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(5,12,5,0.45) 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* ── Header text block ── */
+    .header-block {
+      position: absolute;
+      top: 0;
+      left: 0; right: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding-top: 30px;
+    }
+
+    .sun-icon {
+      width: 34px;
+      margin-bottom: 10px;
+      opacity: 0.95;
+    }
+
+    .h-top {
+      font-family: 'Righteous', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.88);
+      text-shadow: 0 1px 14px rgba(0,0,0,0.9);
+    }
+
+    .h-script {
+      font-family: 'Pacifico', cursive;
+      font-size: 36px;
+      font-weight: 400;
+      color: #d4f56a;
+      line-height: 1.1;
+      margin-top: 4px;
+      text-shadow:
+        0 2px 20px rgba(0,0,0,0.85),
+        0 0 40px rgba(140,210,40,0.3);
+      letter-spacing: 0px;
+    }
+
+    .h-island {
+      font-family: 'Righteous', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 7px;
+      text-transform: uppercase;
+      color: #d4f56a;
+      text-shadow: 0 1px 14px rgba(0,0,0,0.9);
+      margin-top: 6px;
+    }
+
+    .h-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+      width: 200px;
+    }
+
+    .h-divider::before,
+    .h-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(212,245,106,0.40);
+    }
+
+    .h-diamond {
+      width: 5px; height: 5px;
+      background: rgba(212,245,106,0.70);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+
+    .h-tagline {
+      font-family: 'Righteous', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.80);
+      text-shadow: 0 1px 10px rgba(0,0,0,0.8);
+      margin-top: 8px;
+    }
+
+    /* ── Cards wrapper ── */
+    .cards-wrap {
+      position: absolute;
+      top: 28%;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 0 28px;
+    }
+
+    .cards-inner {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    /* ── Neon border rotation only ── */
+    @keyframes rotateBorder {
+      from { --angle: 0deg; }
+      to   { --angle: 360deg; }
+    }
+
+    @property --angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    /* ── Glassmorphism card ── */
+    .card {
+      white-space: nowrap;
+      position: relative;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 14px 18px;
+      backdrop-filter: blur(18px) saturate(1.2);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+      cursor: pointer;
+      transition: background 0.13s;
+
+      background-image:
+        linear-gradient(#0a120a, #0a120a),
+        conic-gradient(
+          from var(--angle),
+          rgba(180,220,80,0.15) 0deg,
+          rgba(180,220,80,0.15) 60deg,
+          rgba(220,255,100,0.5) 90deg,
+          rgba(255,255,180,1.0) 130deg,
+          rgba(220,255,100,0.5) 170deg,
+          rgba(180,220,80,0.15) 200deg,
+          rgba(180,220,80,0.15) 360deg
+        );
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.38);
+    }
+
+    .cards-inner .card:nth-child(1) { animation: rotateBorder 3s linear infinite; animation-delay: 0s; }
+    .cards-inner .card:nth-child(2) { animation: rotateBorder 3s linear infinite; animation-delay: 0.75s; }
+    .cards-inner .card:nth-child(3) { animation: rotateBorder 3s linear infinite; animation-delay: 1.5s; }
+    .cards-inner .card:nth-child(4) { animation: rotateBorder 3s linear infinite; animation-delay: 2.25s; }
+
+    .card > * { position: relative; z-index: 2; }
+
+    .card:active {
+      background: rgba(15, 25, 15, 0.68);
+    }
+
+    .card-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 1px;
+      letter-spacing: 0.1px;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.70);
+      letter-spacing: 0.1px;
+    }
+
+
+
+    /* ── Responsive: pantallas menores a 390px — igual que app.html ── */
+    @media (max-width: 430px) {
+      .app {
+        width: 100%;
+        border-radius: 0;
+      }
+    }
+  
+    /* BOTTOM BUTTONS */
+    .bottom-btns {
+      position: absolute;
+      bottom: 10px;
+      left: 18px; right: 18px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .back-btn {
+      padding: 10px 18px;
+      border-radius: 50px;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(212,245,106,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #d4f56a;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(212,245,106,0.15);
+    }
+    .winner-btn {
+      display: none;
+      padding: 10px 18px;
+      border-radius: 50px;
+      background: rgba(255,215,0,0.15);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,215,0,0.5);
+      color: #FFD700;
+      font-family: 'Anton', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      animation: winnerPulse 2s ease-in-out infinite;
+    }
+    @keyframes winnerPulse {
+      0%,100%{ box-shadow: 0 0 10px rgba(255,215,0,0.2); }
+      50%{ box-shadow: 0 0 24px rgba(255,215,0,0.5); }
+    }
+    #winnerSheet {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(0,0,0,0.88);
+    }
+    #winnerSheet.show { display: flex; }
+    .ws-box {
+      background: #050e04;
+      border: 2px solid #FFD700;
+      border-radius: 24px 24px 0 0;
+      padding: 28px 22px 44px;
+      width: 100%;
+      max-width: 390px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(255,215,0,0.2);
+    }
+    .ws-handle { width: 36px; height: 4px; background: rgba(255,215,0,0.2); border-radius: 2px; margin: 0 auto 20px; }
+    .ws-label { font-size: 10px; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,215,0,0.6); margin-bottom: 12px; }
+    .ws-ticket { font-family: 'Anton', sans-serif; font-size: 48px; color: #FFD700; line-height: 1; text-shadow: 0 0 20px rgba(255,215,0,0.4); }
+    .ws-name { font-family: 'Anton', sans-serif; font-size: 22px; color: #d4f56a; margin-top: 8px; letter-spacing: 2px; }
+    .ws-prize { font-size: 13px; font-weight: 800; color: #d4f56a; margin-top: 6px; }
+    .ws-divider { width: 50px; height: 1px; background: rgba(255,215,0,0.2); margin: 16px auto; }
+    .ws-msg { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.6; margin-bottom: 20px; }
+    .ws-claim { display: none; width: 100%; padding: 14px; background: linear-gradient(180deg,#FFD700 0%,#f0a500 50%,#c47f00 100%); border: none; border-radius: 12px; color: #1a0a00; font-family: 'Anton', sans-serif; font-size: 16px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 4px 0 #7a4f00; text-decoration: none; margin-bottom: 10px; }
+    .ws-close { width: 100%; padding: 13px; background: linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%); border: none; border-radius: 12px; color: #0a1a00; font-family: 'Anton', sans-serif; font-size: 16px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 4px 0 #2d4000; }
+
+    /* ── VAYGO POINTS BAR ── */
+    .vp-bar-wrap { padding: 0 20px 16px; }
+    .vp-bar { background: rgba(255,255,255,0.05); border: 1px solid rgba(212,245,106,0.2); border-radius: 14px; padding: 12px 14px 10px; }
+    .vp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .vp-label { font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #d4f56a; }
+    .vp-pts { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); }
+    .vp-pts span { color: rgba(255,255,255,0.3); }
+    .vp-track { position: relative; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-bottom: 6px; }
+    .vp-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg,#8fc20a,#d4f56a); transition: width 0.6s ease; }
+    .vp-mark { position: absolute; top: -3px; width: 2px; height: 12px; background: rgba(255,255,255,0.2); border-radius: 1px; transform: translateX(-50%); }
+    .vp-bottom { display: flex; justify-content: space-between; }
+    .vp-milestone { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 1px; }
+    .vp-milestone.reached { color: #d4f56a; }
+    .vp-unlock-btn { display: none; width: 100%; margin-top: 10px; padding: 10px; background: linear-gradient(180deg,#FFD700 0%,#f0a500 50%,#c47f00 100%); border: none; border-radius: 10px; color: #1a0a00; font-family: "Anton", sans-serif; font-size: 14px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 3px 0 #7a4f00; }
+
+
+    /* ── AD BANNER (category) ── */
+
+    .cat-click-label {
+      font-family: 'Anton', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: #c8f135;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .cat-banner-wrap {
+      position: absolute;
+      bottom: 68px;
+      left: 18px; right: 18px;
+      z-index: 15;
+    }
+    .cat-banner {
+      width: 100%;
+      height: 200px;
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      border: 1px solid #c8f135;
+    }
+    .cat-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      border-radius: 13px;
+      overflow: hidden;
+    }
+    .cat-slide.active { opacity: 1; }
+    .cat-slide img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 13px;
+      display: block;
+    }
+    .cat-ad-tag {
+      position: absolute;
+      bottom: 7px; right: 8px;
+      background: rgba(255,215,0,0.9);
+      border-radius: 50px;
+      padding: 2px 7px;
+      font-size: 9px;
+      font-weight: 800;
+      color: #000;
+    }
+    .cat-dots {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 5px;
+    }
+    .cat-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      transition: background 0.3s;
+    }
+    .cat-dot.active { background: #FFD700; }
+
+</style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- Header text -->
+    <div class="header-block">
+      <svg class="sun-icon" viewBox="0 0 34 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17 1 L17 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M8 3.5 L6.5 2.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M26 3.5 L27.5 2.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M3 10 L1.5 9.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M31 10 L32.5 9.2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M17 1 Q17 13 4 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M17 1 Q17 13 30 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M4 21 Q17 17 30 21" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="h-top">Fresh Coffee &amp; Breakfast</div>
+      <div class="h-script" style="font-size:44px;white-space:nowrap;">Morning Paradise</div>
+      <div class="h-divider"><div class="h-diamond"></div></div>
+      <div class="h-tagline">Explore &nbsp;–&nbsp; Play &nbsp;–&nbsp; Win</div>
+    </div>
+
+
+    <!-- VAYGO POINTS BAR — DESACTIVADO (movida a slot2.html)
+    <div class="vp-bar-wrap" id="vpBarWrap">
+      <div class="vp-bar" id="vpBar">
+        <div class="vp-top">
+          <div class="vp-label">⭐ VAYGO POINTS</div>
+          <div class="vp-pts" id="vpPts">0 <span>/ 900 pts</span></div>
+        </div>
+        <div class="vp-track">
+          <div class="vp-fill" id="vpFill" style="width:0%"></div>
+          <div class="vp-mark" style="left:33.3%"></div>
+          <div class="vp-mark" style="left:66.6%"></div>
+        </div>
+        <div class="vp-bottom">
+          <span class="vp-milestone" id="vm1">🎁 300</span>
+          <span class="vp-milestone" id="vm2">🎁 600</span>
+          <span class="vp-milestone" id="vm3">🏆 900</span>
+        </div>
+        <button class="vp-unlock-btn" id="vpUnlockBtn" onclick="openGiftBox()">🎁 OPEN YOUR SURPRISE</button>
+      </div>
+    </div>
+    FIN DESACTIVADO -->
+
+    <div class="cards-wrap">
+      <div class="cards-inner">
+
+      <div class="card" onclick="location.href='lobster.html'" style="cursor:pointer;">
+        <div class="card-name">Aquí + Ahora Coffee</div>
+        <div class="card-desc">Specialty coffee · Fresh pastries · Island vibes</div>
+      </div>
+
+      <div class="card">
+        <div class="card-name">Maple Bakehouse Café</div>
+        <div class="card-desc">Artisan bread · Pancakes · Cold brew</div>
+      </div>
+
+      <div class="card">
+        <div class="card-name">Sucré / Salé Café</div>
+        <div class="card-desc">French pastries · Espresso · Garden terrace</div>
+      </div>
+
+      <div class="card">
+        <div class="card-name">Café de Isla Cozumel</div>
+        <div class="card-desc">Local roast · Tropical breakfast · Sea views</div>
+      </div>
+
+      </div>
+    </div>
+
+
+  <!-- AD BANNER -->
+  <div class="cat-banner-wrap">
+    <div class="cat-click-label">CLICK</div>
+    <div class="cat-banner" id="catBanner">
+      <div class="cat-slide active" data-url="#">
+        <img src="ad1.webp" alt="">
+        <div class="cat-ad-tag">AD</div>
+      </div>
+      <div class="cat-slide" data-url="#">
+        <img src="ad2.webp" alt="">
+        <div class="cat-ad-tag">AD</div>
+      </div>
+      <div class="cat-slide" data-url="#">
+        <img src="ad3.webp" alt="">
+        <div class="cat-ad-tag">AD</div>
+      </div>
+      <div class="cat-slide" data-url="#">
+        <img src="ad4.webp" alt="">
+        <div class="cat-ad-tag">AD</div>
+      </div>
+    </div>
+    <div class="cat-dots" id="catDots">
+      <div class="cat-dot active"></div>
+      <div class="cat-dot"></div>
+      <div class="cat-dot"></div>
+      <div class="cat-dot"></div>
+    </div>
+  </div>
+
+    <!-- BOTTOM BUTTONS -->
+    <div class="bottom-btns">
+      <a href="app.html" class="back-btn">BACK</a>
+      <button class="winner-btn" id="winnerBtn" onclick="openWinnerSheet()">🏆 WINNER</button>
+    </div>
+
+  </div>
+
+  <!-- WINNER SHEET -->
+  <div id="winnerSheet">
+    <div class="ws-box">
+      <div class="ws-handle"></div>
+      <div class="ws-label">🏆 Raffle Winner</div>
+      <div class="ws-ticket" id="wsTicket">#001</div>
+      <div class="ws-name" id="wsName">—</div>
+      <div class="ws-prize" id="wsPrize">—</div>
+      <div class="ws-divider"></div>
+      <div class="ws-msg" id="wsMsg"></div>
+      <a id="wsClaimBtn" href="https://instagram.com/vaygo.mx" target="_blank" class="ws-claim">CLAIM ON INSTAGRAM</a>
+      <button class="ws-close" onclick="closeWinnerSheet()">CLOSE</button>
+    </div>
+  </div>
+
+<script>
+/* ══ SONIDO AMBIENTAL TROPICAL ══ */
+</script>
+
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyAnfS-H1Ci1WaAnjoBTA9IJFYSklAk-okM",
+  authDomain:"vaygo-app.firebaseapp.com",
+  projectId:"vaygo-app",
+  storageBucket:"vaygo-app.firebasestorage.app",
+  messagingSenderId:"499741267414",
+  appId:"1:499741267414:web:e69cd43156adaea11bc077"
+});
+const db = firebase.firestore();
+const auth = firebase.auth();
+let currentUser = null;
+let winnerData = null;
+auth.onAuthStateChanged(user => { currentUser = user; });
+db.collection('rifa').doc('activa').onSnapshot(snap => {
+  if(!snap.exists) return;
+  const data = snap.data();
+  if(data && data.status === 'winner' && data.ganadorTicket){
+    const target = new Date(data.sorteoFecha);
+    if(new Date() >= target){
+      winnerData = data;
+      document.getElementById('winnerBtn').style.display = 'block';
+    }
+  }
+});
+function openWinnerSheet(){
+  if(!winnerData) return;
+  const data = winnerData;
+  document.getElementById('wsTicket').textContent = '#' + String(data.ganadorTicket).padStart(3,'0');
+  document.getElementById('wsName').textContent = data.ganadorNombre || '—';
+  document.getElementById('wsPrize').textContent = data.ganadorPremio || 'Surprise Prize';
+  const claimBtn = document.getElementById('wsClaimBtn');
+  const msg = document.getElementById('wsMsg');
+  const isWinner = currentUser && (
+    currentUser.displayName === data.ganadorNombre ||
+    (currentUser.email && currentUser.email.split('@')[0] === data.ganadorNombre) ||
+    currentUser.email === data.ganadorNombre
+  );
+  if(isWinner){
+    msg.textContent = '🎉 Congratulations! You won! Contact us on Instagram to claim your prize.';
+    msg.style.color = '#FFD700';
+    claimBtn.style.display = 'block';
+  } else if(currentUser){
+    msg.textContent = 'Better luck next time 🌴 Keep collecting tickets for the next raffle!';
+    msg.style.color = 'rgba(255,255,255,0.4)';
+    claimBtn.style.display = 'none';
+  } else {
+    msg.textContent = 'Login in the slot to participate in the next raffle!';
+    msg.style.color = 'rgba(255,255,255,0.4)';
+    claimBtn.style.display = 'none';
+  }
+  document.getElementById('winnerSheet').classList.add('show');
+}
+function closeWinnerSheet(){
+  document.getElementById('winnerSheet').classList.remove('show');
+}
+</script>
+
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.cat-slide');
+  const dots   = document.querySelectorAll('.cat-dot');
+  let cur = 0, timer = null;
+  function show(i){
+    slides[cur].classList.remove('active');
+    if(dots[cur]) dots[cur].classList.remove('active');
+    cur = i % slides.length;
+    slides[cur].classList.add('active');
+    if(dots[cur]) dots[cur].classList.add('active');
+  }
+  timer = setInterval(()=>show(cur+1), 3000);
+  document.getElementById('catBanner').addEventListener('click',()=>{
+    const url = slides[cur].dataset.url;
+    if(url && url !== '#') window.open(url,'_blank');
+  });
+  document.getElementById('catBanner').addEventListener('touchstart',()=>clearInterval(timer),{passive:true});
+  document.getElementById('catBanner').addEventListener('touchend',()=>{
+    clearInterval(timer);
+    setTimeout(()=>{ timer=setInterval(()=>show(cur+1),3000); },3000);
+  },{passive:true});
+})();
+</script>
+
+</body>
+</html>
