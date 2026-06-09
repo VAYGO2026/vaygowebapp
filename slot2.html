@@ -458,10 +458,11 @@ async function vpLoadPoints(){
       localStorage.setItem('vaygo_points', p);
       updateVPBar(p);
     });
-    // Check for pending VPR reward not yet validated
+    // Check for pending VPR reward not yet validated — only for this venue
     db.collection('vp_rewards')
       .where('deviceId','==',deviceId)
       .where('used','==',false)
+      .where('venueId','==',REST_ID)
       .limit(1)
       .get()
       .then(rSnap=>{
