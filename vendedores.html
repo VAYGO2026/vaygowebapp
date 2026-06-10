@@ -132,6 +132,7 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;}
       <div class="tab" onclick="setTab('trial',this)">🎁 Prueba</div>
       <div class="tab" onclick="setTab('warning',this)">⚠️ Por vencer</div>
       <div class="tab" onclick="setTab('suspended',this)">🔴 Suspendidos</div>
+      <div class="tab" onclick="setTab('reportes',this)">📊 Reportes</div>
     </div>
     <div style="display:flex;gap:8px;">
       <button class="add-btn" onclick="openModal()">+ Nuevo Venue</button>
@@ -139,6 +140,100 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;}
     </div>
   </div>
   <div class="venues-list" id="venuesList"></div>
+
+  <!-- REPORTES -->
+  <div id="reportesSection" style="display:none;">
+    <div style="background:#0D1E35;border:1px solid #1A2E4A;border-radius:16px;padding:20px;margin-bottom:16px;">
+      <div style="font-family:'Anton',sans-serif;font-size:14px;color:#FF2D7A;letter-spacing:2px;margin-bottom:16px;">GENERAR REPORTE</div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+        <div style="display:flex;flex-direction:column;gap:5px;flex:1;min-width:160px;">
+          <label style="font-size:10px;color:#4B6A85;text-transform:uppercase;letter-spacing:1px;">Venue</label>
+          <select id="rVenueSelect" style="background:#0A1628;border:1px solid #1A2E4A;border-radius:10px;padding:10px 14px;color:#fff;font-size:13px;outline:none;">
+            <option value="lobster">The Original Lobster House</option>
+            <option value="snorkel">Cozumel Snorkel Center</option>
+            <option value="10experiences">10 Experiences</option>
+            <option value="monina">La Monina</option>
+            <option value="aquiyahora">Aquí y Ahora</option>
+            <option value="carruaje">Carruajes del Caribe</option>
+            <option value="deep">Deep Blue Cozumel</option>
+            <option value="buccanos">Buccanos Beach Club</option>
+            <option value="azulmadera">Azul Madera</option>
+            <option value="guidos">Guido's Restaurant</option>
+          </select>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;flex:1;min-width:140px;">
+          <label style="font-size:10px;color:#4B6A85;text-transform:uppercase;letter-spacing:1px;">Mes</label>
+          <input type="month" id="rMonthSelect" style="background:#0A1628;border:1px solid #1A2E4A;border-radius:10px;padding:10px 14px;color:#fff;font-size:13px;outline:none;"/>
+        </div>
+        <button onclick="generateReport()" style="background:linear-gradient(90deg,#FF2D7A,#C4004A);border:none;border-radius:10px;padding:10px 24px;color:#fff;font-family:'Anton',sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;">GENERAR</button>
+      </div>
+    </div>
+
+    <div id="rLoading" style="display:none;text-align:center;padding:30px;color:#4B6A85;">⏳ Cargando datos...</div>
+
+    <div id="rOutput" style="display:none;">
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#0D1E35,#1a2a40);border:1px solid #1A2E4A;border-radius:16px;padding:24px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-family:'Anton',sans-serif;font-size:28px;color:#fff;letter-spacing:3px;">VAY<span style="color:#FF2D7A;">GO</span></div>
+          <div style="font-size:11px;color:#4B6A85;letter-spacing:1px;">MONTHLY VENUE REPORT</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Anton',sans-serif;font-size:16px;color:#fff;" id="rOutVenue">—</div>
+          <div style="font-size:12px;color:#4B6A85;" id="rOutPeriod">—</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px;">
+        <div style="background:#0D1E35;border:1px solid #1A2E4A;border-radius:14px;padding:20px;text-align:center;">
+          <div style="font-size:28px;margin-bottom:6px;">🎰</div>
+          <div style="font-family:'Anton',sans-serif;font-size:32px;color:#7FC142;" id="rOutTotal">0</div>
+          <div style="font-size:10px;color:#4B6A85;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Generados</div>
+        </div>
+        <div style="background:#0D1E35;border:1px solid #1A2E4A;border-radius:14px;padding:20px;text-align:center;">
+          <div style="font-size:28px;margin-bottom:6px;">✅</div>
+          <div style="font-family:'Anton',sans-serif;font-size:32px;color:#4FA3E8;" id="rOutUsed">0</div>
+          <div style="font-size:10px;color:#4B6A85;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Canjeados</div>
+        </div>
+        <div style="background:#0D1E35;border:1px solid #1A2E4A;border-radius:14px;padding:20px;text-align:center;">
+          <div style="font-size:28px;margin-bottom:6px;">🎁</div>
+          <div style="font-family:'Anton',sans-serif;font-size:32px;color:#FF8C00;" id="rOutSurprises">0</div>
+          <div style="font-size:10px;color:#4B6A85;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Sorpresas</div>
+        </div>
+      </div>
+
+      <!-- Peak days -->
+      <div style="background:#0D1E35;border:1px solid #1A2E4A;border-radius:14px;padding:20px;margin-bottom:12px;">
+        <div style="font-family:'Anton',sans-serif;font-size:13px;color:#FF2D7A;letter-spacing:2px;margin-bottom:14px;">📅 ACTIVIDAD POR DÍA</div>
+        <div style="display:flex;gap:6px;align-items:flex-end;height:70px;" id="rDayChart"></div>
+        <div style="display:flex;gap:6px;margin-top:4px;" id="rDayLabels"></div>
+      </div>
+
+      <!-- Peak hours -->
+      <div style="background:#0D1E35;border:1px solid #1A2E4A;border-radius:14px;padding:20px;margin-bottom:12px;">
+        <div style="font-family:'Anton',sans-serif;font-size:13px;color:#FF2D7A;letter-spacing:2px;margin-bottom:14px;">🕐 HORAS PICO</div>
+        <div style="display:flex;gap:2px;align-items:flex-end;height:50px;" id="rHourChart"></div>
+        <div style="display:flex;gap:2px;margin-top:4px;" id="rHourLabels"></div>
+      </div>
+
+      <!-- Top days -->
+      <div style="background:#0D1E35;border:1px solid #1A2E4A;border-radius:14px;padding:20px;margin-bottom:12px;">
+        <div style="font-family:'Anton',sans-serif;font-size:13px;color:#FF2D7A;letter-spacing:2px;margin-bottom:14px;">🏆 DÍAS CON MÁS ACTIVIDAD</div>
+        <div id="rTopDays"></div>
+      </div>
+
+      <!-- Surprises detail -->
+      <div style="background:#0D1E35;border:1px solid #1A2E4A;border-radius:14px;padding:20px;margin-bottom:20px;">
+        <div style="font-family:'Anton',sans-serif;font-size:13px;color:#FF2D7A;letter-spacing:2px;margin-bottom:14px;">🎁 DETALLE SORPRESAS</div>
+        <div id="rPrizeList"></div>
+      </div>
+
+      <div style="text-align:center;">
+        <button onclick="printReport()" style="background:linear-gradient(90deg,#FF8C00,#e07000);border:none;border-radius:10px;padding:12px 28px;color:#fff;font-family:'Anton',sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;">🖨️ IMPRIMIR / GUARDAR PDF</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay">
@@ -478,6 +573,133 @@ async function saveVenue() {
 }
 
 document.getElementById('fStart').value = today();
+document.getElementById('rMonthSelect').value = new Date().toISOString().slice(0,7);
+
+// ── SHOW/HIDE venues list vs reportes ──
+const _origSetTab = setTab;
+function setTab(t, el) {
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  if(t === 'reportes'){
+    document.getElementById('venuesList').style.display = 'none';
+    document.getElementById('reportesSection').style.display = 'block';
+    currentTab = t;
+  } else {
+    document.getElementById('venuesList').style.display = 'flex';
+    document.getElementById('reportesSection').style.display = 'none';
+    currentTab = t;
+    render();
+  }
+}
+
+const MONTHS_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DAYS_ES = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const VENUE_NAMES_R = {
+  lobster:'The Original Lobster House', snorkel:'Cozumel Snorkel Center',
+  '10experiences':'10 Experiences', monina:'La Monina', aquiyahora:'Aquí y Ahora',
+  carruaje:'Carruajes del Caribe', deep:'Deep Blue Cozumel',
+  buccanos:'Buccanos Beach Club', azulmadera:'Azul Madera', guidos:"Guido's Restaurant"
+};
+
+async function generateReport() {
+  const venueId = document.getElementById('rVenueSelect').value;
+  const monthVal = document.getElementById('rMonthSelect').value;
+  if(!monthVal) return alert('Selecciona un mes');
+  const [year, month] = monthVal.split('-').map(Number);
+  const startDate = new Date(year, month-1, 1);
+  const endDate = new Date(year, month, 1);
+
+  document.getElementById('rLoading').style.display = 'block';
+  document.getElementById('rOutput').style.display = 'none';
+
+  try {
+    const codesSnap = await db.collection('codes')
+      .where('restId','==',venueId)
+      .where('spunAt','>=',startDate)
+      .where('spunAt','<',endDate).get();
+    const codes = codesSnap.docs.map(d=>d.data());
+
+    const rewardsSnap = await db.collection('vp_rewards')
+      .where('venueId','==',venueId)
+      .where('redeemedAt','>=',startDate)
+      .where('redeemedAt','<',endDate).get();
+    const rewards = rewardsSnap.docs.map(d=>d.data());
+
+    // Stats
+    document.getElementById('rOutVenue').textContent = VENUE_NAMES_R[venueId]||venueId;
+    document.getElementById('rOutPeriod').textContent = MONTHS_ES[month-1]+' '+year;
+    document.getElementById('rOutTotal').textContent = codes.length;
+    document.getElementById('rOutUsed').textContent = codes.filter(c=>c.used).length;
+    document.getElementById('rOutSurprises').textContent = rewards.length;
+
+    // Day of week chart
+    const weekDays = Array(7).fill(0);
+    codes.forEach(c=>{
+      if(c.spunAt){ const d=c.spunAt.toDate?c.spunAt.toDate():new Date(c.spunAt); weekDays[d.getDay()]++; }
+    });
+    const maxW = Math.max(...weekDays,1);
+    document.getElementById('rDayChart').innerHTML = weekDays.map((n,i)=>
+      `<div style="flex:1;display:flex;align-items:flex-end;">
+        <div style="width:100%;height:${Math.max(4,Math.round((n/maxW)*70))}px;background:${n>0?'#FF2D7A':'rgba(255,45,122,0.15)'};border-radius:3px 3px 0 0;"></div>
+      </div>`).join('');
+    document.getElementById('rDayLabels').innerHTML = DAYS_ES.map(d=>
+      `<div style="flex:1;text-align:center;font-size:9px;color:#4B6A85;font-weight:700;">${d}</div>`).join('');
+
+    // Hour chart
+    const hourCount = Array(24).fill(0);
+    codes.forEach(c=>{
+      if(c.spunAt){ const d=c.spunAt.toDate?c.spunAt.toDate():new Date(c.spunAt); hourCount[d.getHours()]++; }
+    });
+    const maxH = Math.max(...hourCount,1);
+    document.getElementById('rHourChart').innerHTML = hourCount.map((n,i)=>
+      `<div style="flex:1;display:flex;align-items:flex-end;">
+        <div style="width:100%;height:${Math.max(2,Math.round((n/maxH)*50))}px;background:${n>0?'#4FA3E8':'rgba(79,163,232,0.15)'};border-radius:2px 2px 0 0;"></div>
+      </div>`).join('');
+    document.getElementById('rHourLabels').innerHTML = Array.from({length:24},(_,i)=>{
+      const show=[0,6,9,12,15,18,21].includes(i);
+      const lbl=i===0?'12a':i<12?i+'a':i===12?'12p':(i-12)+'p';
+      return `<div style="flex:1;text-align:center;font-size:8px;color:#4B6A85;">${show?lbl:''}</div>`;
+    }).join('');
+
+    // Top days
+    const daysInMonth = new Date(year,month,0).getDate();
+    const dayCount = Array(daysInMonth).fill(0);
+    codes.forEach(c=>{
+      if(c.spunAt){ const d=c.spunAt.toDate?c.spunAt.toDate():new Date(c.spunAt); const day=d.getDate()-1; if(day>=0&&day<daysInMonth) dayCount[day]++; }
+    });
+    const topDays = dayCount.map((n,i)=>({day:i+1,count:n})).filter(d=>d.count>0).sort((a,b)=>b.count-a.count).slice(0,5);
+    document.getElementById('rTopDays').innerHTML = topDays.length===0
+      ? '<div style="color:#4B6A85;font-size:13px;text-align:center;padding:12px;">Sin actividad este mes</div>'
+      : topDays.map(d=>`<div style="display:flex;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
+          <div style="font-size:13px;color:rgba(255,255,255,0.7);">📅 ${MONTHS_ES[month-1]} ${d.day}, ${year}</div>
+          <div style="font-family:'Anton',sans-serif;font-size:15px;color:#FF2D7A;">${d.count} cupones</div>
+        </div>`).join('');
+
+    // Prizes detail
+    document.getElementById('rPrizeList').innerHTML = rewards.length===0
+      ? '<div style="color:#4B6A85;font-size:13px;text-align:center;padding:12px;">Sin sorpresas este mes</div>'
+      : rewards.map(r=>{
+          const dt=r.redeemedAt?(r.redeemedAt.toDate?r.redeemedAt.toDate():new Date(r.redeemedAt)):null;
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:rgba(255,140,0,0.06);border:1px solid rgba(255,140,0,0.2);border-radius:10px;margin-bottom:8px;">
+            <div>
+              <div style="font-family:'Anton',sans-serif;font-size:14px;color:#FF8C00;">${r.code}</div>
+              <div style="font-size:11px;color:#4B6A85;margin-top:2px;">${dt?dt.toLocaleDateString('es-MX'):'—'} · ${r.prize||'—'}</div>
+            </div>
+            <div style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;background:${r.used?'rgba(127,193,66,0.15)':'rgba(255,140,0,0.15)'};color:${r.used?'#7FC142':'#FF8C00'};">${r.used?'✓ CANJEADO':'PENDIENTE'}</div>
+          </div>`;
+        }).join('');
+
+    document.getElementById('rLoading').style.display = 'none';
+    document.getElementById('rOutput').style.display = 'block';
+  } catch(e) {
+    document.getElementById('rLoading').style.display = 'none';
+    alert('Error: ' + e.message);
+  }
+}
+
+function printReport() {
+  window.print();
+}
 </script>
 </body>
 </html>
