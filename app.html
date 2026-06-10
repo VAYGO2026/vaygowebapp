@@ -252,14 +252,19 @@ html,body{
 #reviewModal {
   display: none !important;
   position: fixed;
-  inset: 0;
+  bottom: 0;
+  left: 0; right: 0;
   z-index: 9000;
-  background: rgba(0,0,0,0.92);
-  align-items: center;
+  background: transparent;
+  align-items: flex-end;
   justify-content: center;
-  padding: 20px;
+  padding: 0;
 }
 #reviewModal.open { display: flex !important; }
+.review-box {
+  border-radius: 24px 24px 0 0 !important;
+  max-height: 85vh;
+}
 .review-box {
   background: #0D1E35;
   border: 1px solid #1A2E4A;
@@ -1189,61 +1194,50 @@ function setReviewStar(key, n, totalCats){
   }
 }
 
-async function submitReview(){
+function submitReview(){
   if(!_currentReview) return;
   const btn = document.getElementById('reviewSubmitBtn');
-  btn.textContent = 'SAVING...';
   btn.disabled = true;
-  
-  try{
-    const vals = Object.values(_reviewRatings);
-    const avg = vals.reduce((a,b)=>a+b,0) / vals.length;
-    const score = parseFloat((avg / 5 * 10).toFixed(1));
-    const cat = VENUE_CATEGORIES[_currentReview.venueId] || 'eat';
-    const categories = REVIEW_CATEGORIES[cat] || REVIEW_CATEGORIES.eat;
-    
-    // Build ratings object
-    const ratings = {};
-    categories.forEach(([icon, label], idx) => {
-      ratings[label.toLowerCase()] = _reviewRatings['cat_'+idx] || 0;
-    });
-    
-    // Save review to Firebase
-    await db.collection('reviews').add({
-      venueId: _currentReview.venueId,
-      venueName: _currentReview.venueName,
-      deviceId: getDeviceIdApp(),
-      ratings: ratings,
-      score: score,
-      category: cat,
-      couponCode: _currentReview.code,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    
-    // Mark coupon as reviewed
-    await db.collection('codes').doc(_currentReview.code).update({
-      reviewed: true
-    }).catch(()=>{});
-    
-    // Remove from pending
-    _reviewPending.shift();
-    document.getElementById('reviewModal').classList.remove('open');
-    document.getElementById('reviewModal').style.display = 'none';
-    
-    // Show next if any
-    if(_reviewPending.length > 0){
-      setTimeout(showNextReview, 600);
-    }
-  }catch(e){
-    console.log('review submit error', e);
-    btn.textContent = 'SUBMIT RATING';
-    btn.disabled = false;
+
+  const vals = Object.values(_reviewRatings);
+  const avg = vals.reduce((a,b)=>a+b,0) / vals.length;
+  const score = parseFloat((avg / 5 * 10).toFixed(1));
+  const cat = VENUE_CATEGORIES[_currentReview.venueId] || 'eat';
+  const categories = REVIEW_CATEGORIES[cat] || REVIEW_CATEGORIES.eat;
+  const ratings = {};
+  categories.forEach(([icon, label], idx) => {
+    ratings[label.toLowerCase()] = _reviewRatings['cat_'+idx] || 0;
+  });
+  const reviewData = {
+    venueId: _currentReview.venueId,
+    venueName: _currentReview.venueName,
+    deviceId: getDeviceIdApp(),
+    ratings: ratings,
+    score: score,
+    category: cat,
+    couponCode: _currentReview.code,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  const codeToMark = _currentReview.code;
+
+  // Close modal immediately
+  _reviewPending.shift();
+  document.getElementById('reviewModal').classList.remove('open');
+  document.getElementById('reviewModal').style.display = 'none';
+
+  // Save to Firebase in background
+  db.collection('reviews').add(reviewData).catch(e => console.log('review save error', e));
+  db.collection('codes').doc(codeToMark).update({ reviewed: true }).catch(()=>{});
+
+  // Show next if any
+  if(_reviewPending.length > 0){
+    setTimeout(showNextReview, 400);
   }
 }
 
 // Check for pending reviews when app loads
 window.addEventListener('load', ()=>{
-  setTimeout(checkPendingReviews, 2000);
+  setTimeout(checkPendingReviews, 500);
 });
 
 let selectedRating = 0;
