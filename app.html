@@ -75,10 +75,13 @@ html,body{
   font-family: 'Pacifico', cursive;
   font-size: 36px;
   font-weight: 400;
-  color: #d4f56a;
+  background: linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   line-height: 1.1;
   margin-top: 2px;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.85), 0 0 40px rgba(140,210,40,0.3);
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.85)) drop-shadow(0 0 20px rgba(140,210,40,0.4));
 }
 
 
@@ -441,10 +444,9 @@ html,body{
   bottom: 0; left: 0; right: 0;
   z-index: 30;
   height: 72px;
-  background: #d4f56a;
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border-top: 1px solid rgba(212, 245, 106, 0.25);
+  background: linear-gradient(180deg,#d4f56a 0%,#8fc20a 50%,#5a8000 100%);
+  border-top: 2px solid rgba(255,255,255,0.2);
+  box-shadow: 0 -4px 0 #2d4000, inset 0 1px 0 rgba(255,255,255,0.3);
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -501,6 +503,10 @@ html,body{
 
 .nav-qr     .nav-icon svg { filter: none; }
 .nav-qr     .nav-label    { color: #000000; }
+@keyframes qrPulse {
+  0%,100% { box-shadow: 0 4px 14px rgba(212,245,106,0.5); transform: scale(1); }
+  50% { box-shadow: 0 4px 0 #0369a1, 0 0 28px rgba(56,189,248,0.7); }
+}
 
 /* Modal JOIN */
 .modal-overlay {
@@ -922,27 +928,24 @@ window.addEventListener('load', loadUserCount);
       <span class="nav-label">Follow Us&#10;@vaygo.mx</span>
     </a>
 
-    <!-- RATE US -->
-    <button class="nav-item nav-rate" onclick="document.getElementById('rateModal').classList.add('open')">
-      <div class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-        </svg>
+    <!-- VAYGO GLOBAL SCORE -->
+    <div class="nav-item nav-rate" style="cursor:default;pointer-events:none;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+        <div style="font-size:9px;font-weight:800;color:#000;letter-spacing:0.08em;text-transform:uppercase;">VAYGO</div>
+        <div style="font-family:'Anton',sans-serif;font-size:16px;color:#000;line-height:1;" id="vaygoGlobalScore">—</div>
+        <div style="font-size:7px;font-weight:800;color:rgba(0,0,0,0.5);letter-spacing:0.05em;" id="vaygoGlobalCount">loading</div>
       </div>
-      <span class="nav-label">Rate Us</span>
-    </button>
+    </div>
 
     <!-- QR -->
-    <button class="nav-item nav-qr" onclick="document.getElementById('qrModal').classList.add('open')">
-      <div class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="7" height="7" rx="1"/>
-          <rect x="14" y="3" width="7" height="7" rx="1"/>
-          <rect x="3" y="14" width="7" height="7" rx="1"/>
-          <path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18h3M14 21h3M21 18v3"/>
-        </svg>
-      </div>
-      <span class="nav-label">QR / Share</span>
+    <button class="nav-item nav-qr" onclick="document.getElementById('qrModal').classList.add('open')" style="flex:none;width:52px;height:52px;border-radius:50%;background:linear-gradient(180deg,#00f0ff 0%,#0080ff 100%);box-shadow:0 4px 0 #0050aa,0 0 18px rgba(0,240,255,0.7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border:none;cursor:pointer;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;">
+        <rect x="3" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/>
+        <path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18h3M14 21h3M21 18v3"/>
+      </svg>
+      <span style="font-family:'Anton',sans-serif;font-size:10px;color:#fff;letter-spacing:1px;line-height:1;">QR</span>
     </button>
 
   </nav>
@@ -1235,9 +1238,28 @@ function submitReview(){
   }
 }
 
+// ── VAYGO GLOBAL SCORE ──
+function loadVaygoGlobalScore(){
+  try{
+    db.collection('reviews').get().then(snap=>{
+      if(snap.empty){
+        document.getElementById('vaygoGlobalScore').textContent='—';
+        document.getElementById('vaygoGlobalCount').textContent='no reviews yet';
+        return;
+      }
+      let total=0, count=0;
+      snap.forEach(doc=>{ total+=doc.data().score||0; count++; });
+      const avg=(total/count).toFixed(1);
+      document.getElementById('vaygoGlobalScore').textContent=avg+' / 5';
+      document.getElementById('vaygoGlobalCount').textContent=count+' review'+(count!==1?'s':'');
+    }).catch(()=>{});
+  }catch(e){}
+}
+
 // Check for pending reviews when app loads
 window.addEventListener('load', ()=>{
   setTimeout(checkPendingReviews, 500);
+  loadVaygoGlobalScore();
 });
 
 let selectedRating = 0;
