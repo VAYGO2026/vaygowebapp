@@ -150,7 +150,10 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;}
   <!-- REPORTES -->
   <div id="reportesSection" style="display:none;">
     <div style="background:#0D1E35;border:1px solid #1A2E4A;border-radius:16px;padding:20px;margin-bottom:16px;">
-      <div style="font-family:'Anton',sans-serif;font-size:14px;color:#FF2D7A;letter-spacing:2px;margin-bottom:16px;">GENERAR REPORTE</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-family:'Anton',sans-serif;font-size:14px;color:#FF2D7A;letter-spacing:2px;">GENERAR REPORTE</div>
+        <button onclick="document.querySelectorAll('.tab')[0].click()" style="background:transparent;border:1px solid #1A2E4A;border-radius:10px;padding:6px 14px;color:#4B6A85;font-size:12px;cursor:pointer;">← Volver</button>
+      </div>
       <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
         <div style="display:flex;flex-direction:column;gap:5px;flex:1;min-width:160px;">
           <label style="font-size:10px;color:#4B6A85;text-transform:uppercase;letter-spacing:1px;">Venue</label>
