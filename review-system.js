@@ -20,9 +20,18 @@ let _reviewPending=[], _currentReview=null, _reviewRatings={};
 function getDeviceIdReview(){
   try{
     let id=localStorage.getItem('vaygo_device_id');
-    if(!id){id='dev_'+Date.now()+'_'+Math.random().toString(36).slice(2,12);localStorage.setItem('vaygo_device_id',id);}
+    if(!id){
+      // Try cookie fallback
+      const match=document.cookie.match(/vaygo_device_id=([^;]+)/);
+      if(match) id=match[1];
+    }
+    if(!id){
+      id='dev_'+Date.now()+'_'+Math.random().toString(36).slice(2,12);
+      try{ localStorage.setItem('vaygo_device_id',id); }catch(e){}
+      document.cookie='vaygo_device_id='+id+';max-age=31536000;path=/';
+    }
     return id;
-  }catch(e){return 'dev_unknown';}
+  }catch(e){ return 'dev_'+Date.now(); }
 }
 
 function injectReviewModal(){
