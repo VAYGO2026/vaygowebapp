@@ -29,9 +29,9 @@ function injectReviewModal(){
   if(document.getElementById('vaygoReviewModal')) return;
   const style = document.createElement('style');
   style.textContent = `
-    #vaygoReviewModal{display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;align-items:flex-end;justify-content:center;}
+    #vaygoReviewModal{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);backdrop-filter:blur(4px);}
     #vaygoReviewModal.open{display:flex!important;}
-    .vr-box{background:#0D1E35;border:1px solid #1A2E4A;border-radius:24px 24px 0 0;padding:24px 20px 32px;width:100%;max-width:390px;max-height:85vh;overflow-y:auto;}
+    .vr-box{background:#0D1E35;border:1px solid #1A2E4A;border-radius:24px;padding:24px 20px 28px;width:90%;max-width:360px;max-height:85vh;overflow-y:auto;}
     .vr-header{text-align:center;margin-bottom:16px;}
     .vr-venue{font-family:'Anton',sans-serif;font-size:18px;color:#fff;letter-spacing:2px;margin-bottom:4px;}
     .vr-sub{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;}
@@ -98,13 +98,22 @@ function submitVaygoReview(){
   document.getElementById('vaygoReviewModal').classList.remove('open');
   document.getElementById('vaygoReviewModal').style.display='none';
   // Save in background
-  const db2=firebase.firestore();
-  db2.collection('reviews').add({
-    venueId:_currentReview.venueId, venueName:_currentReview.venueName,
-    deviceId:getDeviceIdReview(), ratings, score, category:cat,
-    couponCode:codeToMark, createdAt:firebase.firestore.FieldValue.serverTimestamp()
-  }).catch(e=>console.log('review error',e));
-  db2.collection('codes').doc(codeToMark).update({reviewed:true}).catch(()=>{});
+  try {
+    const db2 = firebase.firestore();
+    db2.collection('reviews').add({
+      venueId: _currentReview.venueId,
+      venueName: _currentReview.venueName,
+      deviceId: getDeviceIdReview(),
+      ratings: ratings,
+      score: score,
+      category: cat,
+      couponCode: codeToMark,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(()=>{
+      console.log('review saved OK');
+    }).catch(e=>{ console.log('review save error:', e.message); });
+    db2.collection('codes').doc(codeToMark).update({reviewed:true}).catch(()=>{});
+  } catch(e) { console.log('review system error:', e.message); }
   if(_reviewPending.length>0) setTimeout(showNextVaygoReview,400);
 }
 
