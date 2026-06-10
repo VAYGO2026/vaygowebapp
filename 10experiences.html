@@ -215,6 +215,33 @@
   </div>
 
 </div>
+<script>
+(function(){
+  const VENUE_ID = '10experiences';
+  function loadVaygoScore(){
+    if(typeof firebase === 'undefined'){ setTimeout(loadVaygoScore, 500); return; }
+    firebase.firestore().collection('reviews')
+      .where('venueId','==',VENUE_ID)
+      .get()
+      .then(snap=>{
+        if(snap.empty){
+          document.getElementById('vaygoScore').textContent='—';
+          document.getElementById('vaygoReviews').textContent='Be the first!';
+          document.getElementById('vaygoBadge').textContent='NEW';
+          return;
+        }
+        let total=0, count=0;
+        snap.forEach(doc=>{ total+=doc.data().score||0; count++; });
+        const avg=(total/count).toFixed(1);
+        document.getElementById('vaygoScore').textContent=avg;
+        document.getElementById('vaygoReviews').textContent=count+' review'+(count!==1?'s':'');
+        document.getElementById('vaygoBadge').textContent='★ VAYGO SCORE';
+        document.getElementById('vaygoStars').textContent='⭐';
+      }).catch(()=>{});
+  }
+  loadVaygoScore();
+})();
+</script>
 <script src="admin-float.js"></script>
 </body>
 </html>

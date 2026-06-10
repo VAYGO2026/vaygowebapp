@@ -254,6 +254,14 @@
           <div class="rating-reviews">Top rated</div>
           <div><span class="rating-badge">✈ Travellers' Choice</span></div>
         </div>
+
+        <div class="rating-card" id="vaygoScoreCard" style="border-color:rgba(212,245,106,0.3);">
+          <div class="rating-source" style="color:#d4f56a;">VAYGO</div>
+          <div class="rating-stars" id="vaygoStars">⭐</div>
+          <div class="rating-num" id="vaygoScore">—</div>
+          <div class="rating-reviews" id="vaygoReviews">loading...</div>
+          <div><span class="rating-badge" style="background:rgba(212,245,106,0.12);border-color:rgba(212,245,106,0.3);color:#d4f56a;" id="vaygoBadge">VAYGO SCORE</span></div>
+        </div>
       </div>
 
       <div class="info-desc">
@@ -326,6 +334,33 @@
   </div>
 
 </div>
+<script>
+(function(){
+  const VENUE_ID = 'snorkel';
+  function loadVaygoScore(){
+    if(typeof firebase === 'undefined'){ setTimeout(loadVaygoScore, 500); return; }
+    firebase.firestore().collection('reviews')
+      .where('venueId','==',VENUE_ID)
+      .get()
+      .then(snap=>{
+        if(snap.empty){
+          document.getElementById('vaygoScore').textContent='—';
+          document.getElementById('vaygoReviews').textContent='Be the first!';
+          document.getElementById('vaygoBadge').textContent='NEW';
+          return;
+        }
+        let total=0, count=0;
+        snap.forEach(doc=>{ total+=doc.data().score||0; count++; });
+        const avg=(total/count).toFixed(1);
+        document.getElementById('vaygoScore').textContent=avg;
+        document.getElementById('vaygoReviews').textContent=count+' review'+(count!==1?'s':'');
+        document.getElementById('vaygoBadge').textContent='★ VAYGO SCORE';
+        document.getElementById('vaygoStars').textContent='⭐';
+      }).catch(()=>{});
+  }
+  loadVaygoScore();
+})();
+</script>
 <script src="admin-float.js"></script>
 </body>
 </html>
