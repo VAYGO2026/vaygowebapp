@@ -250,7 +250,7 @@ html,body{
 
 /* ── REVIEW MODAL ── */
 #reviewModal {
-  display: none;
+  display: none !important;
   position: fixed;
   inset: 0;
   z-index: 9000;
@@ -259,7 +259,7 @@ html,body{
   justify-content: center;
   padding: 20px;
 }
-#reviewModal.open { display: flex; }
+#reviewModal.open { display: flex !important; }
 .review-box {
   background: #0D1E35;
   border: 1px solid #1A2E4A;
@@ -1228,6 +1228,7 @@ async function submitReview(){
     // Remove from pending
     _reviewPending.shift();
     document.getElementById('reviewModal').classList.remove('open');
+    document.getElementById('reviewModal').style.display = 'none';
     
     // Show next if any
     if(_reviewPending.length > 0){
