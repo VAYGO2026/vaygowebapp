@@ -86,8 +86,8 @@ function setVStar(key,n,totalCats){
   stars.forEach((s,i)=>s.classList.toggle('active',i<n));
   if(Object.keys(_reviewRatings).length===totalCats){
     const avg=Object.values(_reviewRatings).reduce((a,b)=>a+b,0)/totalCats;
-    const score=(avg/5*10).toFixed(1);
-    document.getElementById('vrScorePreview').innerHTML=`VAYGO SCORE <span>${score} / 10</span>`;
+    const score=(avg/5*5).toFixed(1);
+    document.getElementById('vrScorePreview').innerHTML=`VAYGO SCORE <span>${score} / 5</span>`;
     document.getElementById('vrSubmitBtn').disabled=false;
   }
 }
@@ -98,7 +98,7 @@ function submitVaygoReview(){
   const cat=VENUE_CATEGORIES[_currentReview.venueId]||'eat';
   const categories=REVIEW_CATEGORIES[cat]||REVIEW_CATEGORIES.eat;
   const vals=Object.values(_reviewRatings);
-  const score=parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length/5*10).toFixed(1));
+  const score=parseFloat((vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1));
   const ratings={};
   categories.forEach(([icon,label],idx)=>{ ratings[label.toLowerCase()]=_reviewRatings['vcat_'+idx]||0; });
   const codeToMark=_currentReview.code;
