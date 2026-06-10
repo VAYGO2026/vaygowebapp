@@ -248,6 +248,106 @@ html,body{
   line-height: 1;
 }
 
+/* ── REVIEW MODAL ── */
+#reviewModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(0,0,0,0.92);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+#reviewModal.open { display: flex; }
+.review-box {
+  background: #0D1E35;
+  border: 1px solid #1A2E4A;
+  border-radius: 24px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 360px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.review-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.review-venue-name {
+  font-family: 'Anton', sans-serif;
+  font-size: 18px;
+  color: #fff;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.review-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 1px;
+}
+.review-category {
+  margin-bottom: 16px;
+}
+.review-cat-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.review-stars {
+  display: flex;
+  gap: 8px;
+}
+.review-star {
+  font-size: 28px;
+  cursor: pointer;
+  filter: grayscale(1) opacity(0.4);
+  transition: filter 0.15s, transform 0.1s;
+  user-select: none;
+}
+.review-star.active {
+  filter: grayscale(0) opacity(1);
+  transform: scale(1.1);
+}
+.review-submit {
+  width: 100%;
+  background: linear-gradient(90deg, #d4f56a, #a8c840);
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  color: #0D1E35;
+  font-family: 'Anton', sans-serif;
+  font-size: 16px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.review-submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.review-score-preview {
+  text-align: center;
+  margin: 12px 0;
+  font-family: 'Anton', sans-serif;
+  font-size: 14px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 1px;
+}
+.review-score-preview span {
+  color: #d4f56a;
+  font-size: 20px;
+}
+.review-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 16px 0;
+}
+
 /* RATE MODAL */
 #rateModal {
   display: none;
@@ -985,6 +1085,166 @@ window.addEventListener('load', drawQR);
 
 
 <script>
+// ── REVIEW SYSTEM ──
+const REVIEW_CATEGORIES = {
+  eat:       [['🍽️','Food'],['👨‍🍳','Service']],
+  breakfast: [['🍽️','Food'],['👨‍🍳','Service']],
+  drink:     [['🍹','Drinks'],['👨‍🍳','Service']],
+  dive:      [['🤿','Equipment'],['👨‍🏫','Instructors'],['🛟','Safety'],['🌊','Experience']],
+  tours:     [['🚤','Experience'],['👨‍✈️','Staff'],['🛟','Safety']],
+  rent:      [['🛵','Equipment'],['👨‍💼','Staff'],['⭐','Experience']],
+  shop:      [['🛍️','Products'],['👨‍💼','Service']]
+};
+
+const VENUE_CATEGORIES = {
+  lobster:'eat', monina:'eat', azulmadera:'eat', guidos:'eat', '10experiences':'eat',
+  aquiyahora:'drink', buccanos:'drink',
+  snorkel:'dive', deep:'dive',
+  carruaje:'tours'
+};
+
+let _reviewPending = []; // queue of coupons to review
+let _currentReview = null; // {code, venueId, venueName, category}
+let _reviewRatings = {}; // {catKey: stars}
+
+function getDeviceIdApp(){
+  try{
+    let id = localStorage.getItem('vaygo_device_id');
+    if(!id){ id='dev_'+Date.now()+'_'+Math.random().toString(36).slice(2,12); localStorage.setItem('vaygo_device_id',id); }
+    return id;
+  }catch(e){ return 'dev_unknown'; }
+}
+
+async function checkPendingReviews(){
+  try{
+    const deviceId = getDeviceIdApp();
+    const today = new Date().toISOString().slice(0,10);
+    // Get codes used today that haven't been reviewed
+    const snap = await firebase.firestore().collection('codes')
+      .where('deviceId','==',deviceId)
+      .where('used','==',true)
+      .get();
+    
+    const pending = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      if(!d.reviewed && d.restId && d.restName){
+        // Check if validated today
+        const validatedAt = d.validatedAt ? (d.validatedAt.toDate ? d.validatedAt.toDate() : new Date(d.validatedAt)) : null;
+        if(validatedAt){
+          pending.push({ code: doc.id, venueId: d.restId, venueName: d.restName });
+        }
+      }
+    });
+    
+    if(pending.length > 0){
+      _reviewPending = pending;
+      showNextReview();
+    }
+  }catch(e){ console.log('review check error', e); }
+}
+
+function showNextReview(){
+  if(_reviewPending.length === 0) return;
+  _currentReview = _reviewPending[0];
+  _reviewRatings = {};
+  
+  const cat = VENUE_CATEGORIES[_currentReview.venueId] || 'eat';
+  const categories = REVIEW_CATEGORIES[cat] || REVIEW_CATEGORIES.eat;
+  
+  document.getElementById('reviewVenueName').textContent = _currentReview.venueName;
+  
+  // Build categories HTML
+  let html = '';
+  categories.forEach(([icon, label], idx) => {
+    const key = 'cat_'+idx;
+    html += `<div class="review-category">
+      <div class="review-cat-label">${icon} ${label}</div>
+      <div class="review-stars" id="stars_${key}">
+        ${[1,2,3,4,5].map(n => `<span class="review-star" onclick="setReviewStar('${key}',${n},${categories.length})" data-n="${n}">⭐</span>`).join('')}
+      </div>
+    </div>`;
+  });
+  document.getElementById('reviewCategories').innerHTML = html;
+  document.getElementById('reviewScorePreview').innerHTML = 'Rate all categories to submit';
+  document.getElementById('reviewSubmitBtn').disabled = true;
+  document.getElementById('reviewModal').classList.add('open');
+}
+
+function setReviewStar(key, n, totalCats){
+  _reviewRatings[key] = n;
+  // Update stars display
+  const stars = document.querySelectorAll(`#stars_${key} .review-star`);
+  stars.forEach((s,i) => s.classList.toggle('active', i < n));
+  
+  // Check if all categories rated
+  const ratedCount = Object.keys(_reviewRatings).length;
+  if(ratedCount === totalCats){
+    // Calculate score
+    const vals = Object.values(_reviewRatings);
+    const avg = vals.reduce((a,b)=>a+b,0) / vals.length;
+    const score = (avg / 5 * 10).toFixed(1);
+    document.getElementById('reviewScorePreview').innerHTML = `VAYGO SCORE <span>${score} / 10</span>`;
+    document.getElementById('reviewSubmitBtn').disabled = false;
+  }
+}
+
+async function submitReview(){
+  if(!_currentReview) return;
+  const btn = document.getElementById('reviewSubmitBtn');
+  btn.textContent = 'SAVING...';
+  btn.disabled = true;
+  
+  try{
+    const vals = Object.values(_reviewRatings);
+    const avg = vals.reduce((a,b)=>a+b,0) / vals.length;
+    const score = parseFloat((avg / 5 * 10).toFixed(1));
+    const cat = VENUE_CATEGORIES[_currentReview.venueId] || 'eat';
+    const categories = REVIEW_CATEGORIES[cat] || REVIEW_CATEGORIES.eat;
+    
+    // Build ratings object
+    const ratings = {};
+    categories.forEach(([icon, label], idx) => {
+      ratings[label.toLowerCase()] = _reviewRatings['cat_'+idx] || 0;
+    });
+    
+    // Save review to Firebase
+    await firebase.firestore().collection('reviews').add({
+      venueId: _currentReview.venueId,
+      venueName: _currentReview.venueName,
+      deviceId: getDeviceIdApp(),
+      ratings: ratings,
+      score: score,
+      category: cat,
+      couponCode: _currentReview.code,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    // Mark coupon as reviewed
+    await firebase.firestore().collection('codes').doc(_currentReview.code).update({
+      reviewed: true
+    }).catch(()=>{});
+    
+    // Remove from pending
+    _reviewPending.shift();
+    document.getElementById('reviewModal').classList.remove('open');
+    
+    // Show next if any
+    if(_reviewPending.length > 0){
+      setTimeout(showNextReview, 600);
+    }
+  }catch(e){
+    console.log('review submit error', e);
+    btn.textContent = 'SUBMIT RATING';
+    btn.disabled = false;
+  }
+}
+
+// Check for pending reviews when app loads
+window.addEventListener('load', ()=>{
+  setTimeout(checkPendingReviews, 2000);
+});
+
 let selectedRating = 0;
 
 function setRating(n) {
@@ -1161,6 +1421,21 @@ document.getElementById('adBanner').addEventListener('touchend', () => {
 </script>
 
 <script src="admin-float.js"></script>
+
+  <!-- ── REVIEW MODAL ── -->
+  <div id="reviewModal">
+    <div class="review-box" id="reviewBox">
+      <div class="review-header">
+        <div style="font-size:32px;margin-bottom:8px;">⭐</div>
+        <div class="review-venue-name" id="reviewVenueName">—</div>
+        <div class="review-sub">HOW WAS YOUR EXPERIENCE?</div>
+      </div>
+      <div id="reviewCategories"></div>
+      <div class="review-divider"></div>
+      <div class="review-score-preview" id="reviewScorePreview">Rate all categories to submit</div>
+      <button class="review-submit" id="reviewSubmitBtn" onclick="submitReview()" disabled>SUBMIT RATING</button>
+    </div>
+  </div>
 
   <!-- ── COMING SOON SCREEN ── -->
   <div id="vaygoComingSoon" style="display:none;position:fixed;inset:0;z-index:99998;background:#060E1C;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;">
