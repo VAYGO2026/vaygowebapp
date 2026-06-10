@@ -1120,7 +1120,7 @@ async function checkPendingReviews(){
     const deviceId = getDeviceIdApp();
     const today = new Date().toISOString().slice(0,10);
     // Get codes used today that haven't been reviewed
-    const snap = await firebase.firestore().collection('codes')
+    const snap = await db.collection('codes')
       .where('deviceId','==',deviceId)
       .where('used','==',true)
       .get();
@@ -1209,7 +1209,7 @@ async function submitReview(){
     });
     
     // Save review to Firebase
-    await firebase.firestore().collection('reviews').add({
+    await db.collection('reviews').add({
       venueId: _currentReview.venueId,
       venueName: _currentReview.venueName,
       deviceId: getDeviceIdApp(),
@@ -1221,7 +1221,7 @@ async function submitReview(){
     });
     
     // Mark coupon as reviewed
-    await firebase.firestore().collection('codes').doc(_currentReview.code).update({
+    await db.collection('codes').doc(_currentReview.code).update({
       reviewed: true
     }).catch(()=>{});
     
