@@ -12,7 +12,8 @@ const VENUE_CATEGORIES = {
   lobster:'eat', monina:'eat', azulmadera:'eat', guidos:'eat', '10experiences':'eat',
   aquiyahora:'drink', buccanos:'drink', isla:'breakfast',
   snorkel:'dive', deep:'dive',
-  carruaje:'tours'
+  carruaje:'tours',
+  diamonds:'shop'
 };
 
 let _reviewPending=[], _currentReview=null, _reviewRatings={};
