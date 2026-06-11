@@ -146,7 +146,7 @@ body{background:#060E1C;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
       <button class="btn btn-stop" id="stopBtn" onclick="stopScanner()" style="display:none;">✕ Cerrar cámara</button>
       <div class="divider"><div class="div-line"></div><div class="div-txt">o ingresa manual</div><div class="div-line"></div></div>
       <div class="manual-row">
-        <input class="manual-input" id="manualInput" placeholder="VYG-XXXX-XXXX" maxlength="14"/>
+        <input class="manual-input" id="manualInput" placeholder="VYG-XXXXX" maxlength="14"/>
         <button class="manual-btn" onclick="validateManual()">VALIDAR</button>
       </div>
     </div>
@@ -259,7 +259,7 @@ window.validateCode = async function(raw) {
   const isVYG = code.startsWith('VYG-');
   if(!isVPR && !isVYG) return showResult('invalid', { code });
   if(isVPR && !code.match(/^VPR-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) return showResult('invalid', { code });
-  if(isVYG && !code.match(/^VYG-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) return showResult('invalid', { code });
+  if(isVYG && !code.match(/^VYG-[A-Z0-9]{5}$/) && !code.match(/^VYG-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) return showResult('invalid', { code });
 
   const colName = isVPR ? 'vp_rewards' : 'codes';
   const badgeLabel = isVPR ? '🎁 VAYGO POINTS REWARD' : '🎰 SPIN & WIN';
