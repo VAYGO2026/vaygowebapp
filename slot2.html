@@ -282,7 +282,7 @@ const CAT_EAT   = ['lobster','10experiences','monina','azulmadera','guidos'];
 const CAT_DRINK = ['buccanos','aquiyahora'];
 const CAT_COFFEE= ['aquiyahora'];
 const CAT_EXPLORE=['snorkel','carruaje','deep'];
-const CAT_SHOP  = []; // future
+const CAT_SHOP  = ['diamonds'];
 
 function getVenueCategory(vp){
   if(CAT_SHOP.includes(vp))    return 'shop';
@@ -679,7 +679,7 @@ function updateVPMilestoneLabels(){
 }
 
 function goBackToVenue(){
-  const vm={lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html',snorkel:'snorkel.html','10experiences':'10experiences.html',monina:'monina.html',aquiyahora:'aquiyahora.html',carruaje:'carruaje.html',deep:'deep.html'};
+  const vm={lobster:'lobster.html',buccanos:'buccanos.html',azulmadera:'azulmadera.html',guidos:'guidos.html',snorkel:'snorkel.html','10experiences':'10experiences.html',monina:'monina.html',aquiyahora:'aquiyahora.html',carruaje:'carruaje.html',deep:'deep.html',diamonds:'diamonds.html'};
   window.location.href=vm[_vp]||'lobster.html';
 }
 </script>
